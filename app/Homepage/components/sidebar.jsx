@@ -22,12 +22,12 @@ const Sidebar = () => {
   //handlers
   //Add New Project Handler
   const [title, setTitle] = useState("");
-  const [privacy, setPrivacy] = useState("main");
+  const [privacy, setPrivacy] = useState("shared");
   const handleAddProject = () => {
     console.log("trigger");
     addNew({ title, privacy });
     setTitle("");
-    setPrivacy("main");
+    setPrivacy("shared");
   };
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -69,8 +69,8 @@ const Sidebar = () => {
                   value={privacy}
                   onChange={(value) => setPrivacy(value)}
                 >
-                  <Radio value='main'>Main</Radio>
-                  <Radio value='private'>Private</Radio>
+                  <Radio value='shared'>Shared</Radio>
+                  <Radio value='personal'>Personal</Radio>
                 </RadioGroup>
               </ModalBody>
               <ModalFooter>

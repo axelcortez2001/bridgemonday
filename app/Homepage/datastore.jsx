@@ -10,7 +10,7 @@ export const projectsAtom = atom([
   {
     id: projectid++,
     name: "Project 1",
-    privacy: "main",
+    type: "shared",
     grouptask: [
       {
         id: groupId++,
@@ -20,31 +20,73 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Completed",
           },
           {
             id: taskid++,
             item: "Task 2",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Compl sadsadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Comfdsapleted ",
           },
         ],
@@ -56,31 +98,73 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "DOne",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Complet asd saded",
           },
           {
             id: taskid++,
             item: "Task 2",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Compl sads asd asdadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Comfdsa asdasd pleted ",
           },
         ],
@@ -90,7 +174,7 @@ export const projectsAtom = atom([
   {
     id: projectid++,
     name: "Project 2",
-    privacy: "private",
+    type: "personal",
     grouptask: [
       {
         id: groupId++,
@@ -99,31 +183,73 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Completed",
           },
           {
             id: taskid++,
             item: "Task 2",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Compl sadsadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Comfdsapleted ",
           },
         ],
@@ -135,31 +261,73 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "DOne",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Complet asd saded",
           },
           {
             id: taskid++,
             item: "Task 2",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Compl sads asd asdadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            developers: [],
+            processors: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
             dateCompleted: "2024-05-13T12:00:00",
-            supervisor: "",
+            managers: [
+              {
+                sub: "sad786213",
+                name: "Axel Cortez",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
+            ],
             remarks: "Comfdsa asdasd pleted ",
           },
         ],
@@ -183,7 +351,7 @@ export const addProject = atom(null, (get, set, { title, privacy }) => {
   const newProject = {
     id: projectid++,
     name: title,
-    privacy: privacy,
+    type: privacy,
     grouptask: [],
   };
   console.log(newProject);

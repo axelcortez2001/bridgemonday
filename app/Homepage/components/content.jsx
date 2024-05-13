@@ -16,13 +16,13 @@ const columns = [
     cell: (props) => <p>{props.getValue()}</p>,
   },
   {
-    accessorKey: "supervisor",
-    header: "Supervisor",
+    accessorKey: "managers",
+    header: "Managers",
     cell: (props) => <p>{props.getValue()}</p>,
   },
   {
-    accessorKey: "developers",
-    header: "Developers",
+    accessorKey: "processors",
+    header: "Processor",
     cell: (props) => <p>{props.getValue()}</p>,
   },
   {

@@ -1,9 +1,14 @@
 "use client";
 import React from "react";
+import { Provider } from "jotai";
 import { NextUIProvider } from "@nextui-org/react";
 
-const Provider = ({ children }) => {
-  return <NextUIProvider>{children}</NextUIProvider>;
+const Providers = ({ children }) => {
+  return (
+    <NextUIProvider>
+      <Provider>{children}</Provider>
+    </NextUIProvider>
+  );
 };
 
-export default Provider;
+export default Providers;

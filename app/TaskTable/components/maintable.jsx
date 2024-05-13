@@ -5,55 +5,67 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import DATA from "./tablestore";
-import EditableCell from "./components/EditableCell";
-import OptionCell from "./components/OptionCell";
-
+import EditableCell from "@/app/Mainpage/components/EditableCell";
+import OptionCell from "@/app/Mainpage/components/OptionCell";
 
 const columns = [
-  // {
-  //   accessorKey: "id",
-  //   header: "ID",
-  //   size: 200,
-  //   cell: (props) => <p>{props.getValue()}</p>,
-  // },
   {
-    accessorKey: "name",
-    header: "NAME",
-    cell: (props) => <p>{props.getValue()}</p>,
-  },
-  {
-    accessorKey: "task",
-    header: "TASK",
-    size: 200,
+    accessorKey: "item",
+    header: "Item",
     cell: EditableCell,
   },
-  { accessorKey: "status", header: "STATUS", size: 200, cell: OptionCell },
   {
-    accessorKey: "age",
-    header: "AGE",
+    accessorKey: "supervisor",
+    header: "Supervisor",
     cell: (props) => <p>{props.getValue()}</p>,
   },
   {
-    accessorKey: "city",
-    header: "CITY",
+    accessorKey: "developers",
+    header: "Developers",
+    cell: (props) => <p>{props.getValue()}</p>,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: OptionCell,
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: (props) => <p>{props.getValue()}</p>,
+  },
+  {
+    accessorKey: "dateCompleted",
+    header: "DateCompleted",
+    cell: (props) => <p>{props.getValue()}</p>,
+  },
+  {
+    accessorKey: "remarks",
+    header: "Remarks",
     cell: (props) => <p>{props.getValue()}</p>,
   },
 ];
-
-const Mainpage = () => {
-  const [data, setData] = useState(DATA);
+const Maintable = ({ tableData }) => {
+  const [data, setData] = useState(tableData);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
     enableColumnResizing: true,
+    meta: {
+      updateData: (rowIndex, columnId, value) =>
+        setData((prev) =>
+          prev.map((row, index) =>
+            index === rowIndex ? { ...prev[rowIndex], [columnId]: value } : row
+          )
+        ),
+    },
   });
-  console.log(table.getHeaderGroups());
-  console.log("row model:", table.getRowModel());
+
+  console.log(data);
   return (
-    <div className='flex items-center justify-center'>
+    <div className='w-full items-center justify-center'>
       <table className='p-2 border border-gray-900'>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -92,10 +104,13 @@ const Mainpage = () => {
               ))}
             </tr>
           ))}
+          <tr className='w-full flex items-center justify-center p-1 min-h-9 hover:cursor-pointer'>
+            <button>+add item</button>
+          </tr>
         </tbody>
       </table>
     </div>
   );
 };
 
-export default Mainpage;
+export default Maintable;

@@ -5,8 +5,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import EditableCell from "./tablecomponents/EditableCell";
-import { useSetAtom } from "jotai";
-import { updateGroupData } from "../datastore";
+import { useAtom, useSetAtom } from "jotai";
+import { selectedProject, updateGroupData, updateProject } from "../datastore";
 
 const columns = [
   {
@@ -63,18 +63,32 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
         ),
     },
   });
+  //update the all table data of an specfic table
   const updateTableData = useSetAtom(updateGroupData);
-  console.log(groupId);
   useEffect(() => {
     const updateData = () => {
       try {
-        updateTableData(projectId, groupId, data);
+        console.log("trigger");
+        const type = "UpdateData";
+        updateTableData(projectId, groupId, data, type);
       } catch (error) {
         console.log(error);
       }
     };
     updateData();
   }, [data]);
+  //add new tablerow to an specific table
+  const addNewRow = () => {
+    try {
+      const type = "Add Row";
+      const updatedProject = updateTableData(projectId, groupId, data, type);
+      console.log(updatedProject);
+      setData(updatedProject);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   console.log("Data: ", data);
   return (
     <div className='w-full items-center justify-center'>
@@ -117,7 +131,7 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
             </tr>
           ))}
           <tr className='w-full flex items-center justify-center p-1 min-h-9 hover:cursor-pointer'>
-            <button>+add item</button>
+            <button onClick={() => addNewRow()}>+add item</button>
           </tr>
         </tbody>
       </table>

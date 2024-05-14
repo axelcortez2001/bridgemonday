@@ -414,7 +414,7 @@ export const updateGroupName = atom(
 
 export const updateGroupData = atom(
   null,
-  (get, set, projectId, groupId, data) => {
+  (get, set, projectId, groupId, data, type) => {
     const projects = get(projectsAtom);
     console.log("GroupData: ", data);
     const updatedProjects = projects.map((project) => {
@@ -423,10 +423,27 @@ export const updateGroupData = atom(
           ...project,
           grouptask: project.grouptask.map((groupTask) => {
             if (groupTask.id === groupId) {
-              return {
-                ...groupTask,
-                task: data,
-              };
+              if (type === "UpdateData") {
+                return {
+                  ...groupTask,
+                  task: data,
+                };
+              } else {
+                const newRow = {
+                  id: taskid++,
+                  item: "New Task",
+                  processors: [],
+                  status: "",
+                  date: "",
+                  dateCompleted: "",
+                  managers: [],
+                  remarks: "",
+                };
+                return {
+                  ...groupTask,
+                  task: [...data, newRow],
+                };
+              }
             }
             return groupTask;
           }),
@@ -434,6 +451,13 @@ export const updateGroupData = atom(
       }
       return project;
     });
-    return set(projectsAtom, updatedProjects);
+    set(projectsAtom, updatedProjects);
+    const updatedProject = updatedProjects.find(
+      (project) => project.id === projectId
+    );
+    const updatedGroupTask = updatedProject.grouptask.find(
+      (groupTask) => groupTask.id === groupId
+    );
+    return updatedGroupTask.task;
   }
 );

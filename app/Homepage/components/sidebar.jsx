@@ -71,7 +71,7 @@ const Sidebar = () => {
                 <RadioGroup
                   label='Privacy'
                   value={privacy}
-                  onChange={(value) => setPrivacy(value)}
+                  onChange={(e) => setPrivacy(e.target.value)}
                 >
                   <Radio value='shared'>Shared</Radio>
                   <Radio value='personal'>Personal</Radio>

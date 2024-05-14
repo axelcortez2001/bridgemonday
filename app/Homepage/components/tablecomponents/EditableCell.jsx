@@ -16,7 +16,7 @@ const EditableCell = ({ getValue, row, column, table }) => {
       value={value}
       onBlur={onBlur}
       onChange={(e) => setValue(e.target.value)}
-      className='border p-2 text-wrap w-full'
+      className='p-2 text-wrap w-full hover:bg-gray-200 h-full'
     />
   );
 };

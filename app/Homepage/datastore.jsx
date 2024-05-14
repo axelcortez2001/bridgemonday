@@ -3,9 +3,18 @@ import { atom } from "jotai";
 let projectid = 0;
 let groupId = 0;
 let taskid = 0;
+let statusId = 0;
 export const blankProject = atom([
   { id: projectid++, name: "New Group", grouptask: [] },
 ]);
+export const statusesData = [
+  { id: statusId++, color: "green-500", text: "Done" },
+  { id: statusId++, color: "orange-500", text: "Woring On It" },
+  { id: statusId++, color: "red-500", text: "Stuck" },
+  { id: statusId++, color: "violet-500", text: "Future Steps" },
+  { id: statusId++, color: "blue-500", text: "On Hold" },
+  { id: statusId++, color: "gray-500", text: "None" },
+];
 export const projectsAtom = atom([
   {
     id: projectid++,
@@ -34,9 +43,10 @@ export const projectsAtom = atom([
                 picture: "",
               },
             ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
+            status: { id: statusId++, color: "gray-500", text: "None" },
+            date: new Date("2024/05/13"),
+            deadline: new Date("2024/05/13"),
+            dateCompleted: new Date("2024/05/13"),
             managers: [
               {
                 sub: "sad786213",
@@ -58,9 +68,10 @@ export const projectsAtom = atom([
                 picture: "",
               },
             ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
+            status: { id: statusId++, color: "red-500", text: "Stuck" },
+            date: "",
+            deadline: new Date("2024/05/13"),
+            dateCompleted: "",
             managers: [
               {
                 sub: "sad786213",
@@ -82,9 +93,10 @@ export const projectsAtom = atom([
                 picture: "",
               },
             ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
+            status: { id: statusId++, color: "gray", text: "" },
+            date: "",
+            deadline: new Date("2024/05/13"),
+            dateCompleted: "",
             managers: [
               {
                 sub: "sad786213",
@@ -112,9 +124,10 @@ export const projectsAtom = atom([
                 picture: "",
               },
             ],
-            status: "DOne",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
+            status: { id: statusId++, color: "gray", text: "" },
+            date: "",
+            deadline: "",
+            dateCompleted: "",
             managers: [
               {
                 sub: "sad786213",
@@ -136,9 +149,10 @@ export const projectsAtom = atom([
                 picture: "",
               },
             ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
+            status: { id: statusId++, color: "gray", text: "" },
+            date: "",
+            deadline: "",
+            dateCompleted: "",
             managers: [
               {
                 sub: "sad786213",
@@ -160,172 +174,10 @@ export const projectsAtom = atom([
                 picture: "",
               },
             ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
-            managers: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            remarks: "Comfdsa asdasd pleted ",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: projectid++,
-    name: "Project 2",
-    type: "personal",
-    grouptask: [
-      {
-        id: groupId++,
-        groupName: "Group 1",
-        task: [
-          {
-            id: taskid++,
-            item: "Task 1",
-            processors: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
-            managers: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            remarks: "Completed",
-          },
-          {
-            id: taskid++,
-            item: "Task 2",
-            processors: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
-            managers: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            remarks: "Compl sadsadeted",
-          },
-          {
-            id: taskid++,
-            item: "Task 3",
-            processors: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
-            managers: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            remarks: "Comfdsapleted ",
-          },
-        ],
-      },
-      {
-        id: groupId++,
-        groupName: "Group 2",
-        task: [
-          {
-            id: taskid++,
-            item: "Task 1",
-            processors: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            status: "DOne",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
-            managers: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            remarks: "Complet asd saded",
-          },
-          {
-            id: taskid++,
-            item: "Task 2",
-            processors: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
-            managers: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            remarks: "Compl sads asd asdadeted",
-          },
-          {
-            id: taskid++,
-            item: "Task 3",
-            processors: [
-              {
-                sub: "sad786213",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
-              },
-            ],
-            status: "Completed",
-            date: "2024-05-13T12:00:00",
-            dateCompleted: "2024-05-13T12:00:00",
+            status: { id: statusId++, color: "gray", text: "" },
+            date: "",
+            deadline: "",
+            dateCompleted: "",
             managers: [
               {
                 sub: "sad786213",
@@ -412,6 +264,7 @@ export const updateGroupName = atom(
   }
 );
 
+//function to update tabledata
 export const updateGroupData = atom(
   null,
   (get, set, projectId, groupId, data, type) => {
@@ -433,7 +286,7 @@ export const updateGroupData = atom(
                   id: taskid++,
                   item: "New Task",
                   processors: [],
-                  status: "",
+                  status: { id: statusId++, color: "gray", text: "" },
                   date: "",
                   dateCompleted: "",
                   managers: [],
@@ -458,6 +311,7 @@ export const updateGroupData = atom(
     const updatedGroupTask = updatedProject.grouptask.find(
       (groupTask) => groupTask.id === groupId
     );
+
     return updatedGroupTask.task;
   }
 );

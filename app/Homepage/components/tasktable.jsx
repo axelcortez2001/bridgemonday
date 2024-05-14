@@ -7,6 +7,8 @@ import {
 import EditableCell from "./tablecomponents/EditableCell";
 import { useAtom, useSetAtom } from "jotai";
 import { selectedProject, updateGroupData, updateProject } from "../datastore";
+import OptionCell from "./tablecomponents/OptionCell";
+import DateCell from "./tablecomponents/DateCell";
 
 const columns = [
   {
@@ -27,22 +29,27 @@ const columns = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: (props) => <p>{props.getValue()}</p>,
+    cell: OptionCell,
   },
   {
     accessorKey: "date",
     header: "Date",
-    cell: (props) => <p>{props.getValue()}</p>,
+    cell: DateCell,
+  },
+  {
+    accessorKey: "deadline",
+    header: "Deadline",
+    cell: DateCell,
   },
   {
     accessorKey: "dateCompleted",
     header: "DateCompleted",
-    cell: (props) => <p>{props.getValue()}</p>,
+    cell: DateCell,
   },
   {
     accessorKey: "remarks",
     header: "Remarks",
-    cell: (props) => <p>{props.getValue()}</p>,
+    cell: EditableCell,
   },
 ];
 

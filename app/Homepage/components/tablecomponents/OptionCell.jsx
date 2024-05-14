@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -6,21 +6,24 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
+import { statusesData } from "../../datastore";
 
-const OptionCell = ({ getValue }) => {
-  const initialValue = getValue();
-  const [selectedKeys, setSelectedKeys] = React.useState(
-    new Set([initialValue])
-  );
+const OptionCell = ({ getValue, row, column, table }) => {
+  const { text, color } = getValue() || {};
+  const { updateData } = table.options.meta;
 
+  //provided by nextui template
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set([text]));
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
     [selectedKeys]
   );
+
+  console.log("SelectedKeys", statusesData);
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button variant='bordered' className='capitalize w-full'>
+        <Button variant='bordered' className={`capitalize w-full bg-${color}`}>
           {selectedValue}
         </Button>
       </DropdownTrigger>
@@ -32,10 +35,15 @@ const OptionCell = ({ getValue }) => {
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
       >
-        <DropdownItem key='todo'>TO DO</DropdownItem>
-        <DropdownItem key='pending'>Pending</DropdownItem>
-        <DropdownItem key='approval'>Approval</DropdownItem>
-        <DropdownItem key='done'>Done</DropdownItem>
+        {statusesData.map((status) => (
+          <DropdownItem
+            key={status.text}
+            onClick={() => updateData(row.index, column.id, status)}
+            className={`bg-${status.color} text-white `}
+          >
+            {status.text}
+          </DropdownItem>
+        ))}
       </DropdownMenu>
     </Dropdown>
   );

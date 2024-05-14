@@ -20,10 +20,19 @@ const OptionCell = ({ getValue, row, column, table }) => {
   );
 
   console.log("SelectedKeys", color);
+  const checkColor = (color) => {
+    if (!color.startsWith("bg-")) {
+      return `bg-${color}`;
+    }
+    return color;
+  };
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button variant='bordered' className={`capitalize w-full ${color}`}>
+        <Button
+          variant='bordered'
+          className={`capitalize w-full ${checkColor(color)}`}
+        >
           {selectedValue}
         </Button>
       </DropdownTrigger>

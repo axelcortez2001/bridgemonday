@@ -216,6 +216,22 @@ export const addProject = atom(null, (get, set, { title, privacy }) => {
   return set(projectsAtom, [...prevProject, newProject]);
 });
 
+//function to edit project
+export const editProject = atom(null, (get, set, id, title, privacy) => {
+  const prevProjects = get(projectsAtom);
+  const updatedProjects = prevProjects.map((project) =>
+    project.id === id ? { ...project, name: title, type: privacy } : project
+  );
+  set(projectsAtom, updatedProjects);
+});
+
+//function to delete project
+export const deleteProject = atom(null, (get, set, id) => {
+  const prevProjects = get(projectsAtom);
+  const newProject = prevProjects.filter((project) => project.id !== id);
+  set(projectsAtom, newProject);
+});
+
 //function to add group task
 export const addGroupTask = atom(null, (get, set, projectId) => {
   const projects = get(projectsAtom);

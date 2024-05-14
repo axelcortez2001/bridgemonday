@@ -27,15 +27,16 @@ const Content = () => {
     const id = data.id;
     addNewGroup(id);
   };
-
   return (
     <div className='p-2 flex flex-col w-full max-h-screen overflow-y-auto'>
       <p>{data?.name}</p>
       <div className='w-full justify-start mb-2'>
-        <Button onClick={() => handleAddGroup(data)}>New Group</Button>
+        {data !== undefined && (
+          <Button onClick={() => handleAddGroup(data)}>New Group</Button>
+        )}
       </div>
       <div className='w-full flex flex-col space-y-4'>
-        {data.grouptask.map((groupData) => (
+        {data?.grouptask.map((groupData) => (
           <div
             className={`w-full  
             ${!openDrop.includes(groupData.id) ? "bg-gray-200 border" : ""}

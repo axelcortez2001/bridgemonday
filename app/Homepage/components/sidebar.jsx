@@ -15,6 +15,7 @@ import {
 import { useAtom, useSetAtom } from "jotai";
 import { addProject, projectsAtom, selectedProject } from "../datastore";
 import { SlOptions } from "react-icons/sl";
+import OptionModal from "./sidebarcomponents/OptionModal";
 const Sidebar = () => {
   const [data, setData] = useAtom(projectsAtom);
   const addNew = useSetAtom(addProject);
@@ -26,6 +27,10 @@ const Sidebar = () => {
   const [privacy, setPrivacy] = useState("shared");
   const handleAddProject = () => {
     console.log("trigger");
+    if (title === "") {
+      alert("Please enter a title");
+      return;
+    }
     addNew({ title, privacy });
     setTitle("");
     setPrivacy("shared");
@@ -48,9 +53,7 @@ const Sidebar = () => {
             onClick={() => setSelectedProject(task.id)}
           >
             <p>{task.name}</p>
-            <div className='h-full hover:bg-gray-400 flex items-center p-1 rounded-md'>
-              <SlOptions size={15} />
-            </div>
+            <OptionModal task={task} />
           </div>
         ))}
       </div>

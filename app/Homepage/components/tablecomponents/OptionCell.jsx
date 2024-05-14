@@ -48,9 +48,9 @@ const OptionCell = ({ getValue, row, column, table }) => {
           <DropdownItem
             key={status.text}
             onClick={() => updateData(row.index, column.id, status)}
-            className={`${status.color} text-white `}
+            className={`${status.color} `}
           >
-            {status.text}
+            <p>{status.text}</p>
           </DropdownItem>
         ))}
       </DropdownMenu>

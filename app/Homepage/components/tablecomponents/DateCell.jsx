@@ -34,6 +34,7 @@ const DateCustomInput = forwardRef(({ value, onClick, clearDate }, ref) => (
   </div>
 ));
 
+DateCustomInput.displayName = "DateCustomInput";
 const DateCell = ({ getValue, row, column, table }) => {
   const date = getValue();
 

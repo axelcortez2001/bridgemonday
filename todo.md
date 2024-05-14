@@ -1,0 +1,3 @@
+- Edit functionality of projectname
+- Option functionality of projectname at sidebar
+- Setup Amplify

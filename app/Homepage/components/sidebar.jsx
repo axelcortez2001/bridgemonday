@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { useAtom, useSetAtom } from "jotai";
 import { addProject, projectsAtom, selectedProject } from "../datastore";
+import { SlOptions } from "react-icons/sl";
 const Sidebar = () => {
   const [data, setData] = useAtom(projectsAtom);
   const addNew = useSetAtom(addProject);
@@ -42,11 +43,14 @@ const Sidebar = () => {
       <div className='w-full flex flex-col'>
         {data.map((task) => (
           <div
-            className='w-full p-2 hover:bg-gray-200 hover:cursor-pointer'
+            className='w-full p-2 hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
             key={task.id}
             onClick={() => setSelectedProject(task.id)}
           >
-            {task.name}
+            <p>{task.name}</p>
+            <div className='h-full hover:bg-gray-400 flex items-center p-1 rounded-md'>
+              <SlOptions size={15} />
+            </div>
           </div>
         ))}
       </div>

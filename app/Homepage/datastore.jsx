@@ -27,6 +27,12 @@ export const projectsAtom = atom([
                 email: "john.cortez@aretex.com.au",
                 picture: "",
               },
+              {
+                sub: "sad786213",
+                name: "Chloe Lazaro",
+                email: "john.cortez@aretex.com.au",
+                picture: "",
+              },
             ],
             status: "Completed",
             date: "2024-05-13T12:00:00",
@@ -94,7 +100,7 @@ export const projectsAtom = atom([
       {
         id: groupId++,
         groupName: "Group 2",
-        tasks: [
+        task: [
           {
             id: taskid++,
             item: "Task 1",
@@ -257,7 +263,7 @@ export const projectsAtom = atom([
       {
         id: groupId++,
         groupName: "Group 2",
-        tasks: [
+        task: [
           {
             id: taskid++,
             item: "Task 1",
@@ -358,7 +364,7 @@ export const addProject = atom(null, (get, set, { title, privacy }) => {
   return set(projectsAtom, [...prevProject, newProject]);
 });
 
-//function to update project
+//function to add group task
 export const addGroupTask = atom(null, (get, set, projectId) => {
   const projects = get(projectsAtom);
   const groupData = { id: groupId++, groupName: "New Group", task: [] };
@@ -374,3 +380,60 @@ export const addGroupTask = atom(null, (get, set, projectId) => {
   });
   return set(projectsAtom, updatedProjects);
 });
+
+//function to update project
+export const updateProject = atom(null, (get, set) => {
+  const projects = get(projectsAtom);
+});
+
+//function to update groupName
+export const updateGroupName = atom(
+  null,
+  (get, set, { projectId, groupId, newGroupName }) => {
+    const projects = get(projectsAtom);
+    const updatedProjects = projects.map((project) => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          grouptask: project.grouptask.map((groupTask) => {
+            if (groupTask.id === groupId) {
+              return {
+                ...groupTask,
+                groupName: newGroupName,
+              };
+            }
+            return groupTask;
+          }),
+        };
+      }
+      return project;
+    });
+    return set(projectsAtom, updatedProjects);
+  }
+);
+
+export const updateGroupData = atom(
+  null,
+  (get, set, projectId, groupId, data) => {
+    const projects = get(projectsAtom);
+    console.log("GroupData: ", data);
+    const updatedProjects = projects.map((project) => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          grouptask: project.grouptask.map((groupTask) => {
+            if (groupTask.id === groupId) {
+              return {
+                ...groupTask,
+                task: data,
+              };
+            }
+            return groupTask;
+          }),
+        };
+      }
+      return project;
+    });
+    return set(projectsAtom, updatedProjects);
+  }
+);

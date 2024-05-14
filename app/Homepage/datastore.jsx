@@ -8,12 +8,12 @@ export const blankProject = atom([
   { id: projectid++, name: "New Group", grouptask: [] },
 ]);
 export const statusesData = [
-  { id: statusId++, color: "green-500", text: "Done" },
-  { id: statusId++, color: "orange-500", text: "Woring On It" },
-  { id: statusId++, color: "red-500", text: "Stuck" },
-  { id: statusId++, color: "violet-500", text: "Future Steps" },
-  { id: statusId++, color: "blue-500", text: "On Hold" },
-  { id: statusId++, color: "gray-500", text: "None" },
+  { id: statusId++, color: "bg-green-500", text: "Done" },
+  { id: statusId++, color: "bg-orange-500", text: "Woring On It" },
+  { id: statusId++, color: "bg-red-500", text: "Stuck" },
+  { id: statusId++, color: "bg-violet-500", text: "Future Steps" },
+  { id: statusId++, color: "bg-blue-500", text: "On Hold" },
+  { id: statusId++, color: "bg-gray-500", text: "None" },
 ];
 export const projectsAtom = atom([
   {

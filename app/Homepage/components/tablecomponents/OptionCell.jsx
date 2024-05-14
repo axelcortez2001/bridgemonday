@@ -19,11 +19,11 @@ const OptionCell = ({ getValue, row, column, table }) => {
     [selectedKeys]
   );
 
-  console.log("SelectedKeys", statusesData);
+  console.log("SelectedKeys", color);
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button variant='bordered' className={`capitalize w-full bg-${color}`}>
+        <Button variant='bordered' className={`capitalize w-full ${color}`}>
           {selectedValue}
         </Button>
       </DropdownTrigger>
@@ -39,7 +39,7 @@ const OptionCell = ({ getValue, row, column, table }) => {
           <DropdownItem
             key={status.text}
             onClick={() => updateData(row.index, column.id, status)}
-            className={`bg-${status.color} text-white `}
+            className={`${status.color} text-white `}
           >
             {status.text}
           </DropdownItem>

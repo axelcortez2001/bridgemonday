@@ -15,6 +15,32 @@ export const statusesData = [
   { id: statusId++, color: "bg-blue-500", text: "On Hold" },
   { id: statusId++, color: "bg-gray-500", text: "None" },
 ];
+export const userAtom = atom([
+  {
+    sub: "34613191",
+    name: "Axel Cortez",
+    email: "john.cortez@aretex.com.au",
+    picture: "@/../axelAvatar.jpg",
+  },
+  {
+    sub: "34215465",
+    name: "Chloe Lazaro",
+    email: "chloe.lazaro@aretex.com.au",
+    picture: "@/../Avatar2.jpg",
+  },
+  {
+    sub: "34567823",
+    name: "Cyrus Layugan",
+    email: "cyrus.layugan@aretex.com.au",
+    picture: "@/../Avatar3.png",
+  },
+  {
+    sub: "34653245",
+    name: "John Suelila",
+    email: "suelila.john@aretex.com.au",
+    picture: "@/../Avatar4.png",
+  },
+]);
 export const projectsAtom = atom([
   {
     id: projectid++,
@@ -31,16 +57,16 @@ export const projectsAtom = atom([
             item: "Task 1",
             processors: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
               {
-                sub: "sad786213",
+                sub: "34215465",
                 name: "Chloe Lazaro",
-                email: "john.cortez@aretex.com.au",
-                picture: "",
+                email: "chloe.lazaro@aretex.com.au",
+                picture: "@/../Avatar2.jpg",
               },
             ],
             status: { id: statusId++, color: "gray-500", text: "None" },
@@ -49,10 +75,10 @@ export const projectsAtom = atom([
             dateCompleted: new Date("2024/05/13"),
             managers: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             remarks: "Completed",
@@ -62,10 +88,10 @@ export const projectsAtom = atom([
             item: "Task 2",
             processors: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             status: { id: statusId++, color: "red-500", text: "Stuck" },
@@ -74,10 +100,10 @@ export const projectsAtom = atom([
             dateCompleted: "",
             managers: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             remarks: "Compl sadsadeted",
@@ -87,10 +113,10 @@ export const projectsAtom = atom([
             item: "Task 3",
             processors: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             status: { id: statusId++, color: "gray", text: "" },
@@ -99,10 +125,10 @@ export const projectsAtom = atom([
             dateCompleted: "",
             managers: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             remarks: "Comfdsapleted ",
@@ -118,10 +144,10 @@ export const projectsAtom = atom([
             item: "Task 1",
             processors: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             status: { id: statusId++, color: "gray", text: "" },
@@ -130,10 +156,10 @@ export const projectsAtom = atom([
             dateCompleted: "",
             managers: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             remarks: "Complet asd saded",
@@ -143,10 +169,10 @@ export const projectsAtom = atom([
             item: "Task 2",
             processors: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             status: { id: statusId++, color: "gray", text: "" },
@@ -155,10 +181,10 @@ export const projectsAtom = atom([
             dateCompleted: "",
             managers: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             remarks: "Compl sads asd asdadeted",
@@ -168,10 +194,10 @@ export const projectsAtom = atom([
             item: "Task 3",
             processors: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             status: { id: statusId++, color: "gray", text: "" },
@@ -180,10 +206,10 @@ export const projectsAtom = atom([
             dateCompleted: "",
             managers: [
               {
-                sub: "sad786213",
+                sub: "34613191",
                 name: "Axel Cortez",
                 email: "john.cortez@aretex.com.au",
-                picture: "",
+                picture: "@/../axelAvatar.jpg",
               },
             ],
             remarks: "Comfdsa asdasd pleted ",

@@ -9,6 +9,7 @@ import { useAtom, useSetAtom } from "jotai";
 import { selectedProject, updateGroupData, updateProject } from "../datastore";
 import OptionCell from "./tablecomponents/OptionCell";
 import DateCell from "./tablecomponents/DateCell";
+import PersonCell from "./tablecomponents/PersonCell";
 
 const columns = [
   {
@@ -19,12 +20,12 @@ const columns = [
   {
     accessorKey: "managers",
     header: "Managers",
-    cell: (props) => <p>{props.getValue().map((manager) => manager.name)}</p>,
+    cell: PersonCell,
   },
   {
     accessorKey: "processors",
     header: "Processor",
-    cell: (props) => <p>{props.getValue().map((manager) => manager.name)}</p>,
+    cell: PersonCell,
   },
   {
     accessorKey: "status",

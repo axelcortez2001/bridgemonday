@@ -10,8 +10,7 @@ import {
   Button,
   useDisclosure,
   Input,
-  RadioGroup,
-  Radio,
+
 } from "@nextui-org/react";
 
 const PersonCell = ({ getValue, row, column, table }) => {
@@ -71,8 +70,6 @@ const PersonCell = ({ getValue, row, column, table }) => {
     );
   };
   //modal
-
-  const [privacy, setPrivacy] = useState("shared");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   //function to search
   const [searchText, sertSearchText] = useState("");

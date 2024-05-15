@@ -9,7 +9,7 @@ export const blankProject = atom([
 ]);
 export const statusesData = [
   { id: statusId++, color: "bg-green-500", text: "Done" },
-  { id: statusId++, color: "bg-orange-500", text: "Woring On It" },
+  { id: statusId++, color: "bg-orange-500", text: "Working On It" },
   { id: statusId++, color: "bg-red-500", text: "Stuck" },
   { id: statusId++, color: "bg-violet-500", text: "Future Steps" },
   { id: statusId++, color: "bg-blue-500", text: "On Hold" },
@@ -46,6 +46,7 @@ export const projectsAtom = atom([
     id: projectid++,
     name: "Project 1",
     type: "shared",
+    defaultStatus: statusesData,
     grouptask: [
       {
         id: groupId++,
@@ -236,6 +237,7 @@ export const addProject = atom(null, (get, set, { title, privacy }) => {
     id: projectid++,
     name: title,
     type: privacy,
+    defaultStatus: statusesData,
     grouptask: [],
   };
   console.log(newProject);
@@ -278,6 +280,22 @@ export const addGroupTask = atom(null, (get, set, projectId) => {
 //function to update project
 export const updateProject = atom(null, (get, set) => {
   const projects = get(projectsAtom);
+});
+export const addNewStatus = atom(null, (get, set, id, newStatus, newColor) => {
+  const projects = get(projectsAtom);
+  const newDefaultStatus = { id: statusId++, color: newColor, text: newStatus };
+
+  const updatedProject = projects.map((project) => {
+    if (project.id === id) {
+      return {
+        ...project,
+        defaultStatus: [...project.defaultStatus, newDefaultStatus],
+      };
+    }
+    return project;
+  });
+  set(projectsAtom, updatedProject);
+  return newDefaultStatus;
 });
 
 //function to update groupName

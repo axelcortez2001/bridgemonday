@@ -238,7 +238,7 @@ export const selectedProject = atom(1);
 export const selectedProjectAtom = atom((get) => {
   const projects = get(projectsAtom);
   const selectedProjectId = get(selectedProject);
-  console.log("Project", projects);
+  console.log("Project DAATA", projects);
   return projects.find((project) => project.id === selectedProjectId);
 });
 

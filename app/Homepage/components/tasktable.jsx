@@ -11,8 +11,36 @@ import OptionCell from "./tablecomponents/OptionCell";
 import DateCell from "./tablecomponents/DateCell";
 import PersonCell from "./tablecomponents/PersonCell";
 import IndeterminateCheckbox from "./functions/IndeterminateCheckbox";
+// needed for table body level scope DnD setup
+import {
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  DragEndEvent,
+  UniqueIdentifier,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+// needed for row & cell level scope DnD setup
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const columns = [
+  {
+    id: "drag-handle",
+    header: "Move",
+    cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
+    size: 60,
+  },
   {
     id: "select",
     header: ({ table }) => (
@@ -74,6 +102,45 @@ const columns = [
   },
 ];
 
+// Cell Component
+const RowDragHandleCell = ({ rowId }) => {
+  const { attributes, listeners } = useSortable({
+    id: rowId,
+  });
+  return (
+    // Alternatively, you could set these attributes on the rows themselves
+    <button {...attributes} {...listeners}>
+      Drag
+    </button>
+  );
+};
+// Row Component
+const DraggableRow = ({ row }) => {
+  console.log("ROW", row.original.id);
+  const { transform, transition, setNodeRef, isDragging } = useSortable({
+    id: row.original.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform), // let dnd-kit do its thing
+    transition: transition,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1 : 0,
+    position: "relative",
+  };
+
+  return (
+    // connect row ref to dnd-kit, apply important styles
+    <tr ref={setNodeRef} style={style}>
+      {row.getVisibleCells().map((cell) => (
+        <td key={cell.id} style={{ width: cell.column.getSize() }}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </td>
+      ))}
+    </tr>
+  );
+};
+
 const Tasktable = ({ projectId, groupId, groupData }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState(groupData);
@@ -85,8 +152,12 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
       selectedRows,
     },
     columnResizeMode: "onChange",
+    getRowId: (row) => row.id,
+    debugTable: true,
+    debugHeaders: true,
+    debugColumns: true,
     enableColumnResizing: true,
-    enableRowSelection: true,
+
     meta: {
       updateData: (rowIndex, columnId, value) =>
         setData((prev) =>
@@ -138,72 +209,87 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
       console.log(error);
     }
   };
+  const dataIds = React.useMemo(() => data?.map(({ id }) => id), [data]);
 
   console.log("Data: ", data);
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    if (active && over && active.id !== over.id) {
+      setData((data) => {
+        const oldIndex = dataIds.indexOf(active.id);
+        const newIndex = dataIds.indexOf(over.id);
+        return arrayMove(data, oldIndex, newIndex); // this is just a splice util
+      });
+    }
+  }
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {})
+  );
   return (
-    <div className='w-full items-center justify-center'>
-      {convertToArray().length > 0 && (
-        <button
-          onClick={deleteSelectedRows}
-          className='mb-2 p-2 rounded-md bg-red-500 text-white'
-        >
-          Delete
-        </button>
-      )}
+    <DndContext
+      collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis]}
+      onDragEnd={handleDragEnd}
+      sensors={sensors}
+    >
+      <div className='w-full items-center justify-center'>
+        {convertToArray().length > 0 && (
+          <button
+            onClick={deleteSelectedRows}
+            className='mb-2 p-2 rounded-md bg-red-500 text-white'
+          >
+            Delete
+          </button>
+        )}
 
-      <table className='p-2 border border-gray-900 w-full'>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  className='px-6 py-3 border'
-                  key={header.id}
-                  style={{ position: "relative", width: header.getSize() }}
-                >
-                  {header.isPlaceholder ? null : (
-                    <>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={`resizer ${
-                          header.column.getIsResizing() ? "isResizing" : ""
-                        }`}
-                      ></div>
-                    </>
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table?.getRowModel()?.rows.map((row) => (
-            <tr
-              key={row.id}
-              className={row.getIsSelected() ? "bg-gray-200" : ""}
+        <table className='p-2 border border-gray-900 w-full'>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    className='px-6 py-3 border'
+                    key={header.id}
+                    style={{ position: "relative", width: header.getSize() }}
+                  >
+                    {header.isPlaceholder ? null : (
+                      <>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`resizer ${
+                            header.column.getIsResizing() ? "isResizing" : ""
+                          }`}
+                        ></div>
+                      </>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            <SortableContext
+              items={dataIds}
+              strategy={verticalListSortingStrategy}
             >
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  className='border'
-                  key={cell.id}
-                  style={{ width: cell.column.getSize() }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+              {table.getRowModel().rows.map((row) => (
+                <DraggableRow key={row.id} row={row} />
               ))}
+            </SortableContext>
+            <tr className='w-full flex items-center justify-center p-1 min-h-9 hover:cursor-pointer'>
+              <button onClick={() => addNewRow()}>+add item</button>
             </tr>
-          ))}
-          <tr className='w-full flex items-center justify-center p-1 min-h-9 hover:cursor-pointer'>
-            <button onClick={() => addNewRow()}>+add item</button>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          </tbody>
+        </table>
+      </div>
+    </DndContext>
   );
 };
 

@@ -10,9 +10,28 @@ import { selectedProject, updateGroupData, updateProject } from "../datastore";
 import OptionCell from "./tablecomponents/OptionCell";
 import DateCell from "./tablecomponents/DateCell";
 import PersonCell from "./tablecomponents/PersonCell";
-
+import IndeterminateCheckbox from "./functions/IndeterminateCheckbox";
 
 const columns = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <input
+        type='checkbox'
+        checked={table.getIsAllRowsSelected()}
+        indeterminate={table.getIsSomeRowsSelected()}
+        onChange={table.getToggleAllRowsSelectedHandler()}
+      />
+    ),
+    cell: ({ row }) => (
+      <input
+        className='border w-full'
+        type='checkbox'
+        checked={row.getIsSelected()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+    ),
+  },
   {
     accessorKey: "item",
     header: "Item",
@@ -56,13 +75,18 @@ const columns = [
 ];
 
 const Tasktable = ({ projectId, groupId, groupData }) => {
+  const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState(groupData);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      selectedRows,
+    },
     columnResizeMode: "onChange",
     enableColumnResizing: true,
+    enableRowSelection: true,
     meta: {
       updateData: (rowIndex, columnId, value) =>
         setData((prev) =>
@@ -86,6 +110,23 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
     };
     updateData();
   }, [data]);
+
+  //function to delete a row or whole table row
+  const convertToArray = () => {
+    return Object.keys(table.getState().rowSelection).map(Number);
+  };
+  console.log("Selected ROws: ", convertToArray());
+  const deleteSelectedRows = () => {
+    if (window.confirm("Are you sure you want to delete") === true) {
+      const selectedRowIds = convertToArray();
+      const newData = data.filter(
+        (row, index) => !selectedRowIds.includes(index)
+      );
+      console.log("New Table Data: ", newData);
+      setData(newData);
+      table.reset();
+    }
+  };
   //add new tablerow to an specific table
   const addNewRow = () => {
     try {
@@ -101,6 +142,15 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
   console.log("Data: ", data);
   return (
     <div className='w-full items-center justify-center'>
+      {convertToArray().length > 0 && (
+        <button
+          onClick={deleteSelectedRows}
+          className='mb-2 p-2 rounded-md bg-red-500 text-white'
+        >
+          Delete
+        </button>
+      )}
+
       <table className='p-2 border border-gray-900 w-full'>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -111,15 +161,21 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
                   key={header.id}
                   style={{ position: "relative", width: header.getSize() }}
                 >
-                  {header.column.columnDef.header}
-
-                  <div
-                    onMouseDown={header.getResizeHandler()}
-                    onTouchStart={header.getResizeHandler()}
-                    className={`resizer ${
-                      header.column.getIsResizing() ? "isResizing" : ""
-                    }`}
-                  ></div>
+                  {header.isPlaceholder ? null : (
+                    <>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className={`resizer ${
+                          header.column.getIsResizing() ? "isResizing" : ""
+                        }`}
+                      ></div>
+                    </>
+                  )}
                 </th>
               ))}
             </tr>
@@ -127,7 +183,10 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
         </thead>
         <tbody>
           {table?.getRowModel()?.rows.map((row) => (
-            <tr key={row.id}>
+            <tr
+              key={row.id}
+              className={row.getIsSelected() ? "bg-gray-200" : ""}
+            >
               {row.getVisibleCells().map((cell) => (
                 <td
                   className='border'

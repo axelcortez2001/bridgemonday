@@ -54,6 +54,11 @@ const Sidebar = () => {
                 userData.sub.includes(user.sub)
               )
             )
+          ) ||
+          project?.grouptask.map((groupData) =>
+            groupData?.task.map((taskData) =>
+              taskData?.managers.map((user) => userData.sub.includes(user.sub))
+            )
           )
       );
       console.log("Access: ", accessData);

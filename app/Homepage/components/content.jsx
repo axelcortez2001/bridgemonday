@@ -61,6 +61,17 @@ const Content = () => {
                 <EditableGroupName projectId={data.id} groupData={groupData} />
               </div>
             </div>
+            {groupData?.task?.length > 0 &&
+              !openDrop.includes(groupData.id) && (
+                <div className='w-full flex items-center justify-start pl-5'>
+                  <p>{groupData?.task?.length} </p>{" "}
+                  <span>
+                    item
+                    {groupData?.task?.length > 1 && "s"}{" "}
+                  </span>
+                </div>
+              )}
+
             {openDrop.includes(groupData.id) && (
               <Tasktable
                 projectId={data.id}

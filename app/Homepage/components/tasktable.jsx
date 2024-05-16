@@ -35,12 +35,12 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 const columns = [
-  {
-    id: "drag-handle",
-    header: "Move",
-    cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
-    size: 60,
-  },
+  // {
+  //   id: "drag-handle",
+  //   header: "Move",
+  //   cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
+  //   size: 60,
+  // },
   {
     id: "select",
     header: ({ table }) => (
@@ -51,13 +51,18 @@ const columns = [
         onChange={table.getToggleAllRowsSelectedHandler()}
       />
     ),
+    size: 5,
+
     cell: ({ row }) => (
-      <input
-        className='border w-full'
-        type='checkbox'
-        checked={row.getIsSelected()}
-        onChange={row.getToggleSelectedHandler()}
-      />
+      <div className='w-full flex h-full items-center'>
+        <RowDragHandleCell rowId={row.id} />
+        <input
+          className='border h-4 w-4'
+          type='checkbox'
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      </div>
     ),
   },
   {
@@ -109,9 +114,11 @@ const RowDragHandleCell = ({ rowId }) => {
   });
   return (
     // Alternatively, you could set these attributes on the rows themselves
-    <button {...attributes} {...listeners}>
-      Drag
-    </button>
+    <button
+      {...attributes}
+      {...listeners}
+      className=' h-10 w-1  hover:w-2 hover:bg-gray-400'
+    ></button>
   );
 };
 // Row Component
@@ -133,7 +140,11 @@ const DraggableRow = ({ row }) => {
     // connect row ref to dnd-kit, apply important styles
     <tr ref={setNodeRef} style={style}>
       {row.getVisibleCells().map((cell) => (
-        <td key={cell.id} style={{ width: cell.column.getSize() }}>
+        <td
+          key={cell.id}
+          style={{ width: cell.column.getSize() }}
+          className={row.getIsSelected() ? "bg-gray-200" : ""}
+        >
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>
       ))}

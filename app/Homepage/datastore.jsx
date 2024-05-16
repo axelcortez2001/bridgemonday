@@ -41,12 +41,24 @@ export const userAtom = atom([
     picture: "@/../Avatar4.png",
   },
 ]);
+export const UserDataAtom = atom({
+  sub: "34613191",
+  name: "Axel Cortez",
+  email: "john.cortez@aretex.com.au",
+  picture: "@/../axelAvatar.jpg",
+});
 export const projectsAtom = atom([
   {
     id: projectid++,
     name: "Project 1",
     type: "shared",
     defaultStatus: statusesData,
+    organizer: {
+      sub: "34613191",
+      name: "Axel Cortez",
+      email: "john.cortez@aretex.com.au",
+      picture: "@/../axelAvatar.jpg",
+    },
     grouptask: [
       {
         id: groupId++,
@@ -233,10 +245,12 @@ export const selectedProjectAtom = atom((get) => {
 //function to add new project
 export const addProject = atom(null, (get, set, { title, privacy }) => {
   const prevProject = get(projectsAtom);
+  const userData = get(UserDataAtom);
   const newProject = {
     id: projectid++,
     name: title,
     type: privacy,
+    organizer: userData,
     defaultStatus: statusesData,
     grouptask: [],
   };

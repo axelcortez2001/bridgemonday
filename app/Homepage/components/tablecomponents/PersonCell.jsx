@@ -1,6 +1,6 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import React, { useEffect, useState } from "react";
-import { userAtom } from "../../datastore";
+import { selectedProjectAtom, userAtom, UserDataAtom } from "../../datastore";
 import {
   Modal,
   ModalContent,
@@ -10,16 +10,17 @@ import {
   Button,
   useDisclosure,
   Input,
-
 } from "@nextui-org/react";
 
 const PersonCell = ({ getValue, row, column, table }) => {
+  const projects = useAtom(selectedProjectAtom);
+  const currentUser = useAtomValue(UserDataAtom);
   const [personAtom, setPersonAtom] = useAtom(userAtom);
   const [filteredPerson, setFilteredPerson] = useState(personAtom);
   const initialValue = getValue();
   const value = initialValue.map((user) => user.sub);
   const { updateData } = table.options.meta;
-
+  console.log("Current");
   //function to show and find user
   const findUserData = (userAtom, sub) => {
     const allusers = userAtom.filter((userMap) => sub.includes(userMap.sub));
@@ -48,8 +49,13 @@ const PersonCell = ({ getValue, row, column, table }) => {
   const showSuggested = (userAtom, sub) => {
     console.log("sub:", sub);
     console.log("userAtom:", userAtom);
-    const allusers = userAtom.filter((userMap) => !sub.includes(userMap.sub));
-    console.log("allusers:", allusers);
+    const allusers =
+      projects[0].type === "shared"
+        ? userAtom.filter((userMap) => !sub.includes(userMap.sub))
+        : userAtom.find((userMap) => sub.includes(userMap.sub))
+        ? []
+        : [currentUser];
+    console.log("allusers:", projects[0].type);
     return (
       allusers !== undefined &&
       allusers.map((user, index) => (

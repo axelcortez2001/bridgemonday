@@ -13,11 +13,17 @@ import {
   Radio,
 } from "@nextui-org/react";
 import { useAtom, useSetAtom } from "jotai";
-import { addProject, projectsAtom, selectedProject } from "../datastore";
+import {
+  addProject,
+  projectsAtom,
+  selectedProject,
+  UserDataAtom,
+} from "../datastore";
 import { SlOptions } from "react-icons/sl";
 import OptionModal from "./sidebarcomponents/OptionModal";
 const Sidebar = () => {
   const [data, setData] = useAtom(projectsAtom);
+  const [userData, setUserData] = useAtom(UserDataAtom);
   const addNew = useSetAtom(addProject);
   const setSelectedProject = useSetAtom(selectedProject);
 
@@ -36,7 +42,28 @@ const Sidebar = () => {
     setPrivacy("shared");
   };
 
+  //function to check if the user is owner or has access to the project
+  const checkAccess = () => {
+    if (userData && data) {
+      const accessData = data.filter(
+        (project) =>
+          userData.sub.includes(project.organizer.sub) ||
+          project?.grouptask.map((groupData) =>
+            groupData?.task.map((taskData) =>
+              taskData?.processors.map((user) =>
+                userData.sub.includes(user.sub)
+              )
+            )
+          )
+      );
+      console.log("Access: ", accessData);
+      return accessData;
+    }
+  };
+  console.log(checkAccess());
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  console.log("UserData: ", userData);
   return (
     <div className='w-60 min-w-60 h-screen flex flex-col border border-gray-900'>
       <div className='w-full p-2'>Home</div>
@@ -46,7 +73,7 @@ const Sidebar = () => {
         <Button onPress={onOpen}>Add Project</Button>
       </div>
       <div className='w-full flex flex-col'>
-        {data.map((task) => (
+        {checkAccess().map((task) => (
           <div
             className='w-full p-2 hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
             key={task.id}

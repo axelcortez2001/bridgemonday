@@ -30,17 +30,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-// needed for row & cell level scope DnD setup
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { DraggableRow, RowDragHandleCell } from "./functions/tablefunctions";
 
 const columns = [
-  // {
-  //   id: "drag-handle",
-  //   header: "Move",
-  //   cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
-  //   size: 60,
-  // },
   {
     id: "select",
     header: ({ table }) => (
@@ -107,51 +99,6 @@ const columns = [
   },
 ];
 
-// Cell Component
-const RowDragHandleCell = ({ rowId }) => {
-  const { attributes, listeners } = useSortable({
-    id: rowId,
-  });
-  return (
-    // Alternatively, you could set these attributes on the rows themselves
-    <button
-      {...attributes}
-      {...listeners}
-      className=' h-10 w-1  hover:w-2 hover:bg-gray-400'
-    ></button>
-  );
-};
-// Row Component
-const DraggableRow = ({ row }) => {
-  console.log("ROW", row.original.id);
-  const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform), // let dnd-kit do its thing
-    transition: transition,
-    opacity: isDragging ? 0.8 : 1,
-    zIndex: isDragging ? 1 : 0,
-    position: "relative",
-  };
-
-  return (
-    // connect row ref to dnd-kit, apply important styles
-    <tr ref={setNodeRef} style={style}>
-      {row.getVisibleCells().map((cell) => (
-        <td
-          key={cell.id}
-          style={{ width: cell.column.getSize() }}
-          className={row.getIsSelected() ? "bg-gray-200" : ""}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </td>
-      ))}
-    </tr>
-  );
-};
-
 const Tasktable = ({ projectId, groupId, groupData }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState(groupData);
@@ -202,7 +149,7 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
     if (window.confirm("Are you sure you want to delete") === true) {
       const selectedRowIds = convertToArray();
       const newData = data.filter(
-        (row, index) => !selectedRowIds.includes(index)
+        (row, index) => !selectedRowIds.includes(row.id)
       );
       console.log("New Table Data: ", newData);
       setData(newData);

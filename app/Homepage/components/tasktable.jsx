@@ -31,6 +31,7 @@ import {
 } from "@dnd-kit/sortable";
 
 import { DraggableRow, RowDragHandleCell } from "./functions/tablefunctions";
+import DefaultTimeCell from "./tablecomponents/DefaultTimeCell";
 
 const columns = [
   {
@@ -80,7 +81,7 @@ const columns = [
   {
     accessorKey: "date",
     header: "Date",
-    cell: DateCell,
+    cell: DefaultTimeCell,
   },
   {
     accessorKey: "deadline",

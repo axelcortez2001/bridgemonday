@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import React, { useState, useEffect, useCallback } from "react";
 
 const DefaultTimeCell = ({ getValue, row, column, table }) => {
@@ -7,15 +7,26 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
   const [focused, setFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState(selectedValue);
+  const [formattedContent, setFormattedContent] = useState(
+    selectedValue ? format(selectedValue, "hh:mm:ss aa") : selectedValue
+  );
 
-  function isValidDateFormat(text) {
-    // Check if the text matches the date format "YYYY-MM-DD"
-    const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (dateFormatRegex.test(text)) {
-      // If the text matches the format, attempt to create a Date object
-      const date = new Date(text);
-      // Check if the created Date object is a valid date
-      return !isNaN(date.getTime());
+  function isValidTimeFormat(text) {
+    const timeFormatRegex = /^(0[1-9]|1[0-2]):[0-5][0-9]:[0-5][0-9] (AM|PM)$/i;
+    if (timeFormatRegex.test(text)) {
+      const [time, period] = text.split(" ");
+      const [hours, minutes, seconds] = time.split(":").map(Number);
+      // validate time
+      if (
+        hours >= 1 &&
+        hours <= 12 &&
+        minutes >= 0 &&
+        minutes <= 59 &&
+        seconds >= 0 &&
+        seconds <= 59
+      ) {
+        return true;
+      }
     }
     return false;
   }
@@ -28,17 +39,34 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
   };
 
   const handleBlur = () => {
-    !isValidDateFormat(content) && content !== ""
-      ? (alert("Invalid Date Format"), setFocused(false))
-      : setFocused(false);
+    if (focused) {
+      if (isValid(new Date(content)) || content === "") {
+        console.log("Content: ", content);
+        if (isValidTimeFormat(formattedContent) || formattedContent === "") {
+          setFocused(false);
+          table.options.meta.updateData(row.index, column.id, content);
+        } else {
+          alert("Invalid Time Format");
+          setFocused(false);
+          setContent(selectedValue);
+        }
+      } else {
+        console.log("Content: ", content);
+        alert("Invalid Date Format");
+        setFocused(false);
+        setContent(
+          selectedValue ? format(selectedValue, "yyyy-MM-dd") : selectedValue
+        );
+      }
+    }
   };
 
   const handleKeyPress = useCallback((event) => {
-    if (event.ctrlKey && event.key === ";") {
+    if (event.ctrlKey && event.key === ":") {
       event.preventDefault();
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date();
       setContent(today);
-      table.options.meta.updateData(row.index, column.id, today);
+      setFormattedContent(format(today, "hh:mm:ss aa"));
     }
   }, []);
 
@@ -58,7 +86,7 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
       onFocus={handleFocus}
       onBlur={handleBlur}
       onDoubleClick={() => setIsOpen(!isOpen)}
-      value={content ? format(content, "yyy-MM-dd") : content}
+      value={formattedContent}
       onChange={(e) => setContent(e.target.value)}
     />
   );

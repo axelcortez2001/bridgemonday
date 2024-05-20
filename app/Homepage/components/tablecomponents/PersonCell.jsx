@@ -18,12 +18,12 @@ const PersonCell = ({ getValue, row, column, table }) => {
   const [personAtom, setPersonAtom] = useAtom(userAtom);
   const [filteredPerson, setFilteredPerson] = useState(personAtom);
   const initialValue = getValue();
-  const value = initialValue.map((user) => user.sub);
+  const value = initialValue?.map((user) => user.sub) || [];
   const { updateData } = table.options.meta;
   console.log("Current");
   //function to show and find user
   const findUserData = (userAtom, sub) => {
-    const allusers = userAtom.filter((userMap) => sub.includes(userMap.sub));
+    const allusers = userAtom.filter((userMap) => sub?.includes(userMap.sub));
     return (
       allusers !== undefined &&
       allusers.map((user, index) => (
@@ -51,8 +51,8 @@ const PersonCell = ({ getValue, row, column, table }) => {
     console.log("userAtom:", userAtom);
     const allusers =
       projects[0].type === "shared"
-        ? userAtom.filter((userMap) => !sub.includes(userMap.sub))
-        : userAtom.find((userMap) => sub.includes(userMap.sub))
+        ? userAtom.filter((userMap) => !sub?.includes(userMap.sub))
+        : userAtom.find((userMap) => sub?.includes(userMap.sub))
         ? []
         : [currentUser];
     console.log("allusers:", projects[0].type);
@@ -94,7 +94,9 @@ const PersonCell = ({ getValue, row, column, table }) => {
   }, [searchText, sertSearchText]);
   //function to updateuserData
   const updateUserData = (user) => {
-    const newData = [...initialValue, user];
+    console.log("Initial: ", initialValue);
+    const newData =
+      initialValue !== undefined ? [...initialValue, user] : [user];
     console.log("NewData: ", newData);
     updateData(row.index, column.id, newData);
     sertSearchText("");
@@ -118,7 +120,13 @@ const PersonCell = ({ getValue, row, column, table }) => {
           </div>
         </>
       ) : (
-        <div>hello</div>
+        <div
+          onClick={onOpen}
+          className='flex p-2 border rounded-full h-5 w-5 justify-center items-center 
+          hover:cursor-pointer hover:bg-gray-500 '
+        >
+          +
+        </div>
       )}
       <Modal
         isOpen={isOpen}

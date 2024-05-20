@@ -6,10 +6,16 @@ import {
 } from "@tanstack/react-table";
 import EditableCell from "./tablecomponents/EditableCell";
 import { useAtom, useSetAtom } from "jotai";
-import { selectedProject, updateGroupData, updateProject } from "../datastore";
+import {
+  selectedProject,
+  selectedProjectAtom,
+  updateGroupData,
+  updateProject,
+} from "../datastore";
 import OptionCell from "./tablecomponents/OptionCell";
 import DateCell from "./tablecomponents/DateCell";
 import PersonCell from "./tablecomponents/PersonCell";
+import DefaultDateCell from "./tablecomponents/DefaultDateCell";
 import IndeterminateCheckbox from "./functions/IndeterminateCheckbox";
 // needed for table body level scope DnD setup
 import {
@@ -33,79 +39,15 @@ import {
 import { DraggableRow, RowDragHandleCell } from "./functions/tablefunctions";
 import DefaultTimeCell from "./tablecomponents/DefaultTimeCell";
 
-const columns = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <input
-        type='checkbox'
-        checked={table.getIsAllRowsSelected()}
-        indeterminate={table.getIsSomeRowsSelected()}
-        onChange={table.getToggleAllRowsSelectedHandler()}
-      />
-    ),
-    size: 5,
-
-    cell: ({ row }) => (
-      <div className='w-full flex h-full items-center'>
-        <RowDragHandleCell rowId={row.id} />
-        <input
-          className='border h-4 w-4'
-          type='checkbox'
-          checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
-        />
-      </div>
-    ),
-  },
-  {
-    accessorKey: "item",
-    header: "Item",
-    cell: EditableCell,
-  },
-  {
-    accessorKey: "managers",
-    header: "Managers",
-    cell: PersonCell,
-  },
-  {
-    accessorKey: "processors",
-    header: "Processor",
-    cell: PersonCell,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: OptionCell,
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: DefaultTimeCell,
-  },
-  {
-    accessorKey: "deadline",
-    header: "Deadline",
-    cell: DateCell,
-  },
-  {
-    accessorKey: "dateCompleted",
-    header: "DateCompleted",
-    cell: DateCell,
-  },
-  {
-    accessorKey: "remarks",
-    header: "Remarks",
-    cell: EditableCell,
-  },
-];
-
-const Tasktable = ({ projectId, groupId, groupData }) => {
+const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
+  const [storeData, setStoreData] = useAtom(selectedProjectAtom);
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState(groupData);
+
+
   const table = useReactTable({
     data,
-    columns,
+    columns: columnData,
     getCoreRowModel: getCoreRowModel(),
     state: {
       selectedRows,
@@ -131,7 +73,6 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
   useEffect(() => {
     const updateData = () => {
       try {
-        console.log("trigger");
         const type = "UpdateData";
         updateTableData(projectId, groupId, data, type);
       } catch (error) {
@@ -145,7 +86,6 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
   const convertToArray = () => {
     return Object.keys(table.getState().rowSelection).map(Number);
   };
-  console.log("Selected ROws: ", convertToArray());
   const deleteSelectedRows = () => {
     if (window.confirm("Are you sure you want to delete") === true) {
       const selectedRowIds = convertToArray();
@@ -162,14 +102,12 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
     try {
       const type = "Add Row";
       const updatedProject = updateTableData(projectId, groupId, data, type);
-      console.log(updatedProject);
       setData(updatedProject);
     } catch (error) {
       console.log(error);
     }
   };
   const dataIds = React.useMemo(() => data?.map(({ id }) => id), [data]);
-
   console.log("Data: ", data);
   function handleDragEnd(event) {
     const { active, over } = event;
@@ -203,7 +141,10 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
           </button>
         )}
 
-        <table className='p-2 border border-gray-900 w-full'>
+        <table
+          className='p-2 border border-gray-900 '
+          style={{ width: table?.getTotalSize() }}
+        >
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -211,7 +152,7 @@ const Tasktable = ({ projectId, groupId, groupData }) => {
                   <th
                     className='px-6 py-3 border'
                     key={header.id}
-                    style={{ position: "relative", width: header.getSize() }}
+                    style={{ position: "relative", maxwidth: header.getSize() }}
                   >
                     {header.isPlaceholder ? null : (
                       <>

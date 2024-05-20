@@ -1,9 +1,21 @@
 import { atom } from "jotai";
+import { RowDragHandleCell } from "./components/functions/tablefunctions";
+import EditableCell from "./components/tablecomponents/EditableCell";
+import AddDropDown from "./components/otherComponents/AddDropDown";
+import OptionCell from "./components/tablecomponents/OptionCell";
+import DateCell from "./components/tablecomponents/DateCell";
+import PersonCell from "./components/tablecomponents/PersonCell";
+import DefaultDateCell from "./components/tablecomponents/DefaultDateCell";
+import DefaultTimeCell from "./components/tablecomponents/DefaultTimeCell";
+import NumberCell from "./components/tablecomponents/NumberCell";
+import DropDownCell from "./components/tablecomponents/DropDownCell";
 
 let projectid = 0;
 let groupId = 0;
 let taskid = 0;
 let statusId = 0;
+let itemId = 0;
+let dropId = 0;
 export const blankProject = atom([
   { id: projectid++, name: "New Group", grouptask: [] },
 ]);
@@ -11,9 +23,56 @@ export const statusesData = [
   { id: statusId++, color: "bg-green-500", text: "Done" },
   { id: statusId++, color: "bg-orange-500", text: "Working On It" },
   { id: statusId++, color: "bg-red-500", text: "Stuck" },
-  { id: statusId++, color: "bg-violet-500", text: "Future Steps" },
   { id: statusId++, color: "bg-blue-500", text: "On Hold" },
   { id: statusId++, color: "bg-gray-500", text: "None" },
+];
+export const textItem = [
+  {
+    name: "text",
+    cell: EditableCell,
+    data: "",
+  },
+  { name: "status", cell: OptionCell, data: statusesData },
+  { name: "date", cell: DateCell, data: "" },
+  { name: "people", cell: PersonCell, data: [] },
+  { name: "DefaultDate", cell: DefaultDateCell, data: "" },
+  { name: "DefaultTime", cell: DefaultTimeCell, data: "" },
+  { name: "number", cell: NumberCell, data: "" },
+  { name: "DropDown", cell: DropDownCell, data: [] },
+];
+export const defaultColumn = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <input
+        type='checkbox'
+        checked={table.getIsAllRowsSelected()}
+        indeterminate={table.getIsSomeRowsSelected()}
+        onChange={table.getToggleAllRowsSelectedHandler()}
+      />
+    ),
+    size: 5,
+
+    cell: ({ row }) => (
+      <div className='w-full flex h-full items-center'>
+        <RowDragHandleCell rowId={row.id} />
+        <input
+          className='border h-4 w-4'
+          type='checkbox'
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      </div>
+    ),
+  },
+  {
+    accessorKey: "item",
+    header: "Item",
+    size: 400,
+    cell: EditableCell,
+  },
+
+  { accessorKey: "Add", header: AddDropDown, size: 2 },
 ];
 export const userAtom = atom([
   {
@@ -53,6 +112,8 @@ export const projectsAtom = atom([
     name: "Project 1",
     type: "shared",
     defaultStatus: statusesData,
+    defaultDropDown: [],
+    columns: defaultColumn,
     organizer: {
       sub: "34613191",
       name: "Axel Cortez",
@@ -63,88 +124,87 @@ export const projectsAtom = atom([
       {
         id: groupId++,
         groupName: "Group 1",
-
         task: [
           {
             id: taskid++,
             item: "Task 1",
-            processors: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-              {
-                sub: "34215465",
-                name: "Chloe Lazaro",
-                email: "chloe.lazaro@aretex.com.au",
-                picture: "@/../Avatar2.jpg",
-              },
-            ],
-            status: { id: statusId++, color: "gray-500", text: "None" },
-            date: new Date("2024/05/13"),
-            deadline: new Date("2024/05/13"),
-            dateCompleted: new Date("2024/05/13"),
-            managers: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            remarks: "Completed",
+            // processors: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            //   {
+            //     sub: "34215465",
+            //     name: "Chloe Lazaro",
+            //     email: "chloe.lazaro@aretex.com.au",
+            //     picture: "@/../Avatar2.jpg",
+            //   },
+            // ],
+            // status: { id: statusId++, color: "gray-500", text: "None" },
+            // date: new Date("2024/05/13"),
+            // deadline: new Date("2024/05/13"),
+            // dateCompleted: new Date("2024/05/13"),
+            // managers: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // remarks: "Completed",
           },
           {
             id: taskid++,
             item: "Task 2",
-            processors: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            status: { id: statusId++, color: "red-500", text: "Stuck" },
-            date: "",
-            deadline: new Date("2024/05/13"),
-            dateCompleted: "",
-            managers: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            remarks: "Compl sadsadeted",
+            // processors: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // status: { id: statusId++, color: "red-500", text: "Stuck" },
+            // date: "",
+            // deadline: new Date("2024/05/13"),
+            // dateCompleted: "",
+            // managers: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // remarks: "Compl sadsadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            processors: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            status: { id: statusId++, color: "gray", text: "" },
-            date: "",
-            deadline: new Date("2024/05/13"),
-            dateCompleted: "",
-            managers: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            remarks: "Comfdsapleted ",
+            // processors: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // status: { id: statusId++, color: "gray", text: "" },
+            // date: "",
+            // deadline: new Date("2024/05/13"),
+            // dateCompleted: "",
+            // managers: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // remarks: "Comfdsapleted ",
           },
         ],
       },
@@ -155,77 +215,77 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
-            processors: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            status: { id: statusId++, color: "gray", text: "" },
-            date: "",
-            deadline: "",
-            dateCompleted: "",
-            managers: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            remarks: "Complet asd saded",
+            // processors: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // status: { id: statusId++, color: "gray", text: "" },
+            // date: "",
+            // deadline: "",
+            // dateCompleted: "",
+            // managers: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // remarks: "Complet asd saded",
           },
           {
             id: taskid++,
             item: "Task 2",
-            processors: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            status: { id: statusId++, color: "gray", text: "" },
-            date: "",
-            deadline: "",
-            dateCompleted: "",
-            managers: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            remarks: "Compl sads asd asdadeted",
+            // processors: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // status: { id: statusId++, color: "gray", text: "" },
+            // date: "",
+            // deadline: "",
+            // dateCompleted: "",
+            // managers: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // remarks: "Compl sads asd asdadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            processors: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            status: { id: statusId++, color: "gray", text: "" },
-            date: "",
-            deadline: "",
-            dateCompleted: "",
-            managers: [
-              {
-                sub: "34613191",
-                name: "Axel Cortez",
-                email: "john.cortez@aretex.com.au",
-                picture: "@/../axelAvatar.jpg",
-              },
-            ],
-            remarks: "Comfdsa asdasd pleted ",
+            // processors: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // status: { id: statusId++, color: "gray", text: "" },
+            // date: "",
+            // deadline: "",
+            // dateCompleted: "",
+            // managers: [
+            //   {
+            //     sub: "34613191",
+            //     name: "Axel Cortez",
+            //     email: "john.cortez@aretex.com.au",
+            //     picture: "@/../axelAvatar.jpg",
+            //   },
+            // ],
+            // remarks: "Comfdsa asdasd pleted ",
           },
         ],
       },
@@ -250,6 +310,7 @@ export const addProject = atom(null, (get, set, { title, privacy }) => {
     id: projectid++,
     name: title,
     type: privacy,
+    columns: defaultColumn,
     organizer: userData,
     defaultStatus: statusesData,
     grouptask: [],
@@ -291,10 +352,67 @@ export const addGroupTask = atom(null, (get, set, projectId) => {
   return set(projectsAtom, updatedProjects);
 });
 
+//function to add an item to a group
+export const addNewItem = atom(null, (get, set, projectId, itemName) => {
+  let newItemName = itemName;
+  const projects = get(projectsAtom);
+  const foundProject = projects.find((project) => project.id === projectId);
+  const itemCell = textItem.filter(
+    (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
+  );
+  //item duplication
+  const newItem = foundProject.columns.filter(
+    (column) =>
+      column?.accessorKey?.toLocaleLowerCase() ===
+      newItemName?.toLocaleLowerCase()
+  );
+  if (newItem.length > 0) {
+    newItemName = newItemName + itemId++;
+  }
+  //newItemData
+  const newItemData = {
+    accessorKey: newItemName.toLocaleLowerCase(),
+    header: newItemName,
+    cell: itemCell[0].cell,
+  };
+
+  //add the column before the add button
+  const addColumnIndex = foundProject.columns.findIndex(
+    (column) => column.accessorKey === "Add"
+  );
+
+  const updatedColumns = [...foundProject.columns];
+  updatedColumns.splice(addColumnIndex, 0, newItemData);
+  const updatedProjects = projects.map((project) => {
+    if (project.id === projectId) {
+      return {
+        ...project,
+        columns: updatedColumns,
+        grouptask: project.grouptask.map((group) => {
+          return {
+            ...group,
+            task: group.task.map((task) => {
+              return {
+                ...task,
+                [newItemName.toLocaleLowerCase()]: itemCell[0].data, // Add the new item key with an empty value
+              };
+            }),
+          };
+        }),
+      };
+    } else {
+      return project;
+    }
+  });
+  console.log("Updated: ", updatedProjects);
+  return set(projectsAtom, updatedProjects);
+});
+
 //function to update project
 export const updateProject = atom(null, (get, set) => {
   const projects = get(projectsAtom);
 });
+//function to add new status to a project
 export const addNewStatus = atom(null, (get, set, id, newStatus, newColor) => {
   const projects = get(projectsAtom);
   const newDefaultStatus = { id: statusId++, color: newColor, text: newStatus };
@@ -312,6 +430,31 @@ export const addNewStatus = atom(null, (get, set, id, newStatus, newColor) => {
   return newDefaultStatus;
 });
 
+//fuinction to add new dropdown to a project
+export const addNewDropDown = atom(
+  null,
+  (get, set, id, newDropDown, newColor) => {
+    console.log("Add Trigger", id);
+    const projects = get(projectsAtom);
+    const newDefaultStatus = {
+      id: dropId++,
+      color: newColor,
+      text: newDropDown,
+    };
+    console.log("dataDrop: ", newDefaultStatus);
+    const updatedProject = projects.map((project) => {
+      if (project.id === id) {
+        return {
+          ...project,
+          defaultDropDown: [...project.defaultDropDown, newDefaultStatus],
+        };
+      }
+      return project;
+    });
+    set(projectsAtom, updatedProject);
+    return newDefaultStatus;
+  }
+);
 //function to update groupName
 export const updateGroupName = atom(
   null,
@@ -359,12 +502,6 @@ export const updateGroupData = atom(
                 const newRow = {
                   id: taskid++,
                   item: "New Task",
-                  processors: [],
-                  status: { id: statusId++, color: "gray", text: "" },
-                  date: "",
-                  dateCompleted: "",
-                  managers: [],
-                  remarks: "",
                 };
                 return {
                   ...groupTask,

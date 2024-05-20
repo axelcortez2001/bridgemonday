@@ -77,6 +77,7 @@ const Content = () => {
                 projectId={data.id}
                 groupId={groupData.id}
                 groupData={groupData.task}
+                columnData={data.columns}
               />
             )}
           </div>

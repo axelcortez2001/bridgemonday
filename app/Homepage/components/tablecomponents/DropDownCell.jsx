@@ -93,11 +93,17 @@ const DropDownCell = ({ getValue, row, column, table }) => {
               key={status.text}
               onClick={() => updateData(row.index, column.id, status)}
               className={`${status.color} `}
+              textValue={status.text}
             >
               <p>{status.text}</p>
             </DropdownItem>
           ))}
-          <DropdownItem className='bg-gray-200' key={" "} onClick={onOpen}>
+          <DropdownItem
+            className='bg-gray-200'
+            key={" "}
+            onClick={onOpen}
+            textValue='Add New'
+          >
             +Add New DropDown
           </DropdownItem>
         </DropdownMenu>

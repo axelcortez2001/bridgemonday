@@ -9,6 +9,7 @@ import DefaultDateCell from "./components/tablecomponents/DefaultDateCell";
 import DefaultTimeCell from "./components/tablecomponents/DefaultTimeCell";
 import NumberCell from "./components/tablecomponents/NumberCell";
 import DropDownCell from "./components/tablecomponents/DropDownCell";
+import EditableHeader from "./components/tablecomponents/EditableHeader";
 
 let projectid = 0;
 let groupId = 0;
@@ -40,6 +41,7 @@ export const textItem = [
   { name: "number", cell: NumberCell, data: "" },
   { name: "DropDown", cell: DropDownCell, data: [] },
 ];
+let data1 = "heaa";
 export const defaultColumn = [
   {
     id: "select",
@@ -68,6 +70,12 @@ export const defaultColumn = [
   {
     accessorKey: "item",
     header: "Item",
+    size: 400,
+    cell: EditableCell,
+  },
+  {
+    accessorKey: "editable",
+    header: <EditableHeader data={data1} />,
     size: 400,
     cell: EditableCell,
   },
@@ -128,83 +136,14 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
-            // processors: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            //   {
-            //     sub: "34215465",
-            //     name: "Chloe Lazaro",
-            //     email: "chloe.lazaro@aretex.com.au",
-            //     picture: "@/../Avatar2.jpg",
-            //   },
-            // ],
-            // status: { id: statusId++, color: "gray-500", text: "None" },
-            // date: new Date("2024/05/13"),
-            // deadline: new Date("2024/05/13"),
-            // dateCompleted: new Date("2024/05/13"),
-            // managers: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // remarks: "Completed",
           },
           {
             id: taskid++,
             item: "Task 2",
-            // processors: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // status: { id: statusId++, color: "red-500", text: "Stuck" },
-            // date: "",
-            // deadline: new Date("2024/05/13"),
-            // dateCompleted: "",
-            // managers: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // remarks: "Compl sadsadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            // processors: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // status: { id: statusId++, color: "gray", text: "" },
-            // date: "",
-            // deadline: new Date("2024/05/13"),
-            // dateCompleted: "",
-            // managers: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // remarks: "Comfdsapleted ",
           },
         ],
       },
@@ -215,77 +154,14 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
-            // processors: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // status: { id: statusId++, color: "gray", text: "" },
-            // date: "",
-            // deadline: "",
-            // dateCompleted: "",
-            // managers: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // remarks: "Complet asd saded",
           },
           {
             id: taskid++,
             item: "Task 2",
-            // processors: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // status: { id: statusId++, color: "gray", text: "" },
-            // date: "",
-            // deadline: "",
-            // dateCompleted: "",
-            // managers: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // remarks: "Compl sads asd asdadeted",
           },
           {
             id: taskid++,
             item: "Task 3",
-            // processors: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // status: { id: statusId++, color: "gray", text: "" },
-            // date: "",
-            // deadline: "",
-            // dateCompleted: "",
-            // managers: [
-            //   {
-            //     sub: "34613191",
-            //     name: "Axel Cortez",
-            //     email: "john.cortez@aretex.com.au",
-            //     picture: "@/../axelAvatar.jpg",
-            //   },
-            // ],
-            // remarks: "Comfdsa asdasd pleted ",
           },
         ],
       },
@@ -372,7 +248,7 @@ export const addNewItem = atom(null, (get, set, projectId, itemName) => {
   //newItemData
   const newItemData = {
     accessorKey: newItemName.toLocaleLowerCase(),
-    header: newItemName,
+    header: <EditableHeader data={newItemName} />,
     cell: itemCell[0].cell,
   };
 
@@ -394,7 +270,7 @@ export const addNewItem = atom(null, (get, set, projectId, itemName) => {
             task: group.task.map((task) => {
               return {
                 ...task,
-                [newItemName.toLocaleLowerCase()]: itemCell[0].data, // Add the new item key with an empty value
+                [newItemName.toLocaleLowerCase()]: itemCell[0].data,
               };
             }),
           };
@@ -474,6 +350,49 @@ export const updateGroupName = atom(
             return groupTask;
           }),
         };
+      }
+      return project;
+    });
+    return set(projectsAtom, updatedProjects);
+  }
+);
+
+//function to update headerName
+export const updateHeaderName = atom(
+  null,
+  (get, set, projectId, oldName, newHeaderName) => {
+    const projects = get(projectsAtom);
+    const foundProject = projects.find((project) => project.id === projectId);
+    const unFoundColumn = foundProject.columns.filter(
+      (column) =>
+        column?.accessorKey?.toLocaleLowerCase() !== oldName.toLocaleLowerCase()
+    );
+    const newItem = unFoundColumn?.filter(
+      (column) =>
+        column?.accessorKey?.toLocaleLowerCase() ===
+        newHeaderName?.toLocaleLowerCase()
+    );
+    console.log("Item:", newItem);
+    const updatedProjects = projects.map((project) => {
+      if (project.id === projectId) {
+        const updatedColumns = project.columns.map((column) => {
+          console.log("Col: ", column);
+          if (
+            column?.accessorKey?.toLocaleLowerCase() ===
+            oldName?.toLocaleLowerCase()
+          ) {
+            if (newItem.length === 0) {
+              return {
+                ...column,
+                header: <EditableHeader data={newHeaderName} />,
+              };
+            }
+            return column;
+          }
+          return column;
+        });
+        console.log("updatedCOl:", updatedColumns);
+        return { ...project, columns: updatedColumns };
       }
       return project;
     });

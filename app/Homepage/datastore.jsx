@@ -317,7 +317,7 @@ export const addNewItem = atom(null, (get, set, projectId, itemName) => {
   //newItemData
   const newItemData = {
     accessorKey: newItemName.toLocaleLowerCase(),
-    header: <EditableHeader data={newItemName} />,
+    header: <EditableHeader data={newItemName} accessorKey={newItemName} />,
     cell: itemCell[0].cell,
   };
 
@@ -362,18 +362,18 @@ export const addSubItemColumn = atom(null, (get, set, projectId, itemName) => {
     (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
   );
   //item duplication
-  const newItem = foundProject.columns.filter(
+  const newItem = foundProject.subColumns.filter(
     (column) =>
       column?.accessorKey?.toLocaleLowerCase() ===
       newItemName?.toLocaleLowerCase()
   );
   if (newItem.length > 0) {
-    newItemName = newItemName + itemId++;
+    newItemName = newItemName + subItemId++;
   }
   //newItemData
   const newItemData = {
     accessorKey: newItemName.toLocaleLowerCase(),
-    header: <EditableSubHeader data={newItemName} />,
+    header: <EditableSubHeader data={newItemName} accessorKey={newItemName} />,
     cell: itemCell[0].cell,
   };
 
@@ -514,7 +514,9 @@ export const updateHeaderName = atom(
             if (newItem.length === 0) {
               return {
                 ...column,
-                header: <EditableHeader data={newHeaderName} />,
+                header: (
+                  <EditableHeader data={newHeaderName} accessorKey={oldName} />
+                ),
               };
             }
             return column;
@@ -529,7 +531,78 @@ export const updateHeaderName = atom(
     return set(projectsAtom, updatedProjects);
   }
 );
-
+//function to deletecolumn
+export const deleteColumn = atom(null, (get, set, projectId, key) => {
+  const projects = get(projectsAtom);
+  const foundProject = projects.find((project) => project.id === projectId);
+  console.log("Before: ", foundProject);
+  const newColumns = foundProject.columns.filter(
+    (column) =>
+      column?.accessorKey?.toLocaleLowerCase() !== key?.toLocaleLowerCase()
+  );
+  const newKey = key.toLocaleLowerCase();
+  const updatedProject = projects.map((project) => {
+    if (project.id === projectId) {
+      return {
+        ...project,
+        columns: newColumns,
+        grouptask: project.grouptask.map((group) => {
+          return {
+            ...group,
+            task: group.task.map((task) => {
+              return { ...task, [newKey]: null };
+            }),
+          };
+        }),
+      };
+    } else {
+      return project;
+    }
+  });
+  console.log("newColumns: ", updatedProject);
+  set(projectsAtom, updatedProject);
+  console.log("Or: ", projectsAtom);
+});
+//function to delete subcolumns
+export const deleteSubColumn = atom(null, (get, set, projectId, key) => {
+  const projects = get(projectsAtom);
+  const foundProject = projects.find((project) => project.id === projectId);
+  console.log("Before: ", foundProject);
+  const newColumns = foundProject.subColumns.filter(
+    (column) =>
+      column?.accessorKey?.toLocaleLowerCase() !== key?.toLocaleLowerCase()
+  );
+  const newKey = key.toLocaleLowerCase();
+  const updatedProject = projects.map((project) => {
+    if (project.id === projectId) {
+      return {
+        ...project,
+        subColumns: newColumns,
+        grouptask: project.grouptask.map((group) => {
+          return {
+            ...group,
+            task: group.task.map((task) => {
+              return {
+                ...task,
+                subItem: task?.subItems?.map((subItem) => {
+                  return {
+                    ...subItem,
+                    [newKey]: null,
+                  };
+                }),
+              };
+            }),
+          };
+        }),
+      };
+    } else {
+      return project;
+    }
+  });
+  console.log("newColumns: ", updatedProject);
+  set(projectsAtom, updatedProject);
+  console.log("Or: ", projectsAtom);
+});
 //function to update subheaderName
 export const updateSubHeaderName = atom(
   null,
@@ -557,7 +630,12 @@ export const updateSubHeaderName = atom(
             if (newItem.length === 0) {
               return {
                 ...column,
-                header: <EditableSubHeader data={newHeaderName} />,
+                header: (
+                  <EditableSubHeader
+                    data={newHeaderName}
+                    accessorKey={oldName}
+                  />
+                ),
               };
             }
             return column;

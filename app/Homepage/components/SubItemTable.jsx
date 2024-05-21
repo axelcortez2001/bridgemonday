@@ -5,19 +5,7 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import EditableCell from "./tablecomponents/EditableCell";
 import { useAtom, useSetAtom } from "jotai";
-import {
-  selectedProject,
-  selectedProjectAtom,
-  updateGroupData,
-  updateProject,
-} from "../datastore";
-import OptionCell from "./tablecomponents/OptionCell";
-import DateCell from "./tablecomponents/DateCell";
-import PersonCell from "./tablecomponents/PersonCell";
-import DefaultDateCell from "./tablecomponents/DefaultDateCell";
-import IndeterminateCheckbox from "./functions/IndeterminateCheckbox";
 // needed for table body level scope DnD setup
 import {
   DndContext,
@@ -36,32 +24,29 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-
-import { DraggableRow, RowDragHandleCell } from "./functions/tablefunctions";
-import DefaultTimeCell from "./tablecomponents/DefaultTimeCell";
-
-const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
-  const [storeData, setStoreData] = useAtom(selectedProjectAtom);
+import { DraggableRow } from "./functions/tablefunctions";
+import { selectedProjectAtom, updateSubItemData } from "../datastore";
+const SubItemTable = ({ subItems, groupId, taskId }) => {
+  const [projects, setProjects] = useAtom(selectedProjectAtom);
+  const [data, setData] = useState(subItems);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [data, setData] = useState(groupData);
-  const [expandedRows, setExpandedRows] = useState({});
 
+  useEffect(() => {
+    const updateData = () => {
+      setData(subItems);
+    };
+    updateData();
+  }, [subItems]);
   const table = useReactTable({
-    data,
-    columns: columnData,
+    data: data || [],
+    columns: projects.subColumns,
     getCoreRowModel: getCoreRowModel(),
-    state: {
-      selectedRows,
-    },
-    columnResizeMode: "onChange",
+    state: { selectedRows },
     getRowId: (row) => row.id,
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
     enableColumnResizing: true,
-    getRowCanExpand: () => true,
-    getExpandedRowModel: getExpandedRowModel(),
-
     meta: {
       updateData: (rowIndex, columnId, value) =>
         setData((prev) =>
@@ -71,13 +56,14 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
         ),
     },
   });
-  //update the all table data of an specfic table
-  const updateTableData = useSetAtom(updateGroupData);
+  const projectId = projects.id;
+  //function to update subitemdata
+  const updateTableData = useSetAtom(updateSubItemData);
   useEffect(() => {
     const updateData = () => {
       try {
         const type = "UpdateData";
-        updateTableData(projectId, groupId, data, type);
+        updateTableData(projectId, groupId, taskId, data, type);
       } catch (error) {
         console.log(error);
       }
@@ -100,18 +86,9 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       table.reset();
     }
   };
-  //add new tablerow to an specific table
-  const addNewRow = () => {
-    try {
-      const type = "Add Row";
-      const updatedProject = updateTableData(projectId, groupId, data, type);
-      setData(updatedProject);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const dataIds = React.useMemo(() => data?.map(({ id }) => id), [data]);
-  console.log("Data: ", data);
+  console.log("SubData: ", data);
   function handleDragEnd(event) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
@@ -127,7 +104,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   );
-
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -144,7 +120,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
             Delete
           </button>
         )}
-
         <table
           className='p-2 border border-gray-900 '
           style={{ width: table?.getTotalSize() }}
@@ -179,17 +154,16 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
             ))}
           </thead>
           <tbody>
-            <SortableContext
-              items={dataIds}
-              strategy={verticalListSortingStrategy}
-            >
-              {table.getRowModel().rows.map((row) => (
-                <DraggableRow key={row.id} row={row} gId={groupId} />
-              ))}
-            </SortableContext>
-            <tr className='w-full flex items-center justify-center p-1 min-h-9 hover:cursor-pointer'>
-              <button onClick={() => addNewRow()}>+add item</button>
-            </tr>
+            {data !== undefined && (
+              <SortableContext
+                items={dataIds}
+                strategy={verticalListSortingStrategy}
+              >
+                {table?.getRowModel().rows.map((row) => (
+                  <DraggableRow key={row.id} row={row} />
+                ))}
+              </SortableContext>
+            )}
           </tbody>
         </table>
       </div>
@@ -197,4 +171,4 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   );
 };
 
-export default Tasktable;
+export default SubItemTable;

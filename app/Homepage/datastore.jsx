@@ -10,6 +10,8 @@ import DefaultTimeCell from "./components/tablecomponents/DefaultTimeCell";
 import NumberCell from "./components/tablecomponents/NumberCell";
 import DropDownCell from "./components/tablecomponents/DropDownCell";
 import EditableHeader from "./components/tablecomponents/EditableHeader";
+import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown";
+import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
 
 let projectid = 0;
 let groupId = 0;
@@ -17,6 +19,7 @@ let taskid = 0;
 let statusId = 0;
 let itemId = 0;
 let dropId = 0;
+let subItemId = 0;
 export const blankProject = atom([
   { id: projectid++, name: "New Group", grouptask: [] },
 ]);
@@ -41,7 +44,6 @@ export const textItem = [
   { name: "number", cell: NumberCell, data: "" },
   { name: "DropDown", cell: DropDownCell, data: [] },
 ];
-let data1 = "heaa";
 export const defaultColumn = [
   {
     id: "select",
@@ -54,7 +56,57 @@ export const defaultColumn = [
       />
     ),
     size: 5,
-
+    cell: ({ row }) => (
+      <div className='w-full flex h-full items-center'>
+        <RowDragHandleCell rowId={row.id} />
+        <input
+          className='border h-4 w-4'
+          type='checkbox'
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      </div>
+    ),
+  },
+  {
+    id: "expander",
+    header: () => null,
+    size: 5,
+    cell: ({ row }) => {
+      return row.getCanExpand() ? (
+        <button
+          {...{
+            onClick: row.getToggleExpandedHandler(),
+            style: { cursor: "pointer" },
+          }}
+        >
+          {row.getIsExpanded() ? "👇" : "👉"}
+        </button>
+      ) : (
+        "🔵"
+      );
+    },
+  },
+  {
+    accessorKey: "item",
+    header: "Item",
+    size: 400,
+    cell: EditableCell,
+  },
+  { accessorKey: "Add", header: AddDropDown, size: 2 },
+];
+export const defaultSubColumns = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <input
+        type='checkbox'
+        checked={table.getIsAllRowsSelected()}
+        indeterminate={table.getIsSomeRowsSelected()}
+        onChange={table.getToggleAllRowsSelectedHandler()}
+      />
+    ),
+    size: 5,
     cell: ({ row }) => (
       <div className='w-full flex h-full items-center'>
         <RowDragHandleCell rowId={row.id} />
@@ -73,14 +125,7 @@ export const defaultColumn = [
     size: 400,
     cell: EditableCell,
   },
-  {
-    accessorKey: "editable",
-    header: <EditableHeader data={data1} />,
-    size: 400,
-    cell: EditableCell,
-  },
-
-  { accessorKey: "Add", header: AddDropDown, size: 2 },
+  { accessorKey: "Add", header: AddSubItemDropDown, size: 2 },
 ];
 export const userAtom = atom([
   {
@@ -122,6 +167,7 @@ export const projectsAtom = atom([
     defaultStatus: statusesData,
     defaultDropDown: [],
     columns: defaultColumn,
+    subColumns: defaultSubColumns,
     organizer: {
       sub: "34613191",
       name: "Axel Cortez",
@@ -136,14 +182,32 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
+            subItems: [
+              {
+                id: subItemId++,
+                item: "Task 1",
+              },
+            ],
           },
           {
             id: taskid++,
             item: "Task 2",
+            subItems: [
+              {
+                id: subItemId++,
+                item: "Task 2",
+              },
+            ],
           },
           {
             id: taskid++,
             item: "Task 3",
+            subItems: [
+              {
+                id: subItemId++,
+                item: "Task 3",
+              },
+            ],
           },
         ],
       },
@@ -154,14 +218,17 @@ export const projectsAtom = atom([
           {
             id: taskid++,
             item: "Task 1",
+            subItems: [],
           },
           {
             id: taskid++,
             item: "Task 2",
+            subItems: [],
           },
           {
             id: taskid++,
             item: "Task 3",
+            subItems: [],
           },
         ],
       },
@@ -187,8 +254,10 @@ export const addProject = atom(null, (get, set, { title, privacy }) => {
     name: title,
     type: privacy,
     columns: defaultColumn,
+    subColumns: defaultSubColumns,
     organizer: userData,
     defaultStatus: statusesData,
+    defaultDropDown: [],
     grouptask: [],
   };
   console.log(newProject);
@@ -271,6 +340,67 @@ export const addNewItem = atom(null, (get, set, projectId, itemName) => {
               return {
                 ...task,
                 [newItemName.toLocaleLowerCase()]: itemCell[0].data,
+              };
+            }),
+          };
+        }),
+      };
+    } else {
+      return project;
+    }
+  });
+  console.log("Updated: ", updatedProjects);
+  return set(projectsAtom, updatedProjects);
+});
+
+//function to add an Subitem to a group
+export const addSubItemColumn = atom(null, (get, set, projectId, itemName) => {
+  let newItemName = itemName;
+  const projects = get(projectsAtom);
+  const foundProject = projects.find((project) => project.id === projectId);
+  const itemCell = textItem.filter(
+    (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
+  );
+  //item duplication
+  const newItem = foundProject.columns.filter(
+    (column) =>
+      column?.accessorKey?.toLocaleLowerCase() ===
+      newItemName?.toLocaleLowerCase()
+  );
+  if (newItem.length > 0) {
+    newItemName = newItemName + itemId++;
+  }
+  //newItemData
+  const newItemData = {
+    accessorKey: newItemName.toLocaleLowerCase(),
+    header: <EditableSubHeader data={newItemName} />,
+    cell: itemCell[0].cell,
+  };
+
+  //add the column before the add button
+  const addColumnIndex = foundProject.subColumns.findIndex(
+    (column) => column.accessorKey === "Add"
+  );
+
+  const updatedColumns = [...foundProject.subColumns];
+  updatedColumns.splice(addColumnIndex, 0, newItemData);
+  const updatedProjects = projects.map((project) => {
+    if (project.id === projectId) {
+      return {
+        ...project,
+        subColumns: updatedColumns,
+        grouptask: project.grouptask.map((group) => {
+          return {
+            ...group,
+            task: group.task.map((task) => {
+              return {
+                ...task,
+                subItem: task?.subItems?.map((subItem) => {
+                  return {
+                    ...subItem,
+                    [newItemName.toLocaleLowerCase()]: itemCell[0].data,
+                  };
+                }),
               };
             }),
           };
@@ -400,6 +530,49 @@ export const updateHeaderName = atom(
   }
 );
 
+//function to update subheaderName
+export const updateSubHeaderName = atom(
+  null,
+  (get, set, projectId, oldName, newHeaderName) => {
+    const projects = get(projectsAtom);
+    const foundProject = projects.find((project) => project.id === projectId);
+    const unFoundColumn = foundProject?.subColumns?.filter(
+      (column) =>
+        column?.accessorKey?.toLocaleLowerCase() !== oldName.toLocaleLowerCase()
+    );
+    const newItem = unFoundColumn?.filter(
+      (column) =>
+        column?.accessorKey?.toLocaleLowerCase() ===
+        newHeaderName?.toLocaleLowerCase()
+    );
+    console.log("Item:", newItem);
+    const updatedProjects = projects.map((project) => {
+      if (project.id === projectId) {
+        const updatedColumns = project?.subColumns?.map((column) => {
+          console.log("Col: ", column);
+          if (
+            column?.accessorKey?.toLocaleLowerCase() ===
+            oldName?.toLocaleLowerCase()
+          ) {
+            if (newItem.length === 0) {
+              return {
+                ...column,
+                header: <EditableSubHeader data={newHeaderName} />,
+              };
+            }
+            return column;
+          }
+          return column;
+        });
+        console.log("updatedCOl:", updatedColumns);
+        return { ...project, subColumns: updatedColumns };
+      }
+      return project;
+    });
+    return set(projectsAtom, updatedProjects);
+  }
+);
+
 //function to update tabledata
 export const updateGroupData = atom(
   null,
@@ -443,5 +616,61 @@ export const updateGroupData = atom(
     );
 
     return updatedGroupTask.task;
+  }
+);
+
+//function to update subItemData
+export const updateSubItemData = atom(
+  null,
+  (get, set, projectId, groupId, taskId, data, type) => {
+    console.log("Id: ", groupId);
+    const projects = get(projectsAtom);
+    const updatedProjects = projects.map((project) => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          grouptask: project.grouptask.map((grouptask) => {
+            if (grouptask.id === groupId) {
+              return {
+                ...grouptask,
+                task: grouptask.task.map((task) => {
+                  if (task.id === taskId) {
+                    if (type === "UpdateData") {
+                      return {
+                        ...task,
+                        subItems: data,
+                      };
+                    } else {
+                      const newRow = {
+                        id: subItemId++,
+                        item: "New SubTask",
+                      };
+                      return {
+                        ...task,
+                        subItems: [...data, newRow],
+                      };
+                    }
+                  }
+                  return task;
+                }),
+              };
+            }
+            return grouptask;
+          }),
+        };
+      }
+      return project;
+    });
+    set(projectsAtom, updatedProjects);
+    const updatedProject = updatedProjects.find(
+      (project) => project.id === projectId
+    );
+    const updatedGroupTask = updatedProject.grouptask.find(
+      (groupTask) => groupTask.id === groupId
+    );
+    const updatedSubItem = updatedGroupTask.task.find(
+      (task) => task.id === taskId
+    );
+    return updatedSubItem.subItems;
   }
 );

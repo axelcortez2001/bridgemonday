@@ -1,12 +1,15 @@
 "use client";
 import React, { useEffect } from "react";
-import { Amplify } from "aws-amplify";
+
 import Sidebar from "./components/sidebar";
 import Content from "./components/content";
-// import config from "../../src/amplifyconfiguration.json";
-// Amplify.configure(config);
+import { Amplify } from "aws-amplify";
+import { Authenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+import config from "../../src/amplifyconfiguration.json";
+Amplify.configure(config);
 
-const Homepage = ({ user }) => {
+const Homepage = () => {
   // const registerU = useSetAtom(registerUser);
   // console.log(user);
   // useEffect(() => {
@@ -26,12 +29,14 @@ const Homepage = ({ user }) => {
   //   };
   //   handleSignin();
   // }, [user]);
-  console.log(user);
+
   return (
-    <div className='flex flex-row w-full h-screen max-h-screen'>
-      <Sidebar />
-      <Content />
-    </div>
+    <Authenticator>
+      <div className='flex flex-row w-full h-screen max-h-screen'>
+        <Sidebar />
+        <Content />
+      </div>
+    </Authenticator>
   );
 };
 

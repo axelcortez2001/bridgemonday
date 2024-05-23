@@ -14,7 +14,7 @@ import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown"
 import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
 import {  restinsert } from "../utils";
 import { fetchUserAttributes } from "aws-amplify/auth";
-import { User } from "@nextui-org/react";
+
 
 //fetch curentUser
 async function fetchUserData() {

@@ -12,7 +12,7 @@ import DropDownCell from "./components/tablecomponents/DropDownCell";
 import EditableHeader from "./components/tablecomponents/EditableHeader";
 import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown";
 import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
-import { getTodo, getOne, restinsert } from "../utils";
+import {  restinsert } from "../utils";
 import { fetchUserAttributes } from "aws-amplify/auth";
 import { User } from "@nextui-org/react";
 
@@ -44,16 +44,16 @@ export const registerUser = atom(null, async (get, set) => {
   }
 });
 
-export const sampleData = atom(async () => {
-  const response = await getTodo();
-  console.log("Rest Response: ", response);
-  return response;
-});
-export const sampleUser = atom(async () => {
-  const response = await getOne();
-  console.log("One Response: ", response);
-  return response;
-});
+// export const sampleData = atom(async () => {
+//   const response = await getTodo();
+//   console.log("Rest Response: ", response);
+//   return response;
+// });
+// export const sampleUser = atom(async () => {
+//   const response = await getOne();
+//   console.log("One Response: ", response);
+//   return response;
+// });
 
 let projectid = 0;
 let groupId = 0;

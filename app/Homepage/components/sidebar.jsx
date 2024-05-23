@@ -24,11 +24,10 @@ import OptionModal from "./sidebarcomponents/OptionModal";
 import { signOut } from "aws-amplify/auth";
 const Sidebar = () => {
   const [data, setData] = useAtom(projectsAtom);
-  const [userData, setUserData] = useAtom(UserDataAtom);
+  const [userData, setUserData] = useAtom(UserDataAtom || {});
   const addNew = useSetAtom(addProject);
   const setSelectedProject = useSetAtom(selectedProject);
 
-  
   //handlers
   //Add New Project Handler
   const [title, setTitle] = useState("");
@@ -43,23 +42,22 @@ const Sidebar = () => {
     setTitle("");
     setPrivacy("shared");
   };
-  console.log("UserData: ", userData);
   //function to check if the user is owner or has access to the project
   const checkAccess = () => {
     if (userData && data) {
       const accessData = data.filter(
         (project) =>
-          userData.sub.includes(project.organizer.sub) ||
-          project?.grouptask.map((groupData) =>
-            groupData?.task.map((taskData) =>
-              taskData?.processors.map((user) =>
-                userData.sub.includes(user.sub)
+          userData?.sub?.includes(project.organizer.sub) ||
+          project?.grouptask?.map((groupData) =>
+            groupData?.task?.map((taskData) =>
+              taskData?.processors?.map((user) =>
+                userData?.sub?.includes(user.sub)
               )
             )
           ) ||
-          project?.grouptask.map((groupData) =>
-            groupData?.task.map((taskData) =>
-              taskData?.managers.map((user) => userData.sub.includes(user.sub))
+          project?.grouptask?.map((groupData) =>
+            groupData?.task?.map((taskData) =>
+              taskData?.managers?.map((user) => userData?.sub.includes(user.sub))
             )
           )
       );

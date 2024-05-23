@@ -16,8 +16,6 @@ import { fetchAuthSession, fetchUserAttributes } from "aws-amplify/auth";
 
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
-  const resData = useAtomValue(sampleData);
-  const resUser = useAtomValue(sampleUser);
   //function to toggle dropdown of each groupTask
   const [openDrop, setOpenDrop] = useState([]);
   const toggleDropdown = (groupId) => {
@@ -27,8 +25,7 @@ const Content = () => {
       setOpenDrop([...openDrop, groupId]);
     }
   };
-  console.log("Rest Data: ", resData);
-  console.log("Rest User: ", resUser);
+
   //Handlers
   //handler to add new group
   const addNewGroup = useSetAtom(addGroupTask);

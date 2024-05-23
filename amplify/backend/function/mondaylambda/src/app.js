@@ -54,34 +54,14 @@ const userModel = mongoose.model("user", userSchema);
  * Example get method *
  **********************/
 
-app.post("/items/signin", async (req, res) => {
-  const { username, email, sub, name, picture } = req.body;
-
-  if (!username || !email) {
-    return res.status(400).json({ error: "Username and email are required" });
-  }
-
-  try {
-    let user = await userModel.findOne({ email });
-    if (!user) {
-      user = new userModel({ username, email, sub, name, picture });
-      await user.save();
-    }
-    res.json({ success: true, user });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
 app.get("/items", async (req, res) => {
   // Add your code here
-  const envVar = process.env.test;
-  res.json({ success: "get Sample REST!", url: req.url, envVar: envVar });
+
 });
 
 app.get("/items/*", function (req, res) {
   // Add your code here
-  res.json({ success: "get call succeed!", url: req.url });
+
 });
 
 /****************************

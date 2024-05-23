@@ -1,0 +1,124 @@
+{
+  "api": {
+    "mondayREST": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "mondaylambda"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "user"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
+    "bridgemonday": {
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [
+          "GOOGLE"
+        ],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "managed"
+    }
+  },
+  "function": {
+    "mondaylambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "user": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_mondaylambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "mondaylambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_mondaylambda_mongodbUri": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "mondaylambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_mondaylambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "mondaylambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_mondaylambda_test": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "mondaylambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_user_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "user"
+        }
+      ]
+    },
+    "AMPLIFY_function_user_mongodbUri": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "user"
+        }
+      ]
+    },
+    "AMPLIFY_function_user_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "user"
+        }
+      ]
+    }
+  }
+}

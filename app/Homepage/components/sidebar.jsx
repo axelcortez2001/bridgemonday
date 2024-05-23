@@ -21,12 +21,14 @@ import {
 } from "../datastore";
 import { SlOptions } from "react-icons/sl";
 import OptionModal from "./sidebarcomponents/OptionModal";
+import { signOut } from "aws-amplify/auth";
 const Sidebar = () => {
   const [data, setData] = useAtom(projectsAtom);
   const [userData, setUserData] = useAtom(UserDataAtom);
   const addNew = useSetAtom(addProject);
   const setSelectedProject = useSetAtom(selectedProject);
 
+  
   //handlers
   //Add New Project Handler
   const [title, setTitle] = useState("");
@@ -41,7 +43,7 @@ const Sidebar = () => {
     setTitle("");
     setPrivacy("shared");
   };
-
+  console.log("UserData: ", userData);
   //function to check if the user is owner or has access to the project
   const checkAccess = () => {
     if (userData && data) {
@@ -68,11 +70,14 @@ const Sidebar = () => {
   console.log(checkAccess());
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  console.log("UserData: ", userData);
+
   return (
     <div className='w-60 min-w-60 h-screen flex flex-col border border-gray-900'>
       <div className='w-full p-2'>Home</div>
       <div className='w-full p-2'>My Work</div>
+      <div>
+        <Button onClick={signOut}>Signout</Button>
+      </div>
       <div className='w-full h-5 p-2 border-b-1'></div>
       <div>
         <Button onPress={onOpen}>Add Project</Button>

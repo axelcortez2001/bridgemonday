@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 
-import { useAtom, useSetAtom } from "jotai";
-import { addGroupTask, selectedProjectAtom } from "../datastore";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+  addGroupTask,
+  sampleData,
+  sampleUser,
+  selectedProjectAtom,
+} from "../datastore";
 import { IoIosArrowDropdown } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowDown } from "react-icons/md";
 import { Button } from "@nextui-org/react";
 import Tasktable from "./tasktable";
 import EditableGroupName from "./EditableGroupName";
+import { fetchAuthSession, fetchUserAttributes } from "aws-amplify/auth";
 
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
+  const resData = useAtomValue(sampleData);
+  const resUser = useAtomValue(sampleUser);
   //function to toggle dropdown of each groupTask
   const [openDrop, setOpenDrop] = useState([]);
   const toggleDropdown = (groupId) => {
@@ -19,7 +27,8 @@ const Content = () => {
       setOpenDrop([...openDrop, groupId]);
     }
   };
-
+  console.log("Rest Data: ", resData);
+  console.log("Rest User: ", resUser);
   //Handlers
   //handler to add new group
   const addNewGroup = useSetAtom(addGroupTask);
@@ -27,6 +36,12 @@ const Content = () => {
     const id = data.id;
     addNewGroup(id);
   };
+  const fetchUser = async () => {
+    const user = await fetchUserAttributes();
+    const authSession = await fetchAuthSession();
+    console.log("User: ", user);
+  };
+  fetchUser();
   return (
     <div className='p-2 flex flex-col w-full max-h-screen overflow-y-auto'>
       <p>{data?.name}</p>

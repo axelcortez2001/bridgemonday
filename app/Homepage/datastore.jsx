@@ -12,6 +12,48 @@ import DropDownCell from "./components/tablecomponents/DropDownCell";
 import EditableHeader from "./components/tablecomponents/EditableHeader";
 import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown";
 import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
+import { getTodo, getOne, restinsert } from "../utils";
+import { fetchUserAttributes } from "aws-amplify/auth";
+import { User } from "@nextui-org/react";
+
+//fetch curentUser
+async function fetchUserData() {
+  try {
+    const user = await fetchUserAttributes();
+    if (user.sub) {
+      return user;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
+export const UserDataAtom = atom(async () => {
+  return await fetchUserData();
+});
+export const registerUser = atom(null, async (get, set) => {
+  const data = get(UserDataAtom);
+  console.log("before user: ", data.value);
+  const userResponse = await restinsert("/user", data.value);
+  console.log("UserResponse: " + userResponse);
+  if (userResponse.success) {
+    return { success: true, userResponse };
+  } else {
+    return { success: false };
+  }
+});
+
+export const sampleData = atom(async () => {
+  const response = await getTodo();
+  console.log("Rest Response: ", response);
+  return response;
+});
+export const sampleUser = atom(async () => {
+  const response = await getOne();
+  console.log("One Response: ", response);
+  return response;
+});
 
 let projectid = 0;
 let groupId = 0;
@@ -129,7 +171,7 @@ export const defaultSubColumns = [
 ];
 export const userAtom = atom([
   {
-    sub: "34613191",
+    sub: "69cab55c-a081-70a0-64a5-37a2163cbeda",
     name: "Axel Cortez",
     email: "john.cortez@aretex.com.au",
     picture: "@/../axelAvatar.jpg",
@@ -153,12 +195,7 @@ export const userAtom = atom([
     picture: "@/../Avatar4.png",
   },
 ]);
-export const UserDataAtom = atom({
-  sub: "34613191",
-  name: "Axel Cortez",
-  email: "john.cortez@aretex.com.au",
-  picture: "@/../axelAvatar.jpg",
-});
+
 export const projectsAtom = atom([
   {
     id: projectid++,
@@ -169,7 +206,7 @@ export const projectsAtom = atom([
     columns: defaultColumn,
     subColumns: defaultSubColumns,
     organizer: {
-      sub: "34613191",
+      sub: "69cab55c-a081-70a0-64a5-37a2163cbeda",
       name: "Axel Cortez",
       email: "john.cortez@aretex.com.au",
       picture: "@/../axelAvatar.jpg",

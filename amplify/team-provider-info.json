@@ -1,0 +1,37 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-bridgemonday-dev-ee81f-authRole",
+      "UnauthRoleArn": "arn:aws:iam::675436869821:role/amplify-bridgemonday-dev-ee81f-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::675436869821:role/amplify-bridgemonday-dev-ee81f-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
+      "UnauthRoleName": "amplify-bridgemonday-dev-ee81f-unauthRole",
+      "StackName": "amplify-bridgemonday-dev-ee81f",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:675436869821:stack/amplify-bridgemonday-dev-ee81f/5aa1f720-18a1-11ef-b179-02c321046043",
+      "AmplifyAppId": "d2j0j42c3x4apu",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-bridgemonday-dev-ee81f-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    },
+    "categories": {
+      "function": {
+        "mondaylambda": {
+          "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
+          "s3Key": "amplify-builds/mondaylambda-49575663344e76632b65-build.zip",
+          "test": "helloworld",
+          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/"
+        },
+        "user": {
+          "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
+          "s3Key": "amplify-builds/user-65504470485274724b58-build.zip",
+          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge"
+        }
+      },
+      "auth": {
+        "bridgemonday": {}
+      },
+      "api": {
+        "mondayREST": {}
+      }
+    }
+  }
+}

@@ -7,28 +7,36 @@ import { Amplify } from "aws-amplify";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import config from "../../src/amplifyconfiguration.json";
+import { withAuthenticator } from "@aws-amplify/ui-react";
+import { fetchAuthSession, fetchUserAttributes } from "aws-amplify/auth";
+import { registerUser } from "./datastore";
+import { useSetAtom } from "jotai";
 Amplify.configure(config);
 
 const Homepage = () => {
-  // const registerU = useSetAtom(registerUser);
-  // console.log(user);
-  // useEffect(() => {
-  //   const handleSignin = async () => {
-  //     if (user) {
-  //       try {
-  //         const result = await registerU();
-  //         if (result.success) {
-  //           console.log("User registered successfully");
-  //         } else {
-  //           console.error("User registration failed:", result.message);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error registering user:", error);
-  //       }
-  //     }
-  //   };
-  //   handleSignin();
-  // }, [user]);
+  // const fetchUser = async () => {
+  //   return await fetchUserAttributes();
+  // };
+
+  const registerU = useSetAtom(registerUser);
+  useEffect(() => {
+    const handleSignin = async () => {
+      // const user = await fetchUserAttributes();
+      // if (user) {
+      try {
+        const result = await registerU();
+        if (result.success) {
+          console.log("User registered successfully");
+        } else {
+          console.error("User registration failed:", result.message);
+        }
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
+    };
+    // };
+    handleSignin();
+  }, []);
 
   return (
     <Authenticator>
@@ -40,4 +48,4 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default withAuthenticator(Homepage);

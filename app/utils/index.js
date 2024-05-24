@@ -74,3 +74,21 @@ export const getWorkspace = async (path) => {
     console.log(e);
   }
 };
+//function to add new Poject
+export const addWorkspace = async (path, workspaceData) => {
+  try {
+    console.log("Path: ", path);
+    console.log("Workspace: ", workspaceData);
+    const insertOperation = post({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        body: { workspaceData },
+      },
+    });
+    const { body } = await insertOperation.response;
+    return await body.json();
+  } catch (e) {
+    console.log(e);
+  }
+};

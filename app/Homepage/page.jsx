@@ -8,15 +8,13 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import config from "../../src/amplifyconfiguration.json";
 import { withAuthenticator } from "@aws-amplify/ui-react";
-import { fetchAuthSession, fetchUserAttributes } from "aws-amplify/auth";
-import { registerUser } from "./datastore";
+import { getProjects, registerUser } from "./datastore";
 import { useSetAtom } from "jotai";
 Amplify.configure(config);
 
 const Homepage = () => {
-  
-
   const registerU = useSetAtom(registerUser);
+  const getWorkSpaceData = useSetAtom(getProjects);
   useEffect(() => {
     const handleSignin = async () => {
       try {
@@ -30,7 +28,15 @@ const Homepage = () => {
         console.error("Error registering user:", error);
       }
     };
+    const fetchWorkSpace = async () => {
+      try {
+        await getWorkSpaceData();
+      } catch (error) {
+        console.log(error);
+      }
+    };
     handleSignin();
+    fetchWorkSpace();
   }, []);
 
   return (

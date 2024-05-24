@@ -12,7 +12,7 @@ import {
   RadioGroup,
   Radio,
 } from "@nextui-org/react";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   addProject,
   projectsAtom,
@@ -23,11 +23,15 @@ import { SlOptions } from "react-icons/sl";
 import OptionModal from "./sidebarcomponents/OptionModal";
 import { signOut } from "aws-amplify/auth";
 const Sidebar = () => {
-  const [data, setData] = useAtom(projectsAtom);
+  const data = useAtomValue(projectsAtom);
   const [userData, setUserData] = useAtom(UserDataAtom || {});
   const addNew = useSetAtom(addProject);
   const setSelectedProject = useSetAtom(selectedProject);
 
+  const handleSelect = (task) => {
+    console.log("Trigger select: ", task._id);
+    setSelectedProject(task._id);
+  };
   //handlers
   //Add New Project Handler
   const [title, setTitle] = useState("");
@@ -45,9 +49,10 @@ const Sidebar = () => {
   //function to check if the user is owner or has access to the project
   const checkAccess = () => {
     if (userData && data) {
+      console.log("ddada", data);
       const accessData = data.filter(
         (project) =>
-          userData?.sub?.includes(project.organizer.sub) ||
+          userData?.sub?.includes(project?.organizer?.sub) ||
           project?.grouptask?.map((groupData) =>
             groupData?.task?.map((taskData) =>
               taskData?.processors?.map((user) =>
@@ -89,7 +94,7 @@ const Sidebar = () => {
             <div
               className='w-full p-2 hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
               key={task.id}
-              onClick={() => setSelectedProject(task.id)}
+              onClick={() => handleSelect(task)}
             >
               <p>{task.name}</p>
               <OptionModal task={task} />

@@ -33,10 +33,9 @@ mongoose.connect(mongoURI, {
 });
 
 const workspaceSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
   name: { type: String },
   type: { type: String, required: true },
-  defaulStatus: [],
+  defaultStatus: [],
   defaultDropDown: [],
   columns: [],
   subColumns: [],
@@ -74,10 +73,16 @@ app.get("/modaydata/*", function (req, res) {
 /****************************
  * Example post method *
  ****************************/
-
-app.post("/modaydata", function (req, res) {
-  // Add your code here
-  res.json({ success: "post call succeed!", url: req.url, body: req.body });
+//add new Project to workspace
+app.post("/modaydata", async (req, res) => {
+  const { workspaceData } = req.body;
+  try {
+    const workspace = new workspaceModel(workspaceData);
+    await workspace.save();
+    res.status(200).json({ success: true, workspace });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.post("/modaydata/*", function (req, res) {

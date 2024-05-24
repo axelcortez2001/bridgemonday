@@ -12,6 +12,7 @@ import { getProjects, registerUser } from "./datastore";
 import { useSetAtom } from "jotai";
 Amplify.configure(config);
 
+
 const Homepage = () => {
   const registerU = useSetAtom(registerUser);
   const getWorkSpaceData = useSetAtom(getProjects);

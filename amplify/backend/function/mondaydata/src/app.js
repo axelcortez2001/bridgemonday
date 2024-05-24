@@ -94,9 +94,21 @@ app.post("/modaydata/*", function (req, res) {
  * Example put method *
  ****************************/
 
-app.put("/modaydata", function (req, res) {
-  // Add your code here
-  res.json({ success: "put call succeed!", url: req.url, body: req.body });
+app.put("/modaydata", async (req, res) => {
+  const { id, title, privacy } = req.body;
+  try {
+    const project = await workspaceModel.findByIdAndUpdate(id, {
+      name: title,
+      type: privacy,
+    });
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    res.status(200).json({ success: true, project });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.put("/modaydata/*", function (req, res) {
@@ -108,9 +120,19 @@ app.put("/modaydata/*", function (req, res) {
  * Example delete method *
  ****************************/
 
-app.delete("/modaydata", function (req, res) {
-  // Add your code here
-  res.json({ success: "delete call succeed!", url: req.url });
+app.delete("/modaydata", async (req, res) => {
+  const { id } = req.query;
+  try {
+    const deleted = await workspaceModel.deleteOne({ _id: id });
+    if (!deleted) {
+      return res.status(404).json({ error: "ID not found" });
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "Document deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.delete("/modaydata/*", function (req, res) {

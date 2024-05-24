@@ -27,7 +27,7 @@ export default function OptionModal({ task }) {
   const deleteHandle = useSetAtom(deleteProject);
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete?")) {
-      const id = task.id;
+      const id = task._id;
       deleteHandle(id);
     } else {
       alert("File Deleted");
@@ -41,7 +41,7 @@ export default function OptionModal({ task }) {
   //function to edt
   const editHandle = useSetAtom(editProject);
   const handleEdit = () => {
-    const id = task.id;
+    const id = task._id;
     editHandle(id, title, privacy);
   };
   const iconClasses =

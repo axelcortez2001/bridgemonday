@@ -1,5 +1,4 @@
-import { get } from "aws-amplify/api";
-import { post } from "aws-amplify/api";
+import { get, post, del, put } from "aws-amplify/api";
 
 export async function getTodo() {
   try {
@@ -77,8 +76,6 @@ export const getWorkspace = async (path) => {
 //function to add new Poject
 export const addWorkspace = async (path, workspaceData) => {
   try {
-    console.log("Path: ", path);
-    console.log("Workspace: ", workspaceData);
     const insertOperation = post({
       apiName: "mondayREST",
       path: path,
@@ -90,5 +87,39 @@ export const addWorkspace = async (path, workspaceData) => {
     return await body.json();
   } catch (e) {
     console.log(e);
+  }
+};
+//function to delete workspace
+export const deleteWorkSpace = async (path, id) => {
+  try {
+    console.log("ID: ", id);
+    const deleteOperation = del({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        queryParams: { id },
+      },
+    });
+    const { body } = await deleteOperation.response;
+    return await body.json();
+  } catch (error) {
+    console.log(error);
+  }
+};
+//funtion to edit workspace
+export const editWorkSpace = async (path, id, title, privacy) => {
+  try {
+    console.log(id);
+    const editOperation = put({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        body: { id, title, privacy },
+      },
+    });
+    const { body } = await editOperation.response;
+    return await body.json();
+  } catch (error) {
+    console.log(error);
   }
 };

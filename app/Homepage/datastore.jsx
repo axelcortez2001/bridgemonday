@@ -12,7 +12,14 @@ import DropDownCell from "./components/tablecomponents/DropDownCell";
 import EditableHeader from "./components/tablecomponents/EditableHeader";
 import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown";
 import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
-import { addWorkspace, getAllUsers, getWorkspace, restinsert } from "../utils";
+import {
+  addWorkspace,
+  deleteWorkSpace,
+  editWorkSpace,
+  getAllUsers,
+  getWorkspace,
+  restinsert,
+} from "../utils";
 import { fetchUserAttributes } from "aws-amplify/auth";
 
 //fetch curentUser
@@ -207,19 +214,31 @@ export const addProject = atom(null, async (get, set, { title, privacy }) => {
 });
 
 //function to edit project
-export const editProject = atom(null, (get, set, id, title, privacy) => {
+export const editProject = atom(null, async (get, set, id, title, privacy) => {
   const prevProjects = get(projectsAtom);
+  const updatedProjectFromBackEnd = await editWorkSpace(
+    "/modaydata",
+    id,
+    title,
+    privacy
+  );
+  console.log("Updated", updatedProjectFromBackEnd);
   const updatedProjects = prevProjects.map((project) =>
-    project.id === id ? { ...project, name: title, type: privacy } : project
+    project._id === id ? { ...project, name: title, type: privacy } : project
   );
   set(projectsAtom, updatedProjects);
 });
 
 //function to delete project
-export const deleteProject = atom(null, (get, set, id) => {
+export const deleteProject = atom(null, async (get, set, id) => {
   const prevProjects = get(projectsAtom);
-  const newProject = prevProjects.filter((project) => project.id !== id);
-  set(projectsAtom, newProject);
+  const deleted = await deleteWorkSpace("/modaydata", id);
+  if (deleted && deleted.success === true) {
+    const newProject = prevProjects.filter((project) => project._id !== id);
+    set(projectsAtom, newProject);
+  } else {
+    set(projectsAtom, prevProjects);
+  }
 });
 
 //function to add group task

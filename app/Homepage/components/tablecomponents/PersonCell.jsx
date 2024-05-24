@@ -20,7 +20,7 @@ const PersonCell = ({ getValue, row, column, table }) => {
   const initialValue = getValue();
   const value = initialValue?.map((user) => user.sub) || [];
   const { updateData } = table.options.meta;
-  console.log("Current");
+  console.log("person Atom:", personAtom);
   //function to show and find user
   const findUserData = (userAtom, sub) => {
     const allusers = userAtom.filter((userMap) => sub?.includes(userMap.sub));

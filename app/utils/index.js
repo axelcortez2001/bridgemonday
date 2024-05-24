@@ -15,18 +15,20 @@ export async function getTodo() {
   }
 }
 export async function getOne() {
-    try {
-      const restOperation = get({
-        apiName: "mondayREST",
-        path: "/user",
-      });
-      const { body } = await restOperation.response;
-      console.log("GET call succeeded: ", body.json());
-      return await body.json();
-    } catch (e) {
-      console.log("GET call failed: ", JSON.parse(e.response.body));
-    }
+  try {
+    const restOperation = get({
+      apiName: "mondayREST",
+      path: "/user",
+    });
+    const { body } = await restOperation.response;
+    console.log("GET call succeeded: ", body.json());
+    return await body.json();
+  } catch (e) {
+    console.log("GET call failed: ", JSON.parse(e.response.body));
   }
+}
+
+//function to add newuser to db
 export const restinsert = async (path, request) => {
   try {
     const insertOperation = post({
@@ -43,19 +45,32 @@ export const restinsert = async (path, request) => {
     console.log(e);
   }
 };
+//function to get all users
+export const getAllUsers = async (path) => {
+  try {
+    const getOperation = get({
+      apiName: "mondayREST",
+      path: path,
+    });
+    const { body } = await getOperation.response;
+    console.log("All Users: ", body.json());
+    return await body.json();
+  } catch (e) {
+    console.log(e);
+  }
+};
 
-// try {
-//   const insertOperation = post({
-//     apiName: "bridgeApi",
-//     path: path,
-//     options: {
-//       queryParams: query,
-//       body: request,
-//     },
-//   });
-
-//   const { body } = await insertOperation.response;
-//   return await body.json();
-// } catch (error) {
-//   console.log(error);
-// }
+//function to get all workspace
+export const getWorkspace = async (path) => {
+  try {
+    const getOperation = get({
+      apiName: "mondayREST",
+      path: path,
+    });
+    const { body } = await getOperation.response;
+    console.log("All Workspace: ", body.json());
+    return await body.json();
+  } catch (e) {
+    console.log(e);
+  }
+};

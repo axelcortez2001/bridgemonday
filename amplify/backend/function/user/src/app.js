@@ -58,10 +58,16 @@ const userModel = mongoose.model("user", userSchema);
  * Example get method *
  **********************/
 
-app.get("/user", function (req, res) {
-  // Add your code here
-  const envVar = process.env.MONGODB_URI;
-  res.json({ success: "get Sample REST!", url: req.url, envVar: envVar });
+app.get("/user", async (req, res) => {
+  try {
+    const user = await userModel.find();
+    if (!user) {
+      return res.status(404).json({ message: "Users Unavailable" });
+    }
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.get("/user/*", function (req, res) {
@@ -75,7 +81,6 @@ app.get("/user/*", function (req, res) {
 
 app.post("/user", async (req, res) => {
   const { email, sub, name, picture } = req.body;
-  console.log(email);
   if (!email) {
     return res.status(400).json({ error: "Username and email are required" });
   }
@@ -86,7 +91,7 @@ app.post("/user", async (req, res) => {
       user = new userModel({ email, sub, name, picture });
       await user.save();
     }
-    res.json({ success: true, user });
+    res.status(200).json({ success: true, user });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }

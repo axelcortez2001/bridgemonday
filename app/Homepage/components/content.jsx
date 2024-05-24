@@ -33,12 +33,7 @@ const Content = () => {
     const id = data.id;
     addNewGroup(id);
   };
-  const fetchUser = async () => {
-    const user = await fetchUserAttributes();
-    const authSession = await fetchAuthSession();
-    console.log("User: ", user);
-  };
-  fetchUser();
+
   return (
     <div className='p-2 flex flex-col w-full max-h-screen overflow-y-auto'>
       <p>{data?.name}</p>

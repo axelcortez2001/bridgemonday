@@ -1,3 +1,11 @@
+/*
+Copyright 2017 - 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
+    http://aws.amazon.com/apache2.0/
+or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+*/
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
@@ -17,63 +25,62 @@ app.use(function (req, res, next) {
   next();
 });
 
-// Connect to mongoose
+//connect to mongoose
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   dbName: "MondayBridge",
 });
 
-//userSchema
-
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
+const workspaceSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  name: { type: String },
+  type: { type: String, required: true },
+  defaulStatus: [],
+  defaultDropDown: [],
+  columns: [],
+  subColumns: [],
+  organizer: {
+    sub: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    picture: { type: String },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  sub: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  picture: {
-    type: String,
-  },
+  grouptask: [],
 });
-const userModel = mongoose.model("user", userSchema);
+const workspaceModel = mongoose.model("workspace", workspaceSchema);
 
 /**********************
  * Example get method *
  **********************/
 
-app.get("/items", async (req, res) => {
-  // Add your code here
-
+app.get("/modaydata", async (req, res) => {
+  try {
+    const workspace = await workspaceModel.find();
+    if (!workspace) {
+      return res.status(404).json({ message: "WorkSpace Unavailable" });
+    }
+    res.status(200).json({ success: true, workspace });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-app.get("/items/*", function (req, res) {
+app.get("/modaydata/*", function (req, res) {
   // Add your code here
-
+  res.json({ success: "get call succeed!", url: req.url });
 });
 
 /****************************
  * Example post method *
  ****************************/
 
-app.post("/items", function (req, res) {
+app.post("/modaydata", function (req, res) {
   // Add your code here
   res.json({ success: "post call succeed!", url: req.url, body: req.body });
 });
 
-app.post("/items/*", function (req, res) {
+app.post("/modaydata/*", function (req, res) {
   // Add your code here
   res.json({ success: "post call succeed!", url: req.url, body: req.body });
 });
@@ -82,12 +89,12 @@ app.post("/items/*", function (req, res) {
  * Example put method *
  ****************************/
 
-app.put("/items", function (req, res) {
+app.put("/modaydata", function (req, res) {
   // Add your code here
   res.json({ success: "put call succeed!", url: req.url, body: req.body });
 });
 
-app.put("/items/*", function (req, res) {
+app.put("/modaydata/*", function (req, res) {
   // Add your code here
   res.json({ success: "put call succeed!", url: req.url, body: req.body });
 });
@@ -96,12 +103,12 @@ app.put("/items/*", function (req, res) {
  * Example delete method *
  ****************************/
 
-app.delete("/items", function (req, res) {
+app.delete("/modaydata", function (req, res) {
   // Add your code here
   res.json({ success: "delete call succeed!", url: req.url });
 });
 
-app.delete("/items/*", function (req, res) {
+app.delete("/modaydata/*", function (req, res) {
   // Add your code here
   res.json({ success: "delete call succeed!", url: req.url });
 });

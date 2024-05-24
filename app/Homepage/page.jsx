@@ -14,15 +14,11 @@ import { useSetAtom } from "jotai";
 Amplify.configure(config);
 
 const Homepage = () => {
-  // const fetchUser = async () => {
-  //   return await fetchUserAttributes();
-  // };
+  
 
   const registerU = useSetAtom(registerUser);
   useEffect(() => {
     const handleSignin = async () => {
-      // const user = await fetchUserAttributes();
-      // if (user) {
       try {
         const result = await registerU();
         if (result.success) {
@@ -34,7 +30,6 @@ const Homepage = () => {
         console.error("Error registering user:", error);
       }
     };
-    // };
     handleSignin();
   }, []);
 

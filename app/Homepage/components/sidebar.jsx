@@ -57,15 +57,18 @@ const Sidebar = () => {
           ) ||
           project?.grouptask?.map((groupData) =>
             groupData?.task?.map((taskData) =>
-              taskData?.managers?.map((user) => userData?.sub.includes(user.sub))
+              taskData?.managers?.map((user) =>
+                userData?.sub.includes(user.sub)
+              )
             )
           )
       );
       console.log("Access: ", accessData);
       return accessData;
     }
+    return [];
   };
-  console.log(checkAccess());
+  console.log("CjecL : ", checkAccess());
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -81,16 +84,17 @@ const Sidebar = () => {
         <Button onPress={onOpen}>Add Project</Button>
       </div>
       <div className='w-full flex flex-col'>
-        {checkAccess().map((task) => (
-          <div
-            className='w-full p-2 hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
-            key={task.id}
-            onClick={() => setSelectedProject(task.id)}
-          >
-            <p>{task.name}</p>
-            <OptionModal task={task} />
-          </div>
-        ))}
+        {checkAccess !== undefined &&
+          checkAccess().map((task) => (
+            <div
+              className='w-full p-2 hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
+              key={task.id}
+              onClick={() => setSelectedProject(task.id)}
+            >
+              <p>{task.name}</p>
+              <OptionModal task={task} />
+            </div>
+          ))}
       </div>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>

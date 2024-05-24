@@ -8,7 +8,7 @@
             "Arn"
           ],
           "category": "function",
-          "resourceName": "mondaylambda"
+          "resourceName": "user"
         },
         {
           "attributes": [
@@ -16,7 +16,7 @@
             "Arn"
           ],
           "category": "function",
-          "resourceName": "user"
+          "resourceName": "mondaydata"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -52,7 +52,7 @@
     }
   },
   "function": {
-    "mondaylambda": {
+    "mondaydata": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
@@ -64,35 +64,27 @@
     }
   },
   "parameters": {
-    "AMPLIFY_function_mondaylambda_deploymentBucketName": {
+    "AMPLIFY_function_mondaydata_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "mondaylambda"
+          "resourceName": "mondaydata"
         }
       ]
     },
-    "AMPLIFY_function_mondaylambda_mongodbUri": {
+    "AMPLIFY_function_mondaydata_mongodbUri": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "mondaylambda"
+          "resourceName": "mondaydata"
         }
       ]
     },
-    "AMPLIFY_function_mondaylambda_s3Key": {
+    "AMPLIFY_function_mondaydata_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "mondaylambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_mondaylambda_test": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "mondaylambda"
+          "resourceName": "mondaydata"
         }
       ]
     },

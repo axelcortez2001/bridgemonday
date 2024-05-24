@@ -1,9 +1,9 @@
 {
   "version": 1,
   "paths": {
-    "/items": {
-      "name": "/items",
-      "lambdaFunction": "mondaylambda",
+    "/user": {
+      "name": "/user",
+      "lambdaFunction": "user",
       "permissions": {
         "setting": "private",
         "auth": [
@@ -14,9 +14,9 @@
         ]
       }
     },
-    "/user": {
-      "name": "/user",
-      "lambdaFunction": "user",
+    "/modaydata": {
+      "name": "/modaydata",
+      "lambdaFunction": "mondaydata",
       "permissions": {
         "setting": "private",
         "auth": [

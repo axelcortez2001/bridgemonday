@@ -12,9 +12,8 @@ import DropDownCell from "./components/tablecomponents/DropDownCell";
 import EditableHeader from "./components/tablecomponents/EditableHeader";
 import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown";
 import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
-import {  restinsert } from "../utils";
+import { getAllUsers, getWorkspace, restinsert } from "../utils";
 import { fetchUserAttributes } from "aws-amplify/auth";
-
 
 //fetch curentUser
 async function fetchUserData() {
@@ -32,6 +31,7 @@ async function fetchUserData() {
 export const UserDataAtom = atom(async () => {
   return await fetchUserData();
 });
+//function to register user to database
 export const registerUser = atom(null, async (get, set) => {
   const data = get(UserDataAtom);
   console.log("before user: ", data.value);
@@ -44,16 +44,12 @@ export const registerUser = atom(null, async (get, set) => {
   }
 });
 
-// export const sampleData = atom(async () => {
-//   const response = await getTodo();
-//   console.log("Rest Response: ", response);
-//   return response;
-// });
-// export const sampleUser = atom(async () => {
-//   const response = await getOne();
-//   console.log("One Response: ", response);
-//   return response;
-// });
+//function to get all users
+export const userAtom = atom(async () => {
+  const user = await getAllUsers("/user");
+  console.log("userasd: ", user.user);
+  return user.user;
+});
 
 let projectid = 0;
 let groupId = 0;
@@ -62,9 +58,7 @@ let statusId = 0;
 let itemId = 0;
 let dropId = 0;
 let subItemId = 0;
-export const blankProject = atom([
-  { id: projectid++, name: "New Group", grouptask: [] },
-]);
+
 export const statusesData = [
   { id: statusId++, color: "bg-green-500", text: "Done" },
   { id: statusId++, color: "bg-orange-500", text: "Working On It" },
@@ -169,117 +163,95 @@ export const defaultSubColumns = [
   },
   { accessorKey: "Add", header: AddSubItemDropDown, size: 2 },
 ];
-export const userAtom = atom([
-  {
-    sub: "69cab55c-a081-70a0-64a5-37a2163cbeda",
-    name: "Axel Cortez",
-    email: "john.cortez@aretex.com.au",
-    picture: "@/../axelAvatar.jpg",
-  },
-  {
-    sub: "34215465",
-    name: "Chloe Lazaro",
-    email: "chloe.lazaro@aretex.com.au",
-    picture: "@/../Avatar2.jpg",
-  },
-  {
-    sub: "34567823",
-    name: "Cyrus Layugan",
-    email: "cyrus.layugan@aretex.com.au",
-    picture: "@/../Avatar3.png",
-  },
-  {
-    sub: "34653245",
-    name: "John Suelila",
-    email: "suelila.john@aretex.com.au",
-    picture: "@/../Avatar4.png",
-  },
-]);
 
-export const projectsAtom = atom([
-  {
-    id: projectid++,
-    name: "Project 1",
-    type: "shared",
-    defaultStatus: statusesData,
-    defaultDropDown: [],
-    columns: defaultColumn,
-    subColumns: defaultSubColumns,
-    organizer: {
-      sub: "69cab55c-a081-70a0-64a5-37a2163cbeda",
-      name: "Axel Cortez",
-      email: "john.cortez@aretex.com.au",
-      picture: "@/../axelAvatar.jpg",
-    },
-    grouptask: [
-      {
-        id: groupId++,
-        groupName: "Group 1",
-        task: [
-          {
-            id: taskid++,
-            item: "Task 1",
-            subItems: [
-              {
-                id: subItemId++,
-                item: "Task 1",
-              },
-            ],
-          },
-          {
-            id: taskid++,
-            item: "Task 2",
-            subItems: [
-              {
-                id: subItemId++,
-                item: "Task 2",
-              },
-            ],
-          },
-          {
-            id: taskid++,
-            item: "Task 3",
-            subItems: [
-              {
-                id: subItemId++,
-                item: "Task 3",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: groupId++,
-        groupName: "Group 2",
-        task: [
-          {
-            id: taskid++,
-            item: "Task 1",
-            subItems: [],
-          },
-          {
-            id: taskid++,
-            item: "Task 2",
-            subItems: [],
-          },
-          {
-            id: taskid++,
-            item: "Task 3",
-            subItems: [],
-          },
-        ],
-      },
-    ],
-  },
-]);
+export const projectsAtom = atom(async () => {
+  const workSpace = await getWorkspace("/modaydata");
+  console.log("userasd: ", workSpace.workspace);
+  return workSpace.workspace;
+  // {
+  //   id: projectid++,
+  //   name: "Project 1",
+  //   type: "shared",
+  //   defaultStatus: statusesData,
+  //   defaultDropDown: [],
+  //   columns: defaultColumn,
+  //   subColumns: defaultSubColumns,
+  //   organizer: {
+  //     sub: "69cab55c-a081-70a0-64a5-37a2163cbeda",
+  //     name: "Axel Cortez",
+  //     email: "john.cortez@aretex.com.au",
+  //     picture: "@/../axelAvatar.jpg",
+  //   },
+  //   grouptask: [
+  //     {
+  //       id: groupId++,
+  //       groupName: "Group 1",
+  //       task: [
+  //         {
+  //           id: taskid++,
+  //           item: "Task 1",
+  //           subItems: [
+  //             {
+  //               id: subItemId++,
+  //               item: "Task 1",
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           id: taskid++,
+  //           item: "Task 2",
+  //           subItems: [
+  //             {
+  //               id: subItemId++,
+  //               item: "Task 2",
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           id: taskid++,
+  //           item: "Task 3",
+  //           subItems: [
+  //             {
+  //               id: subItemId++,
+  //               item: "Task 3",
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: groupId++,
+  //       groupName: "Group 2",
+  //       task: [
+  //         {
+  //           id: taskid++,
+  //           item: "Task 1",
+  //           subItems: [],
+  //         },
+  //         {
+  //           id: taskid++,
+  //           item: "Task 2",
+  //           subItems: [],
+  //         },
+  //         {
+  //           id: taskid++,
+  //           item: "Task 3",
+  //           subItems: [],
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
+});
 
 //selection of atom from sidebar
 export const selectedProject = atom(1);
 export const selectedProjectAtom = atom((get) => {
   const projects = get(projectsAtom);
   const selectedProjectId = get(selectedProject);
-  console.log("Project DAATA", projects);
-  return projects.find((project) => project.id === selectedProjectId);
+  if (projects.length > 0) {
+    return projects.find((project) => project.id === selectedProjectId);
+  }
 });
 
 //function to add new project

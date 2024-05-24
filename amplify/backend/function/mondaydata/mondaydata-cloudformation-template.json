@@ -16,9 +16,6 @@
     "s3Key": {
       "Type": "String"
     },
-    "test": {
-      "Type": "String"
-    },
     "mongodbUri": {
       "Type": "String"
     }
@@ -53,12 +50,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "mondaylambda",
+            "mondaydata",
             {
               "Fn::Join": [
                 "",
                 [
-                  "mondaylambda",
+                  "mondaydata",
                   "-",
                   {
                     "Ref": "env"
@@ -75,9 +72,6 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
-            },
-            "test": {
-              "Ref": "test"
             },
             "MONGODB_URI": {
               "Ref": "mongodbUri"
@@ -101,12 +95,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "bridgemondayLambdaRolefc53c3bb",
+            "bridgemondayLambdaRole03f0611c",
             {
               "Fn::Join": [
                 "",
                 [
-                  "bridgemondayLambdaRolefc53c3bb",
+                  "bridgemondayLambdaRole03f0611c",
                   "-",
                   {
                     "Ref": "env"

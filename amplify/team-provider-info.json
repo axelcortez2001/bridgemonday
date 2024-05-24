@@ -14,15 +14,14 @@
     },
     "categories": {
       "function": {
-        "mondaylambda": {
-          "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
-          "s3Key": "amplify-builds/mondaylambda-49575663344e76632b65-build.zip",
-          "test": "helloworld",
-          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/"
-        },
         "user": {
           "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
-          "s3Key": "amplify-builds/user-65504470485274724b58-build.zip",
+          "s3Key": "amplify-builds/user-566b73532b4b52324e65-build.zip",
+          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge"
+        },
+        "mondaydata": {
+          "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
+          "s3Key": "amplify-builds/mondaydata-356e6b76384f61597447-build.zip",
           "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge"
         }
       },

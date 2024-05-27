@@ -83,7 +83,7 @@ const Content = () => {
 
             {openDrop.includes(groupData.id) && (
               <Tasktable
-                projectId={data.id}
+                projectId={data._id}
                 groupId={groupData.id}
                 groupData={groupData.task}
                 columnData={dataColumns(data.columns)}

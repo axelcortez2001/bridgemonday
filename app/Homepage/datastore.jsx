@@ -253,6 +253,14 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
       column?.key?.toLocaleLowerCase() === itemName?.toLocaleLowerCase()
   );
   if (newItem.length > 0) {
+    let highestID = 0;
+    console.log(newItem);
+    newItem.map((item) => {
+      if (item.id > highestID) {
+        return highestID === item.id;
+      }
+    });
+    console.log("Highest: ", highestID);
     newItemName = newItemName + (newItem.length + 1);
   }
   //newItemData
@@ -364,31 +372,44 @@ export const addSubItemColumn = atom(null, (get, set, projectId, itemName) => {
 });
 
 //function to update project
-export const updateProject = atom(null, (get, set) => {
+export const updateProject = atom(null, async (get, set) => {
   const projects = get(projectsAtom);
 });
 //function to add new status to a project
-export const addNewStatus = atom(null, (get, set, id, newStatus, newColor) => {
-  const projects = get(projectsAtom);
-  const newDefaultStatus = { id: statusId++, color: newColor, text: newStatus };
+export const addNewStatus = atom(
+  null,
+  async (get, set, id, newStatus, newColor) => {
+    const projects = get(projectsAtom);
+    const newDefaultStatus = {
+      id: statusId++,
+      color: newColor,
+      text: newStatus,
+    };
 
-  const updatedProject = projects.map((project) => {
-    if (project.id === id) {
-      return {
-        ...project,
-        defaultStatus: [...project.defaultStatus, newDefaultStatus],
-      };
+    const updatedProject = projects.map((project) => {
+      if (project._id === id) {
+        return {
+          ...project,
+          defaultStatus: [...project.defaultStatus, newDefaultStatus],
+        };
+      }
+      return project;
+    });
+    const updated = await updateWholeWorkSpace(
+      "/modaydata/update",
+      updatedProject
+    );
+    if (updated.success === true) {
+      set(projectsAtom, updatedProject);
+      return newDefaultStatus;
     }
-    return project;
-  });
-  set(projectsAtom, updatedProject);
-  return newDefaultStatus;
-});
+  }
+);
 
 //fuinction to add new dropdown to a project
 export const addNewDropDown = atom(
   null,
-  (get, set, id, newDropDown, newColor) => {
+  async (get, set, id, newDropDown, newColor) => {
     const projects = get(projectsAtom);
     const newDefaultStatus = {
       id: dropId++,
@@ -397,7 +418,7 @@ export const addNewDropDown = atom(
     };
 
     const updatedProject = projects.map((project) => {
-      if (project.id === id) {
+      if (project._id === id) {
         return {
           ...project,
           defaultDropDown: [...project.defaultDropDown, newDefaultStatus],
@@ -405,8 +426,14 @@ export const addNewDropDown = atom(
       }
       return project;
     });
-    set(projectsAtom, updatedProject);
-    return newDefaultStatus;
+    const updated = await updateWholeWorkSpace(
+      "/modaydata/update",
+      updatedProject
+    );
+    if (updated.success === true) {
+      set(projectsAtom, updatedProject);
+      return newDefaultStatus;
+    }
   }
 );
 //function to update groupName
@@ -602,7 +629,7 @@ export const updateGroupData = atom(
     const projects = get(projectsAtom);
 
     const updatedProjects = projects.map((project) => {
-      if (project.id === projectId) {
+      if (project._id === projectId) {
         return {
           ...project,
           grouptask: project.grouptask.map((groupTask) => {
@@ -614,7 +641,7 @@ export const updateGroupData = atom(
                 };
               } else {
                 const newRow = {
-                  id: taskid++,
+                  id: groupTask?.task?.length + 1 || 0,
                   item: "New Task",
                 };
                 return {
@@ -629,9 +656,10 @@ export const updateGroupData = atom(
       }
       return project;
     });
+    console.log("New Task: ", updatedProjects);
     set(projectsAtom, updatedProjects);
     const updatedProject = updatedProjects.find(
-      (project) => project.id === projectId
+      (project) => project._id === projectId
     );
     const updatedGroupTask = updatedProject.grouptask.find(
       (groupTask) => groupTask.id === groupId

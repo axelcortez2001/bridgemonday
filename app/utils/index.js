@@ -157,3 +157,20 @@ export const updateWholeWorkSpace = async (path, workData) => {
     console.log(error);
   }
 };
+
+//function to add new status
+export const addStatus = async (path, workData) => {
+  try {
+    const insertOperation = put({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        body: { workData },
+      },
+    });
+    const { body } = await insertOperation.response;
+    return await body.json();
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -55,7 +55,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
         );
 
         if (prevStatus === undefined) {
-          addDropDown(selectedProject.id, newDropDown, newColor);
+          addDropDown(selectedProject._id, newDropDown, newColor);
           setNewDropDown("");
           setNewColor("");
           onOpenChange(false);

@@ -38,7 +38,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           key='status'
           textValue='Status'
-          onClick={() => handleSelect(project.id, "Status")}
+          onClick={() => handleSelect(project._id, "Status")}
         >
           <div className='flex w-full items-center gap-x-2'>
             <div className=' bg-green-400 w-7 h-7 flex items-center justify-center border rounded-md'>
@@ -50,7 +50,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           textValue='Text'
           key='text'
-          onClick={() => handleSelect(project.id, "Text")}
+          onClick={() => handleSelect(project._id, "Text")}
         >
           <div className='flex w-full items-center gap-x-2'>
             <div className=' bg-blue-300 w-7 h-7 flex items-center justify-center border rounded-md'>
@@ -62,7 +62,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           key='people'
           textValue='People'
-          onClick={() => handleSelect(project.id, "people")}
+          onClick={() => handleSelect(project._id, "people")}
         >
           <div className='flex w-full items-center gap-x-2'>
             <div className=' bg-blue-500 w-7 h-7 flex items-center justify-center border rounded-md'>
@@ -74,7 +74,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           key='dropdown'
           textValue='Drop Down'
-          onClick={() => handleSelect(project.id, "DropDown")}
+          onClick={() => handleSelect(project._id, "DropDown")}
         >
           <div className='flex w-full items-center gap-x-2'>
             <div className=' bg-red-400 w-7 h-7 flex items-center justify-center border rounded-md'>
@@ -86,7 +86,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           key='date'
           textValue='Date'
-          onClick={() => handleSelect(project.id, "date")}
+          onClick={() => handleSelect(project._id, "date")}
         >
           <div className='flex w-full items-center gap-x-2'>
             <div className=' bg-green-400 w-7 h-7 flex items-center justify-center border rounded-md'>
@@ -98,7 +98,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           key='numbers'
           textValue='Numbers'
-          onClick={() => handleSelect(project.id, "Number")}
+          onClick={() => handleSelect(project._id, "Number")}
         >
           <div className='flex w-full items-center gap-x-2'>
             <div className=' bg-red-500 w-7 h-7 flex items-center justify-center border rounded-md'>
@@ -110,7 +110,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           key='defaultDate'
           textValue='Default Date'
-          onClick={() => handleSelect(project.id, "DefaultDate")}
+          onClick={() => handleSelect(project._id, "DefaultDate")}
         >
           <div className='flex w-full items-center gap-x-2'>
             <div className=' bg-green-600 w-7 h-7 flex items-center justify-center border rounded-md'>
@@ -122,7 +122,7 @@ const AddSubItemDropDown = () => {
         <DropdownItem
           key='defaultTime'
           textValue='Default Time'
-          onClick={() => handleSelect(project.id, "DefaultTime")}
+          onClick={() => handleSelect(project._id, "DefaultTime")}
         >
           {" "}
           <div className='flex w-full items-center gap-x-2'>

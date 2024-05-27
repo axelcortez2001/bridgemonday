@@ -64,7 +64,7 @@ const OptionCell = ({ getValue, row, column, table }) => {
         );
 
         if (prevStatus === undefined) {
-          addStatus(selectedProject.id, newStatus, newColor);
+          addStatus(selectedProject._id, newStatus, newColor);
           setNewStatus("");
           setNewColor("");
           onOpenChange(false);

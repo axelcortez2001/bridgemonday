@@ -13,6 +13,7 @@ import { Button } from "@nextui-org/react";
 import Tasktable from "./tasktable";
 import EditableGroupName from "./EditableGroupName";
 import { fetchAuthSession, fetchUserAttributes } from "aws-amplify/auth";
+import { dataColumns } from "./functions/hookfunctions";
 
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
@@ -30,9 +31,10 @@ const Content = () => {
   //handler to add new group
   const addNewGroup = useSetAtom(addGroupTask);
   const handleAddGroup = (data) => {
-    const id = data.id;
+    const id = data._id;
     addNewGroup(id);
   };
+  console.log("columns: ", dataColumns(data?.columns));
 
   return (
     <div className='p-2 flex flex-col w-full max-h-screen overflow-y-auto'>
@@ -84,7 +86,7 @@ const Content = () => {
                 projectId={data.id}
                 groupId={groupData.id}
                 groupData={groupData.task}
-                columnData={data.columns}
+                columnData={dataColumns(data.columns)}
               />
             )}
           </div>

@@ -13,14 +13,17 @@ import EditableHeader from "./components/tablecomponents/EditableHeader";
 import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown";
 import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
 import {
+  addNewGrouptask,
   addWorkspace,
   deleteWorkSpace,
   editWorkSpace,
   getAllUsers,
   getWorkspace,
   restinsert,
+  updateWholeWorkSpace,
 } from "../utils";
 import { fetchUserAttributes } from "aws-amplify/auth";
+import { v4 as uuidv4 } from "uuid";
 
 //fetch curentUser
 async function fetchUserData() {
@@ -90,54 +93,24 @@ export const textItem = [
 export const defaultColumn = [
   {
     id: "select",
-    header: ({ table }) => (
-      <input
-        type='checkbox'
-        checked={table.getIsAllRowsSelected()}
-        indeterminate={table.getIsSomeRowsSelected()}
-        onChange={table.getToggleAllRowsSelectedHandler()}
-      />
-    ),
+    key: "select",
     size: 5,
-    cell: ({ row }) => (
-      <div className='w-full flex h-full items-center'>
-        <RowDragHandleCell rowId={row.id} />
-        <input
-          className='border h-4 w-4'
-          type='checkbox'
-          checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
-        />
-      </div>
-    ),
   },
   {
     id: "expander",
-    header: () => null,
+    key: "expander",
     size: 5,
-    cell: ({ row }) => {
-      return row.getCanExpand() ? (
-        <button
-          {...{
-            onClick: row.getToggleExpandedHandler(),
-            style: { cursor: "pointer" },
-          }}
-        >
-          {row.getIsExpanded() ? "👇" : "👉"}
-        </button>
-      ) : (
-        "🔵"
-      );
-    },
   },
   {
+    id: "item",
+    key: "item",
     accessorKey: "item",
     header: "Item",
     size: 400,
-    cell: EditableCell,
   },
-  { accessorKey: "Add", header: AddDropDown, size: 2 },
+  { id: "add", key: "add", accessorKey: "Add", size: 2 },
 ];
+
 export const defaultSubColumns = [
   {
     id: "select",
@@ -242,44 +215,53 @@ export const deleteProject = atom(null, async (get, set, id) => {
 });
 
 //function to add group task
-export const addGroupTask = atom(null, (get, set, projectId) => {
+export const addGroupTask = atom(null, async (get, set, projectId) => {
   const projects = get(projectsAtom);
-  const groupData = { id: groupId++, groupName: "New Group", task: [] };
-  const updatedProjects = projects.map((project) => {
-    if (project.id === projectId) {
-      return {
-        ...project,
-        grouptask: [...project.grouptask, groupData],
-      };
-    } else {
-      return project;
-    }
-  });
-  return set(projectsAtom, updatedProjects);
+  const groupData = { id: uuidv4(), groupName: "New Group", task: [] };
+  const id = projectId;
+  const updatedProjects = await addNewGrouptask(
+    "/modaydata/grouptask",
+    id,
+    groupData
+  );
+  if (updatedProjects.success === true) {
+    const updatedProjects = projects.map((project) => {
+      if (project._id === projectId) {
+        return {
+          ...project,
+          grouptask: [...project.grouptask, groupData],
+        };
+      } else {
+        return project;
+      }
+    });
+    return set(projectsAtom, updatedProjects);
+  }
 });
 
 //function to add an item to a group
-export const addNewItem = atom(null, (get, set, projectId, itemName) => {
+export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
   let newItemName = itemName;
   const projects = get(projectsAtom);
-  const foundProject = projects.find((project) => project.id === projectId);
+  const foundProject = projects.find((project) => project._id === projectId);
   const itemCell = textItem.filter(
     (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
   );
   //item duplication
   const newItem = foundProject.columns.filter(
     (column) =>
-      column?.accessorKey?.toLocaleLowerCase() ===
-      newItemName?.toLocaleLowerCase()
+      column?.key?.toLocaleLowerCase() === itemName?.toLocaleLowerCase()
   );
   if (newItem.length > 0) {
-    newItemName = newItemName + itemId++;
+    newItemName = newItemName + (newItem.length + 1);
   }
   //newItemData
   const newItemData = {
+    key: itemName.toLocaleLowerCase(),
     accessorKey: newItemName.toLocaleLowerCase(),
-    header: <EditableHeader data={newItemName} accessorKey={newItemName} />,
-    cell: itemCell[0].cell,
+    newItemName: newItemName,
+    // header: <EditableHeader data={newItemName} accessorKey={newItemName} />,
+    // cell: itemCell[0].cell,
   };
 
   //add the column before the add button
@@ -290,7 +272,7 @@ export const addNewItem = atom(null, (get, set, projectId, itemName) => {
   const updatedColumns = [...foundProject.columns];
   updatedColumns.splice(addColumnIndex, 0, newItemData);
   const updatedProjects = projects.map((project) => {
-    if (project.id === projectId) {
+    if (project._id === projectId) {
       return {
         ...project,
         columns: updatedColumns,
@@ -310,8 +292,14 @@ export const addNewItem = atom(null, (get, set, projectId, itemName) => {
       return project;
     }
   });
-  console.log("Updated: ", updatedProjects);
-  return set(projectsAtom, updatedProjects);
+
+  const updated = await updateWholeWorkSpace(
+    "/modaydata/update",
+    updatedProjects
+  );
+  if (updated.success === true) {
+    set(projectsAtom, updatedProjects);
+  }
 });
 
 //function to add an Subitem to a group
@@ -371,7 +359,7 @@ export const addSubItemColumn = atom(null, (get, set, projectId, itemName) => {
       return project;
     }
   });
-  console.log("Updated: ", updatedProjects);
+
   return set(projectsAtom, updatedProjects);
 });
 
@@ -401,14 +389,13 @@ export const addNewStatus = atom(null, (get, set, id, newStatus, newColor) => {
 export const addNewDropDown = atom(
   null,
   (get, set, id, newDropDown, newColor) => {
-    console.log("Add Trigger", id);
     const projects = get(projectsAtom);
     const newDefaultStatus = {
       id: dropId++,
       color: newColor,
       text: newDropDown,
     };
-    console.log("dataDrop: ", newDefaultStatus);
+
     const updatedProject = projects.map((project) => {
       if (project.id === id) {
         return {
@@ -463,11 +450,10 @@ export const updateHeaderName = atom(
         column?.accessorKey?.toLocaleLowerCase() ===
         newHeaderName?.toLocaleLowerCase()
     );
-    console.log("Item:", newItem);
+
     const updatedProjects = projects.map((project) => {
       if (project.id === projectId) {
         const updatedColumns = project.columns.map((column) => {
-          console.log("Col: ", column);
           if (
             column?.accessorKey?.toLocaleLowerCase() ===
             oldName?.toLocaleLowerCase()
@@ -484,7 +470,7 @@ export const updateHeaderName = atom(
           }
           return column;
         });
-        console.log("updatedCOl:", updatedColumns);
+
         return { ...project, columns: updatedColumns };
       }
       return project;
@@ -496,7 +482,7 @@ export const updateHeaderName = atom(
 export const deleteColumn = atom(null, (get, set, projectId, key) => {
   const projects = get(projectsAtom);
   const foundProject = projects.find((project) => project.id === projectId);
-  console.log("Before: ", foundProject);
+
   const newColumns = foundProject.columns.filter(
     (column) =>
       column?.accessorKey?.toLocaleLowerCase() !== key?.toLocaleLowerCase()
@@ -520,15 +506,14 @@ export const deleteColumn = atom(null, (get, set, projectId, key) => {
       return project;
     }
   });
-  console.log("newColumns: ", updatedProject);
+
   set(projectsAtom, updatedProject);
-  console.log("Or: ", projectsAtom);
 });
 //function to delete subcolumns
 export const deleteSubColumn = atom(null, (get, set, projectId, key) => {
   const projects = get(projectsAtom);
   const foundProject = projects.find((project) => project.id === projectId);
-  console.log("Before: ", foundProject);
+
   const newColumns = foundProject.subColumns.filter(
     (column) =>
       column?.accessorKey?.toLocaleLowerCase() !== key?.toLocaleLowerCase()
@@ -560,9 +545,8 @@ export const deleteSubColumn = atom(null, (get, set, projectId, key) => {
       return project;
     }
   });
-  console.log("newColumns: ", updatedProject);
+
   set(projectsAtom, updatedProject);
-  console.log("Or: ", projectsAtom);
 });
 //function to update subheaderName
 export const updateSubHeaderName = atom(
@@ -579,11 +563,10 @@ export const updateSubHeaderName = atom(
         column?.accessorKey?.toLocaleLowerCase() ===
         newHeaderName?.toLocaleLowerCase()
     );
-    console.log("Item:", newItem);
+
     const updatedProjects = projects.map((project) => {
       if (project.id === projectId) {
         const updatedColumns = project?.subColumns?.map((column) => {
-          console.log("Col: ", column);
           if (
             column?.accessorKey?.toLocaleLowerCase() ===
             oldName?.toLocaleLowerCase()
@@ -603,7 +586,7 @@ export const updateSubHeaderName = atom(
           }
           return column;
         });
-        console.log("updatedCOl:", updatedColumns);
+
         return { ...project, subColumns: updatedColumns };
       }
       return project;
@@ -617,7 +600,7 @@ export const updateGroupData = atom(
   null,
   (get, set, projectId, groupId, data, type) => {
     const projects = get(projectsAtom);
-    console.log("GroupData: ", data);
+
     const updatedProjects = projects.map((project) => {
       if (project.id === projectId) {
         return {
@@ -662,7 +645,6 @@ export const updateGroupData = atom(
 export const updateSubItemData = atom(
   null,
   (get, set, projectId, groupId, taskId, data, type) => {
-    console.log("Id: ", groupId);
     const projects = get(projectsAtom);
     const updatedProjects = projects.map((project) => {
       if (project.id === projectId) {

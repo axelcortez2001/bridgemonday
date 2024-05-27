@@ -93,7 +93,7 @@ app.post("/modaydata/*", function (req, res) {
 /****************************
  * Example put method *
  ****************************/
-
+//update project data, title and type
 app.put("/modaydata", async (req, res) => {
   const { id, title, privacy } = req.body;
   try {
@@ -110,16 +110,39 @@ app.put("/modaydata", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+//function to update all projectData
+app.put("/modaydata/update", async (req, res) => {
+  const { workData } = req.body;
+  try {
+    // Delete all existing documents
+    await workspaceModel.deleteMany({});
+    // Insert new data
+    const newProjects = await workspaceModel.insertMany(workData);
+    res.status(200).json({ success: true, newProjects });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-app.put("/modaydata/*", function (req, res) {
-  // Add your code here
-  res.json({ success: "put call succeed!", url: req.url, body: req.body });
+app.put("/modaydata/grouptask", async (req, res) => {
+  const { id, groupData } = req.body;
+  try {
+    const project = await workspaceModel.findById(id);
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    project.grouptask.push(groupData);
+    await project.save();
+    res.status(200).json({ success: true, project });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 /****************************
  * Example delete method *
  ****************************/
-
+//delete project
 app.delete("/modaydata", async (req, res) => {
   const { id } = req.query;
   try {

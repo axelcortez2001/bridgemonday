@@ -39,6 +39,7 @@ import {
 
 import { DraggableRow, RowDragHandleCell } from "./functions/tablefunctions";
 import DefaultTimeCell from "./tablecomponents/DefaultTimeCell";
+import { checkHeader } from "./functions/hookfunctions";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [storeData, setStoreData] = useAtom(selectedProjectAtom);
@@ -127,7 +128,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   );
-
+  console.log("tblheaders: ", table.getHeaderGroups());
   return (
     <DndContext
       collisionDetection={closestCenter}

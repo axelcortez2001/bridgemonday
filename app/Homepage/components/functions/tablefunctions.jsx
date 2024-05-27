@@ -7,6 +7,7 @@ import SubItemTable from "../SubItemTable";
 import { useAtom, useSetAtom } from "jotai";
 import { selectedProjectAtom, updateSubItemData } from "../../datastore";
 import { useState } from "react";
+import { dataColumns } from "./hookfunctions";
 
 //functions for DnD based from tanstackDnD
 //Cell Component
@@ -46,6 +47,7 @@ export const DraggableRow = ({ row, gId }) => {
     const project = addSubColumn(projectId, groupId, taskId, data);
     setData(project);
   };
+  console.log("ROW: " + row);
   return (
     <>
       <tr ref={setNodeRef} style={style}>
@@ -71,7 +73,11 @@ export const DraggableRow = ({ row, gId }) => {
           <tr className=''>
             {/* 2nd row is a custom 1 cell row */}
             <td colSpan={row.getVisibleCells().length}>
-              <SubItemRow subItems={data} groupId={groupId} taskId={taskId} />
+              <SubItemRow
+                subItems={dataColumns(data)}
+                groupId={groupId}
+                taskId={taskId}
+              />
             </td>
           </tr>
         </>

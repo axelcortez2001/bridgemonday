@@ -84,6 +84,7 @@ export const addWorkspace = async (path, workspaceData) => {
       },
     });
     const { body } = await insertOperation.response;
+    console.log("All Workspace: ", body.json());
     return await body.json();
   } catch (e) {
     console.log(e);
@@ -118,6 +119,39 @@ export const editWorkSpace = async (path, id, title, privacy) => {
       },
     });
     const { body } = await editOperation.response;
+    return await body.json();
+  } catch (error) {
+    console.log(error);
+  }
+};
+//function to add new grouptask
+export const addNewGrouptask = async (path, id, groupData) => {
+  try {
+    const insertOperation = put({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        body: { id, groupData },
+      },
+    });
+    const { body } = await insertOperation.response;
+    return await body.json();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//function to update the whole project
+export const updateWholeWorkSpace = async (path, workData) => {
+  try {
+    const replaceOperation = put({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        body: { workData },
+      },
+    });
+    const { body } = await replaceOperation.response;
     return await body.json();
   } catch (error) {
     console.log(error);

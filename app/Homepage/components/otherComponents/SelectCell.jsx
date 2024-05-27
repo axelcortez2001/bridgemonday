@@ -1,4 +1,5 @@
 import React from "react";
+import { RowDragHandleCell } from "../functions/tablefunctions";
 
 const SelectCell = ({ row }) => {
   return (

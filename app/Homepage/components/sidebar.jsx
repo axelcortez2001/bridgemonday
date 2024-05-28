@@ -51,27 +51,13 @@ const Sidebar = () => {
       console.log("data", data);
       const accessData = data.filter(
         (project) =>
-          userData?.sub?.includes(project?.organizer?.sub) ||
-          project?.grouptask?.map((groupData) =>
-            groupData?.task?.map((taskData) =>
-              taskData?.processors?.map((user) =>
-                userData?.sub?.includes(user.sub)
-              )
-            )
-          ) ||
-          project?.grouptask?.map((groupData) =>
-            groupData?.task?.map((taskData) =>
-              taskData?.managers?.map((user) =>
-                userData?.sub.includes(user.sub)
-              )
-            )
-          )
+          project?.organizer?.some((person) => person?.sub === userData?.sub)
       );
       return accessData;
     }
     return [];
   };
-
+  console.log("Access: ", checkAccess());
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (

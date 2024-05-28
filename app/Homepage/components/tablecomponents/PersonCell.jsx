@@ -1,6 +1,12 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
-import { selectedProjectAtom, userAtom, UserDataAtom } from "../../datastore";
+import {
+  selectedProjectAtom,
+  userAtom,
+  UserDataAtom,
+  setOrganizers,
+  removeOrganizer,
+} from "../../datastore";
 import {
   Modal,
   ModalContent,
@@ -20,6 +26,8 @@ const PersonCell = ({ getValue, row, column, table }) => {
   const initialValue = getValue();
   const value = initialValue?.map((user) => user.sub) || [];
   const { updateData } = table.options.meta;
+  const setOrganizerData = useSetAtom(setOrganizers);
+  const removeOrganizerData = useSetAtom(removeOrganizer);
   //function to show and find user
   const findUserData = (userAtom, sub) => {
     const allusers = userAtom.filter((userMap) => sub?.includes(userMap.sub));
@@ -89,16 +97,21 @@ const PersonCell = ({ getValue, row, column, table }) => {
     searchData();
   }, [searchText, sertSearchText]);
   //function to updateuserData
-  const updateUserData = (user) => {
+  const updateUserData = async (user) => {
+    const projectId = projects[0]._id;
     const newData =
       initialValue !== undefined ? [...initialValue, user] : [user];
-    updateData(row.index, column.id, newData);
+    await setOrganizerData(projectId, user);
+    await updateData(row.index, column.id, newData);
     sertSearchText("");
   };
   //function to delete userData
-  const deleteUserData = (data) => {
+  const deleteUserData = async (data) => {
+    const projectId = projects[0]._id;
+    const sub = data.sub;
     const newData = initialValue.filter((user) => user.sub !== data.sub);
-    updateData(row.index, column.id, newData);
+    await removeOrganizerData(projectId, sub);
+    await updateData(row.index, column.id, newData);
   };
   return (
     <div className='w-full flex flex-wrap items-center justify-center'>

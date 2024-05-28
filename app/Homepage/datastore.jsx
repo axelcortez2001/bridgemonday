@@ -153,6 +153,51 @@ export const getProjects = atom(null, async (get, set) => {
   set(projectsAtom, workSpace?.workspace);
 });
 
+export const setOrganizers = atom(null, async (get, set, projectId, user) => {
+  console.log(projectId);
+  const projects = get(projectsAtom);
+  const updateProjects = projects.map((project) => {
+    if (project._id === projectId) {
+      return {
+        ...project,
+        organizer: [...project.organizer, user],
+      };
+    }
+    return project;
+  });
+
+  const updated = await updateWholeWorkSpace(
+    "/modaydata/update",
+    updateProjects
+  );
+  if (updated.success === true) {
+    set(projectsAtom, updateProjects);
+  }
+});
+export const removeOrganizer = atom(null, async (get, set, projectId, sub) => {
+  const projects = get(projectsAtom);
+  const updatedProjects = projects.map((project) => {
+    if (project._id === projectId) {
+      const updatedOrganizer = [...project.organizer];
+      const index = updatedOrganizer.findIndex((org) => org.sub === sub);
+      if (index !== -1) {
+        updatedOrganizer.splice(index, 1);
+      }
+      return {
+        ...project,
+        organizer: updatedOrganizer,
+      };
+    }
+    return project;
+  });
+  const updated = await updateWholeWorkSpace(
+    "/modaydata/update",
+    updatedProjects
+  );
+  if (updated.success === true) {
+    set(projectsAtom, updatedProjects);
+  }
+});
 //selection of atom from sidebar
 export const selectedProject = atom(1);
 
@@ -175,7 +220,7 @@ export const addProject = atom(null, async (get, set, { title, privacy }) => {
     type: privacy,
     columns: defaultColumn,
     subColumns: defaultSubColumns,
-    organizer: userData.value,
+    organizer: [userData.value],
     defaultStatus: statusesData,
     defaultDropDown: [],
     grouptask: [],
@@ -235,7 +280,7 @@ export const addGroupTask = atom(null, async (get, set, projectId) => {
         return project;
       }
     });
-    return set(projectsAtom, updatedProjects);
+    set(projectsAtom, updatedProjects);
   }
 });
 

@@ -174,3 +174,19 @@ export const addStatus = async (path, workData) => {
     console.log(error);
   }
 };
+
+export const addOrganizer = async (path, projectId, user) => {
+  try {
+    const insertOperation = put({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        body: { projectId, user },
+      },
+    });
+    const { body } = await insertOperation.response;
+    return await body.json();
+  } catch (error) {
+    console.log(error);
+  }
+};

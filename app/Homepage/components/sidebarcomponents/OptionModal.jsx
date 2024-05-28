@@ -88,14 +88,18 @@ export default function OptionModal({ task }) {
                   onChange={(e) => setTitle(e.target.value)}
                   required
                 ></Input>
-                <RadioGroup
-                  label='Privacy'
-                  value={privacy}
-                  onChange={(e) => setPrivacy(e.target.value)}
-                >
-                  <Radio value='shared'>Shared</Radio>
-                  <Radio value='personal'>Personal</Radio>
-                </RadioGroup>
+                {task.type === "shared" ? (
+                  <div>Project cannot be converted to personal</div>
+                ) : (
+                  <RadioGroup
+                    label='Privacy'
+                    value={privacy}
+                    onChange={(e) => setPrivacy(e.target.value)}
+                  >
+                    <Radio value='shared'>Shared</Radio>
+                    <Radio value='personal'>Personal</Radio>
+                  </RadioGroup>
+                )}
               </ModalBody>
               <ModalFooter>
                 <Button color='danger' variant='light' onPress={onClose}>

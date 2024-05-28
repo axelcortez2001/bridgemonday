@@ -39,12 +39,7 @@ const workspaceSchema = new mongoose.Schema({
   defaultDropDown: [],
   columns: [],
   subColumns: [],
-  organizer: {
-    sub: { type: String, required: true },
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    picture: { type: String },
-  },
+  organizer: [],
   grouptask: [],
 });
 const workspaceModel = mongoose.model("workspace", workspaceSchema);

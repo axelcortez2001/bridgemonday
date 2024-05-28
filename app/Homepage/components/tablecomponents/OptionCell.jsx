@@ -32,7 +32,7 @@ const OptionCell = ({ getValue, row, column, table }) => {
   );
 
   //function for color coding in status
-  console.log("SelectedKeys", text);
+
   const checkColor = (color) => {
     if (color) {
       if (!color.startsWith("bg-")) {

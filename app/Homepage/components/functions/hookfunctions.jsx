@@ -1,5 +1,6 @@
 import { statusesData, textItem } from "../../datastore";
 import AddDropDown from "../otherComponents/AddDropDown";
+import AddSubItemDropDown from "../otherComponents/AddSubItemDropDown";
 import SelectCell from "../otherComponents/SelectCell";
 import SelectHeader from "../otherComponents/SelectHeader";
 import DateCell from "../tablecomponents/DateCell";
@@ -8,6 +9,7 @@ import DefaultTimeCell from "../tablecomponents/DefaultTimeCell";
 import DropDownCell from "../tablecomponents/DropDownCell";
 import EditableCell from "../tablecomponents/EditableCell";
 import EditableHeader from "../tablecomponents/EditableHeader";
+import EditableSubHeader from "../tablecomponents/EditableSubHeader";
 import NumberCell from "../tablecomponents/NumberCell";
 import OptionCell from "../tablecomponents/OptionCell";
 import PersonCell from "../tablecomponents/PersonCell";
@@ -92,6 +94,14 @@ export const dataColumns = (columns) => {
           header: AddDropDown,
           accessorKey: column.accessorKey,
         });
+      } else if (column.key === "addsub") {
+        return dataCol.push({
+          id: column.id,
+          size: column.size,
+          key: column.key,
+          header: AddSubItemDropDown,
+          accessorKey: column.accessorKey,
+        });
       } else if (column.key === "text") {
         return dataCol.push({
           size: column.size,
@@ -100,7 +110,21 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: EditableCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subtext") {
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: EditableCell,
@@ -114,7 +138,21 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: DateCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subdate") {
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: DateCell,
@@ -128,7 +166,21 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: PersonCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subpeople") {
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: PersonCell,
@@ -142,7 +194,21 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: DefaultDateCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subdefaultdate") {
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: DefaultDateCell,
@@ -156,7 +222,21 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: DefaultTimeCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subdefaulttime") {
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: DefaultTimeCell,
@@ -170,7 +250,21 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: NumberCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subnumber") {
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: NumberCell,
@@ -184,7 +278,21 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: DropDownCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subdropdown") {
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: DropDownCell,
@@ -199,7 +307,22 @@ export const dataColumns = (columns) => {
           header: (
             <EditableHeader
               data={column.newItemName}
-              accessorKey={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: OptionCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "substatus") {
+        //pending action
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableSubHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
             />
           ),
           cell: OptionCell,

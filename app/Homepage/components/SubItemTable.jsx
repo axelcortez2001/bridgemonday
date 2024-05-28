@@ -5,7 +5,7 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 // needed for table body level scope DnD setup
 import {
   DndContext,
@@ -26,11 +26,12 @@ import {
 } from "@dnd-kit/sortable";
 import { DraggableRow } from "./functions/tablefunctions";
 import { selectedProjectAtom, updateSubItemData } from "../datastore";
+import { dataColumns } from "./functions/hookfunctions";
 const SubItemTable = ({ subItems, groupId, taskId }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
   const [data, setData] = useState(subItems);
   const [selectedRows, setSelectedRows] = useState([]);
-
+  const columnData = dataColumns(projects.subColumns);
   useEffect(() => {
     const updateData = () => {
       setData(subItems);
@@ -39,7 +40,7 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
   }, [subItems]);
   const table = useReactTable({
     data: data || [],
-    columns: projects.subColumns,
+    columns: columnData,
     getCoreRowModel: getCoreRowModel(),
     state: { selectedRows },
     getRowId: (row) => row.id,
@@ -56,7 +57,7 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
         ),
     },
   });
-  const projectId = projects.id;
+  const projectId = projects._id;
   //function to update subitemdata
   const updateTableData = useSetAtom(updateSubItemData);
   useEffect(() => {
@@ -69,7 +70,7 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
       }
     };
     updateData();
-  }, [data]);
+  }, [updateTableData, data]);
 
   //function to delete a row or whole table row
   const convertToArray = () => {
@@ -160,7 +161,7 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
                 strategy={verticalListSortingStrategy}
               >
                 {table?.getRowModel().rows.map((row) => (
-                  <DraggableRow key={row.id} row={row} />
+                  <DraggableRow key={row.id} row={row} gId={groupId} />
                 ))}
               </SortableContext>
             )}

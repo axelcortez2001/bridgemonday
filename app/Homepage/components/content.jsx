@@ -34,7 +34,6 @@ const Content = () => {
     const id = data._id;
     addNewGroup(id);
   };
-  console.log("columns: ", dataColumns(data?.columns));
 
   return (
     <div className='p-2 flex flex-col w-full max-h-screen overflow-y-auto'>
@@ -67,7 +66,7 @@ const Content = () => {
                   !openDrop.includes(groupData.id) ? "" : " font-semibold"
                 }`}
               >
-                <EditableGroupName projectId={data.id} groupData={groupData} />
+                <EditableGroupName projectId={data._id} groupData={groupData} />
               </div>
             </div>
             {groupData?.task?.length > 0 &&

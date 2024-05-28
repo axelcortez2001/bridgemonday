@@ -19,10 +19,10 @@ const EditableHeader = ({ data, accessorKey }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
   const [isClicked, setIsClicked] = useState(false);
   const [newHeaderName, setNewHeaderName] = useState(data);
-  const [oldName, setOldName] = useState(data);
+  const [oldName, setOldName] = useState(accessorKey);
 
   const editHeader = useSetAtom(updateHeaderName);
-  const projectId = projects.id;
+  const projectId = projects._id;
   const key = accessorKey;
 
   const handleBlur = () => {
@@ -31,9 +31,9 @@ const EditableHeader = ({ data, accessorKey }) => {
   };
   const deleteHeader = useSetAtom(deleteColumn);
   const handleDelete = () => {
+    console.log("Key", key);
     deleteHeader(projectId, key);
   };
-  console.log("Accessor: ", key);
   return (
     <div className='hover:cursor-text flex flex-row items-center justify-center relative w-full'>
       {!isClicked ? (

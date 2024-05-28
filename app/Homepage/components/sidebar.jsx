@@ -37,7 +37,6 @@ const Sidebar = () => {
   const [title, setTitle] = useState("");
   const [privacy, setPrivacy] = useState("shared");
   const handleAddProject = () => {
-    console.log("trigger");
     if (title === "") {
       alert("Please enter a title");
       return;
@@ -49,7 +48,7 @@ const Sidebar = () => {
   //function to check if the user is owner or has access to the project
   const checkAccess = () => {
     if (userData && data) {
-      console.log("ddada", data);
+      console.log("data", data);
       const accessData = data.filter(
         (project) =>
           userData?.sub?.includes(project?.organizer?.sub) ||
@@ -68,12 +67,10 @@ const Sidebar = () => {
             )
           )
       );
-      console.log("Access: ", accessData);
       return accessData;
     }
     return [];
   };
-  console.log("CjecL : ", checkAccess());
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 

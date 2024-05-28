@@ -20,7 +20,6 @@ const PersonCell = ({ getValue, row, column, table }) => {
   const initialValue = getValue();
   const value = initialValue?.map((user) => user.sub) || [];
   const { updateData } = table.options.meta;
-  console.log("person Atom:", personAtom);
   //function to show and find user
   const findUserData = (userAtom, sub) => {
     const allusers = userAtom.filter((userMap) => sub?.includes(userMap.sub));
@@ -47,15 +46,12 @@ const PersonCell = ({ getValue, row, column, table }) => {
 
   //show suggested User
   const showSuggested = (userAtom, sub) => {
-    console.log("sub:", sub);
-    console.log("userAtom:", userAtom);
     const allusers =
       projects[0].type === "shared"
         ? userAtom.filter((userMap) => !sub?.includes(userMap.sub))
         : userAtom.find((userMap) => sub?.includes(userMap.sub))
         ? []
         : [currentUser];
-    console.log("allusers:", projects[0].type);
     return (
       allusers !== undefined &&
       allusers.map((user, index) => (
@@ -94,10 +90,8 @@ const PersonCell = ({ getValue, row, column, table }) => {
   }, [searchText, sertSearchText]);
   //function to updateuserData
   const updateUserData = (user) => {
-    console.log("Initial: ", initialValue);
     const newData =
       initialValue !== undefined ? [...initialValue, user] : [user];
-    console.log("NewData: ", newData);
     updateData(row.index, column.id, newData);
     sertSearchText("");
   };

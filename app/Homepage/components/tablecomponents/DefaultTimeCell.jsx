@@ -41,7 +41,7 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
   const handleBlur = () => {
     if (focused) {
       if (isValid(new Date(content)) || content === "") {
-        console.log("Content: ", content);
+        
         if (isValidTimeFormat(formattedContent) || formattedContent === "") {
           setFocused(false);
           table.options.meta.updateData(row.index, column.id, content);
@@ -51,7 +51,7 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
           setContent(selectedValue);
         }
       } else {
-        console.log("Content: ", content);
+  
         alert("Invalid Date Format");
         setFocused(false);
         setContent(

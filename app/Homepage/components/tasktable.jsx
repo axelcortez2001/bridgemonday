@@ -45,8 +45,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [storeData, setStoreData] = useAtom(selectedProjectAtom);
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState(groupData);
-  const [expandedRows, setExpandedRows] = useState({});
-
   const table = useReactTable({
     data,
     columns: columnData,
@@ -96,16 +94,20 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       const newData = data.filter(
         (row, index) => !selectedRowIds.includes(row.id)
       );
-      console.log("New Table Data: ", newData);
       setData(newData);
       table.reset();
     }
   };
   //add new tablerow to an specific table
-  const addNewRow = () => {
+  const addNewRow = async () => {
     try {
       const type = "Add Row";
-      const updatedProject = updateTableData(projectId, groupId, data, type);
+      const updatedProject = await updateTableData(
+        projectId,
+        groupId,
+        data,
+        type
+      );
       setData(updatedProject);
     } catch (error) {
       console.log(error);
@@ -128,7 +130,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   );
-  console.log("tblheaders: ", table.getHeaderGroups());
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -189,7 +190,9 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
               ))}
             </SortableContext>
             <tr className='w-full flex items-center justify-center p-1 min-h-9 hover:cursor-pointer'>
-              <button onClick={() => addNewRow()}>+add item</button>
+              <div>
+                <button onClick={() => addNewRow()}>+add item</button>
+              </div>
             </tr>
           </tbody>
         </table>

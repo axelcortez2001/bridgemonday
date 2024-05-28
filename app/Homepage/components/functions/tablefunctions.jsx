@@ -6,7 +6,7 @@ import { Button } from "@nextui-org/react";
 import SubItemTable from "../SubItemTable";
 import { useAtom, useSetAtom } from "jotai";
 import { selectedProjectAtom, updateSubItemData } from "../../datastore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { dataColumns } from "./hookfunctions";
 
 //functions for DnD based from tanstackDnD
@@ -37,17 +37,18 @@ export const DraggableRow = ({ row, gId }) => {
     position: "relative",
   };
   //function to add subcolumn
+  console.log("Row Data:", row);
   const addSubColumn = useSetAtom(updateSubItemData);
   const subData = row?.original?.subItems || [];
   const taskId = row.original.id;
-  const projectId = project.id;
+  const projectId = project._id;
   const groupId = gId;
   const [data, setData] = useState(subData);
-  const handleAdd = () => {
-    const project = addSubColumn(projectId, groupId, taskId, data);
+  const handleAdd = async () => {
+    const project = await addSubColumn(projectId, groupId, taskId, data);
+    console.log("Project:", project);
     setData(project);
   };
-  console.log("ROW: " + row);
   return (
     <>
       <tr ref={setNodeRef} style={style}>
@@ -73,11 +74,7 @@ export const DraggableRow = ({ row, gId }) => {
           <tr className=''>
             {/* 2nd row is a custom 1 cell row */}
             <td colSpan={row.getVisibleCells().length}>
-              <SubItemRow
-                subItems={dataColumns(data)}
-                groupId={groupId}
-                taskId={taskId}
-              />
+              <SubItemRow subItems={data} groupId={groupId} taskId={taskId} />
             </td>
           </tr>
         </>
@@ -88,7 +85,7 @@ export const DraggableRow = ({ row, gId }) => {
 export const SubItemRow = ({ subItems, groupId, taskId }) => (
   <div className='pl-14'>
     {console.log("SubItems: ", subItems)}
-    {subItems !== undefined && (
+    {subItems !== undefined && subItems.length > 0 && (
       <SubItemTable subItems={subItems} groupId={groupId} taskId={taskId} />
     )}
 

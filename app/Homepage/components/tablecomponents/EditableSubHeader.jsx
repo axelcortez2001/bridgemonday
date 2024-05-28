@@ -18,10 +18,10 @@ const EditableSubHeader = ({ data, accessorKey }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
   const [isClicked, setIsClicked] = useState(false);
   const [newHeaderName, setNewHeaderName] = useState(data);
-  const [oldName, setOldName] = useState(data);
+  const [oldName, setOldName] = useState(accessorKey);
 
   const editHeader = useSetAtom(updateSubHeaderName);
-  const projectId = projects.id;
+  const projectId = projects._id;
   const key = accessorKey;
   const handleBlur = () => {
     editHeader(projectId, oldName, newHeaderName);

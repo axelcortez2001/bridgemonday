@@ -23,8 +23,6 @@ const AddDropDown = () => {
 
   const addItem = useSetAtom(addNewItem);
   const handleSelect = (projectId, itemName, itemType) => {
-    console.log("Project: " + project);
-    console.log("ID: " + projectId);
     addItem(projectId, itemName, itemType);
   };
   return (

@@ -24,9 +24,10 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { DraggableRow } from "./functions/tablefunctions";
+import { DraggableRow, preprocessData } from "./functions/tablefunctions";
 import { selectedProjectAtom, updateSubItemData } from "../datastore";
 import { dataColumns } from "./functions/hookfunctions";
+import { mkConfig, generateCsv, download } from "export-to-csv";
 const SubItemTable = ({ subItems, groupId, taskId }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
   const [data, setData] = useState(subItems);
@@ -105,6 +106,38 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   );
+  //exportfunction
+  const csvConfig = mkConfig({
+    fieldSeparator: ",",
+    filename: "Subtable_data",
+    decimalSeparator: ".",
+    useKeysAsHeaders: true,
+  });
+  const exportCsv = () => {
+    const rowData = table.getRowModel().rows.map((row) => row.original);
+
+    const keyMapping = {};
+    columnData.forEach((col) => {
+      if (
+        col.accessorKey &&
+        col.accessorKey !== "item" &&
+        col.accessorKey !== "id"
+      ) {
+        keyMapping[col.accessorKey] = col.newItemName || col.key;
+      }
+    });
+    const renameKeys = (obj, keyMap) => {
+      return Object.keys(obj).reduce((acc, key) => {
+        const newKey = keyMap[key] || key;
+        acc[newKey] = obj[key];
+        return acc;
+      }, {});
+    };
+    const finalData = rowData.map((row) => renameKeys(row, keyMapping));
+    const preprocessedData = preprocessData(finalData, convertToArray());
+    const csv = generateCsv(csvConfig)(preprocessedData);
+    download(csvConfig)(csv);
+  };
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -114,12 +147,20 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
     >
       <div className='w-full items-center justify-center'>
         {convertToArray().length > 0 && (
-          <button
-            onClick={deleteSelectedRows}
-            className='mb-2 p-2 rounded-md bg-red-500 text-white'
-          >
-            Delete
-          </button>
+          <>
+            <button
+              onClick={deleteSelectedRows}
+              className='mb-2 p-2 rounded-md bg-red-500 text-white'
+            >
+              Delete
+            </button>
+            <button
+              onClick={exportCsv}
+              className='mb-2 p-2 rounded-md bg-blue-500 text-white'
+            >
+              Export CSV
+            </button>
+          </>
         )}
         <table
           className='p-2 border border-gray-900 '

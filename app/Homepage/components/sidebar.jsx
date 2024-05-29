@@ -22,6 +22,7 @@ import {
 import { SlOptions } from "react-icons/sl";
 import OptionModal from "./sidebarcomponents/OptionModal";
 import { signOut } from "aws-amplify/auth";
+
 const Sidebar = () => {
   const data = useAtomValue(projectsAtom);
   const [userData, setUserData] = useAtom(UserDataAtom || {});

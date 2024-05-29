@@ -25,8 +25,6 @@ import {
   MouseSensor,
   TouchSensor,
   closestCenter,
-  DragEndEvent,
-  UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -37,9 +35,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-import { DraggableRow, RowDragHandleCell } from "./functions/tablefunctions";
-import DefaultTimeCell from "./tablecomponents/DefaultTimeCell";
-import { checkHeader } from "./functions/hookfunctions";
+import { DraggableRow, preprocessData } from "./functions/tablefunctions";
+import { mkConfig, generateCsv, download } from "export-to-csv";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [storeData, setStoreData] = useAtom(selectedProjectAtom);
@@ -130,6 +127,39 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   );
+
+  //exportfunction
+  const csvConfig = mkConfig({
+    fieldSeparator: ",",
+    filename: "table_data",
+    decimalSeparator: ".",
+    useKeysAsHeaders: true,
+  });
+  const exportCsv = () => {
+    const rowData = table.getRowModel().rows.map((row) => row.original);
+
+    const keyMapping = {};
+    columnData.forEach((col) => {
+      if (
+        col.accessorKey &&
+        col.accessorKey !== "item" &&
+        col.accessorKey !== "id"
+      ) {
+        keyMapping[col.accessorKey] = col.newItemName || col.key;
+      }
+    });
+    const renameKeys = (obj, keyMap) => {
+      return Object.keys(obj).reduce((acc, key) => {
+        const newKey = keyMap[key] || key;
+        acc[newKey] = obj[key];
+        return acc;
+      }, {});
+    };
+    const finalData = rowData.map((row) => renameKeys(row, keyMapping));
+    const preprocessedData = preprocessData(finalData, convertToArray());
+    const csv = generateCsv(csvConfig)(preprocessedData);
+    download(csvConfig)(csv);
+  };
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -139,12 +169,20 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     >
       <div className='w-full items-center justify-center'>
         {convertToArray().length > 0 && (
-          <button
-            onClick={deleteSelectedRows}
-            className='mb-2 p-2 rounded-md bg-red-500 text-white'
-          >
-            Delete
-          </button>
+          <>
+            <button
+              onClick={deleteSelectedRows}
+              className='mb-2 p-2 rounded-md bg-red-500 text-white'
+            >
+              Delete
+            </button>
+            <button
+              onClick={exportCsv}
+              className='mb-2 p-2 rounded-md bg-blue-500 text-white'
+            >
+              Export CSV
+            </button>
+          </>
         )}
 
         <table

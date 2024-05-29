@@ -96,3 +96,35 @@ export const SubItemRow = ({ subItems, groupId, taskId }) => (
     ))} */}
   </div>
 );
+const removeSubItems = (data) => {
+  return data.map((row) => {
+    const { subItems, ...rest } = row;
+    return rest;
+  });
+};
+export const preprocessData = (data, convertedArray) => {
+  const data1 = removeSubItems(data);
+  const array = convertedArray;
+  const selectedExport = data1.filter((rowData) =>
+    array.some((row) => row === rowData.id)
+  );
+  return selectedExport.map((row) => {
+    const processedRow = {};
+    for (const key in row) {
+      const value = row[key];
+      if (Array.isArray(value) || typeof value === "object") {
+        if (value.length > 0) {
+          const returnedValue = value.map((val) => {
+            return val.email;
+          });
+          processedRow[key] = JSON.stringify(returnedValue);
+        } else if (value.text !== undefined) {
+          processedRow[key] = value.text;
+        } else processedRow[key] = JSON.stringify(value);
+      } else {
+        processedRow[key] = value;
+      }
+    }
+    return processedRow;
+  });
+};

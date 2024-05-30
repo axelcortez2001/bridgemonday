@@ -139,7 +139,7 @@ const Content = () => {
         )}
       </div>
       <div className='w-full flex flex-col space-y-4'>
-        {data?.grouptask && data.grouptask.length > 0 && (
+        {data?.grouptask && data?.grouptask?.length > 0 && (
           <div>
             <Button onClick={() => exportCsv()}>Download</Button>
           </div>

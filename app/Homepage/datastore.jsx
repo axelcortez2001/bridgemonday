@@ -769,9 +769,9 @@ export const updateSubItemData = atom(
                       };
                       return {
                         ...task,
-                        subItems: (
-                          task.subItems ? [...task.subItems, newRow] : [newRow],
-                        ),
+                        subItems: task.subItems
+                          ? [...task.subItems, newRow]
+                          : [newRow],
                       };
                     }
                   }

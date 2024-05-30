@@ -37,7 +37,7 @@ export const DraggableRow = ({ row, gId }) => {
     position: "relative",
   };
   //function to add subcolumn
-  console.log("Row Data:", row);
+
   const addSubColumn = useSetAtom(updateSubItemData);
   const subData = row?.original?.subItems || [];
   const taskId = row.original.id;
@@ -45,9 +45,10 @@ export const DraggableRow = ({ row, gId }) => {
   const groupId = gId;
   const [data, setData] = useState(subData);
   const handleAdd = async () => {
-    const project = await addSubColumn(projectId, groupId, taskId, data);
+    const projectData = await addSubColumn(projectId, groupId, taskId, data);
     console.log("Project:", project);
-    setData(project);
+    console.log("projectData:", projectData);
+    setData(projectData);
   };
   return (
     <>
@@ -98,8 +99,13 @@ export const SubItemRow = ({ subItems, groupId, taskId }) => (
 );
 const removeSubItems = (data) => {
   return data.map((row) => {
-    const { subItems, ...rest } = row;
-    return rest;
+    console.log(row instanceof Object);
+    if (row instanceof Object) {
+      const { subItems, ...rest } = row;
+      return rest;
+    } else {
+      return row;
+    }
   });
 };
 export const preprocessData = (data, convertedArray) => {
@@ -126,5 +132,38 @@ export const preprocessData = (data, convertedArray) => {
       }
     }
     return processedRow;
+  });
+};
+
+export const preprocessAllData = (data) => {
+  const data1 = data;
+  return data1.map((row) => {
+    console.log("data1: ", row);
+    if (row instanceof Object) {
+      const processedRow = {};
+      for (const key in row) {
+        const value = row[key];
+        if (Array.isArray(value) || typeof value === "object") {
+          if (key === "subItems") {
+            const returnedValue = value.map((val) => {
+              return val.item;
+            });
+            processedRow[key] = JSON.stringify(returnedValue);
+          } else if (value && value.length > 0) {
+            const returnedValue = value.map((val) => {
+              return val.email;
+            });
+            processedRow[key] = JSON.stringify(returnedValue);
+          } else if (value.text !== undefined) {
+            processedRow[key] = value.text;
+          } else processedRow[key] = JSON.stringify(value);
+        } else {
+          processedRow[key] = value;
+        }
+      }
+      return processedRow;
+    } else {
+      return [row];
+    }
   });
 };

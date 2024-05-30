@@ -134,6 +134,11 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     filename: "table_data",
     decimalSeparator: ".",
     useKeysAsHeaders: true,
+    quoteStrings: '"',
+    showLabels: true,
+    showTitle: false,
+    useTextFile: false,
+    useBom: true,
   });
   const exportCsv = () => {
     const rowData = table.getRowModel().rows.map((row) => row.original);
@@ -157,8 +162,10 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     };
     const finalData = rowData.map((row) => renameKeys(row, keyMapping));
     const preprocessedData = preprocessData(finalData, convertToArray());
+
     const csv = generateCsv(csvConfig)(preprocessedData);
-    download(csvConfig)(csv);
+    console.log("preprocessData: ", csv);
+    // download(csvConfig)(csv);
   };
   return (
     <DndContext

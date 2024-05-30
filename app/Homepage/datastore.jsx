@@ -199,7 +199,7 @@ export const removeOrganizer = atom(null, async (get, set, projectId, sub) => {
   }
 });
 //selection of atom from sidebar
-export const selectedProject = atom(1);
+export const selectedProject = atom(null);
 
 export const selectedProjectAtom = atom((get) => {
   const projects = get(projectsAtom);
@@ -373,6 +373,7 @@ export const addSubItemColumn = atom(
         column?.accessorKey?.toLocaleLowerCase() ===
         newItemName?.toLocaleLowerCase()
     );
+    console.log("newOte,m: ", newItem);
     if (newItem.length > 0) {
       newItemName = newItemName + subItemId++;
     }
@@ -401,7 +402,7 @@ export const addSubItemColumn = atom(
               task: group.task.map((task) => {
                 return {
                   ...task,
-                  subItem: task?.subItems?.map((subItem) => {
+                  subItems: task?.subItems?.map((subItem) => {
                     return {
                       ...subItem,
                       [newAccessorName.toLocaleLowerCase()]: itemCell[0].data,
@@ -612,7 +613,7 @@ export const deleteSubColumn = atom(null, async (get, set, projectId, key) => {
             task: group.task.map((task) => {
               return {
                 ...task,
-                subItem: task?.subItems?.map((subItem) => {
+                subItems: task?.subItems?.map((subItem) => {
                   return {
                     ...subItem,
                     [newKey]: null,
@@ -744,6 +745,7 @@ export const updateSubItemData = atom(
       }
       return taskIdData;
     };
+
     const updatedProjects = projects.map((project) => {
       if (project._id === projectId) {
         return {
@@ -753,6 +755,7 @@ export const updateSubItemData = atom(
               return {
                 ...grouptask,
                 task: grouptask.task.map((task) => {
+                  console.log("Before Updating Project " + task);
                   if (task.id === taskId) {
                     if (type === "UpdateData") {
                       return {

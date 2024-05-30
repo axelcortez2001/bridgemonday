@@ -769,7 +769,9 @@ export const updateSubItemData = atom(
                       };
                       return {
                         ...task,
-                        subItems: [...data, newRow],
+                        subItems: (
+                          task.subItems ? [...task.subItems, newRow] : [newRow],
+                        ),
                       };
                     }
                   }

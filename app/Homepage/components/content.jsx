@@ -132,9 +132,6 @@ const Content = () => {
     <div className='p-2 flex flex-col w-full max-h-screen overflow-y-auto'>
       <div className='w-full flex '>
         <p>{data?.name}</p>
-        <div>
-          <button onClick={() => exportCsv()}>Download</button>
-        </div>
       </div>
       <div className='w-full justify-start mb-2'>
         {data !== undefined && (
@@ -142,6 +139,11 @@ const Content = () => {
         )}
       </div>
       <div className='w-full flex flex-col space-y-4'>
+        {data?.grouptask && data.grouptask.length > 0 && (
+          <div>
+            <Button onClick={() => exportCsv()}>Download</Button>
+          </div>
+        )}
         {data?.grouptask.map((groupData) => (
           <div
             className={`w-full  

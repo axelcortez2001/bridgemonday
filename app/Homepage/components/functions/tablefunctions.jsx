@@ -24,7 +24,7 @@ export const RowDragHandleCell = ({ rowId }) => {
 };
 
 //Row Component
-export const DraggableRow = ({ row, gId }) => {
+export const DraggableRow = ({ row, gId, subItemData }) => {
   const [project, setProject] = useAtom(selectedProjectAtom);
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
@@ -37,7 +37,7 @@ export const DraggableRow = ({ row, gId }) => {
     position: "relative",
   };
   //function to add subcolumn
-
+  console.log("Projectas:", row?.original?.subItems);
   const addSubColumn = useSetAtom(updateSubItemData);
   const subData = row?.original?.subItems || [];
   const taskId = row.original.id;
@@ -45,8 +45,8 @@ export const DraggableRow = ({ row, gId }) => {
   const groupId = gId;
   const [data, setData] = useState(subData);
   const handleAdd = async () => {
+    console.log(data);
     const projectData = await addSubColumn(projectId, groupId, taskId, data);
-    console.log("Project:", project);
     console.log("projectData:", projectData);
     setData(projectData);
   };

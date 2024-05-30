@@ -138,6 +138,7 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
     const csv = generateCsv(csvConfig)(preprocessedData);
     download(csvConfig)(csv);
   };
+  console.log("RowModel: ", table?.getRowModel());
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -202,7 +203,12 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
                 strategy={verticalListSortingStrategy}
               >
                 {table?.getRowModel().rows.map((row) => (
-                  <DraggableRow key={row.id} row={row} gId={groupId} />
+                  <DraggableRow
+                    key={row.id}
+                    row={row}
+                    subItemData={data}
+                    gId={groupId}
+                  />
                 ))}
               </SortableContext>
             )}

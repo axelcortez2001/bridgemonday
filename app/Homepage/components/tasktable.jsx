@@ -5,19 +5,8 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import EditableCell from "./tablecomponents/EditableCell";
 import { useAtom, useSetAtom } from "jotai";
-import {
-  selectedProject,
-  selectedProjectAtom,
-  updateGroupData,
-  updateProject,
-} from "../datastore";
-import OptionCell from "./tablecomponents/OptionCell";
-import DateCell from "./tablecomponents/DateCell";
-import PersonCell from "./tablecomponents/PersonCell";
-import DefaultDateCell from "./tablecomponents/DefaultDateCell";
-import IndeterminateCheckbox from "./functions/IndeterminateCheckbox";
+import { selectedProjectAtom, updateGroupData } from "../datastore";
 // needed for table body level scope DnD setup
 import {
   DndContext,
@@ -39,7 +28,6 @@ import { DraggableRow, preprocessData } from "./functions/tablefunctions";
 import { mkConfig, generateCsv, download } from "export-to-csv";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
-  const [storeData, setStoreData] = useAtom(selectedProjectAtom);
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState(groupData);
   const table = useReactTable({
@@ -111,16 +99,20 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     }
   };
   const dataIds = React.useMemo(() => data?.map(({ id }) => id), [data]);
-  console.log("Data: ", data);
   function handleDragEnd(event) {
+    console.log("Dragging trigger");
     const { active, over } = event;
+    console.log("Active: ", event);
+    console.log("Over: ", over);
     if (active && over && active.id !== over.id) {
       setData((data) => {
         const oldIndex = dataIds.indexOf(active.id);
         const newIndex = dataIds.indexOf(over.id);
-        return arrayMove(data, oldIndex, newIndex); // this is just a splice util
+        return arrayMove(data, oldIndex, newIndex);
       });
     }
+    console.log("Data: ", data);
+    console.log("DataIds: ", dataIds);
   }
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -142,7 +134,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   });
   const exportCsv = () => {
     const rowData = table.getRowModel().rows.map((row) => row.original);
-
     const keyMapping = {};
     columnData.forEach((col) => {
       if (
@@ -170,7 +161,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   return (
     <DndContext
       collisionDetection={closestCenter}
-      modifiers={[restrictToVerticalAxis]}
+      // modifiers={[restrictToVerticalAxis]}
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
@@ -191,7 +182,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
             </button>
           </>
         )}
-
         <table
           className='p-2 border border-gray-900 '
           style={{ width: table?.getTotalSize() }}

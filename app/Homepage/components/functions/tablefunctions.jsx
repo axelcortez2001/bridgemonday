@@ -16,19 +16,27 @@ export const RowDragHandleCell = ({ rowId }) => {
   return (
     // Alternatively, you could set these attributes on the rows themselves
     <button
-      {...attributes}
-      {...listeners}
+      // {...attributes}
+      // {...listeners}
       className=' h-10 w-1  hover:w-2 hover:bg-gray-400'
     ></button>
   );
 };
 
 //Row Component
-export const DraggableRow = ({ row, gId, subItemData }) => {
+export const DraggableRow = ({ row, gId }) => {
   const [project, setProject] = useAtom(selectedProjectAtom);
-  const { transform, transition, setNodeRef, isDragging } = useSortable({
+  const {
+    transform,
+    transition,
+    setNodeRef,
+    isDragging,
+    attributes,
+    listeners,
+  } = useSortable({
     id: row.original.id,
   });
+  console.log(transform);
   const style = {
     transform: CSS.Transform.toString(transform), // let dnd-kit do its thing
     transition: transition,
@@ -37,7 +45,6 @@ export const DraggableRow = ({ row, gId, subItemData }) => {
     position: "relative",
   };
   //function to add subcolumn
-  console.log("Projectas:", row?.original?.subItems);
   const addSubColumn = useSetAtom(updateSubItemData);
   const subData = row?.original?.subItems || [];
   const taskId = row.original.id;
@@ -47,12 +54,11 @@ export const DraggableRow = ({ row, gId, subItemData }) => {
   const handleAdd = async () => {
     console.log(data);
     const projectData = await addSubColumn(projectId, groupId, taskId, data);
-    console.log("projectData:", projectData);
     setData(projectData);
   };
   return (
     <>
-      <tr ref={setNodeRef} style={style}>
+      <tr ref={setNodeRef} style={style} {...attributes} {...listeners}>
         {row.getVisibleCells().map((cell) => (
           <td
             key={cell.id}
@@ -85,16 +91,9 @@ export const DraggableRow = ({ row, gId, subItemData }) => {
 };
 export const SubItemRow = ({ subItems, groupId, taskId }) => (
   <div className='pl-14'>
-    {console.log("SubItems: ", subItems)}
     {subItems !== undefined && subItems.length > 0 && (
       <SubItemTable subItems={subItems} groupId={groupId} taskId={taskId} />
     )}
-
-    {/* {subItems?.map((subItem) => (
-      <div key={subItem.id} className='p-2 border border-gray-300'>
-        {subItem.id}
-      </div>
-    ))} */}
   </div>
 );
 const removeSubItems = (data) => {
@@ -138,7 +137,6 @@ export const preprocessData = (data, convertedArray) => {
 export const preprocessAllData = (data) => {
   const data1 = data;
   return data1.map((row) => {
-    console.log("data1: ", row);
     if (row instanceof Object) {
       const processedRow = {};
       for (const key in row) {
@@ -166,4 +164,41 @@ export const preprocessAllData = (data) => {
       return [row];
     }
   });
+};
+
+export const renameKeys = (obj, keyMap) => {
+  if (obj instanceof Object) {
+    return Object.keys(obj).reduce((acc, key) => {
+      const newKey = keyMap[key] || key;
+      acc[newKey] = obj[key];
+      return acc;
+    }, {});
+  } else {
+    return obj;
+  }
+};
+
+export const exportInitialData = (columnData, sub) => {
+  let finalData = [];
+  if (columnData?.grouptask) {
+    columnData.grouptask.map((group) => {
+      group?.task.map((task) => {
+        finalData.push({ ...task, groupName: group.groupName });
+        if (sub === "Sub") {
+          task?.subItems?.map((sub) => {
+            const { id, item, ...rest } = sub;
+            finalData.push({
+              SubId: sub.id,
+              SubName: sub.item,
+              groupName: group.groupName,
+              ...rest,
+            });
+          });
+        }
+      });
+
+      finalData.push(group.groupName);
+    });
+  }
+  return finalData;
 };

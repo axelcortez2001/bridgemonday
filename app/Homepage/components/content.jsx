@@ -1,21 +1,27 @@
 import React, { useState } from "react";
 
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  addGroupTask,
-  sampleData,
-  sampleUser,
-  selectedProjectAtom,
-} from "../datastore";
-import { IoIosArrowDropdown } from "react-icons/io";
+import { addGroupTask, selectedProjectAtom } from "../datastore";
 import { MdKeyboardArrowLeft, MdKeyboardArrowDown } from "react-icons/md";
-import { Button } from "@nextui-org/react";
+import {
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Input,
+} from "@nextui-org/react";
 import Tasktable from "./tasktable";
 import EditableGroupName from "./EditableGroupName";
-import { fetchAuthSession, fetchUserAttributes } from "aws-amplify/auth";
 import { dataColumns } from "./functions/hookfunctions";
 import { mkConfig, generateCsv, download } from "export-to-csv";
-import { preprocessAllData, preprocessData } from "./functions/tablefunctions";
+import {
+  exportInitialData,
+  preprocessAllData,
+  preprocessData,
+  renameKeys,
+} from "./functions/tablefunctions";
+import { SlOptionsVertical } from "react-icons/sl";
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
   //function to toggle dropdown of each groupTask
@@ -35,37 +41,15 @@ const Content = () => {
     const id = data._id;
     addNewGroup(id);
   };
-  const exportCsv = () => {
+  const exportCsv = (sub) => {
+    console.log("Sub: ", sub);
     const columnData = JSON.parse(JSON.stringify(data));
-    console.log("Data:", columnData);
-    const exportInitialData = () => {
-      let finalData = [];
-      if (columnData?.grouptask) {
-        columnData.grouptask.map((group) => {
-          group?.task.map((task) => {
-            finalData.push({ ...task, groupName: group.groupName });
-            task?.subItems?.map((sub) => {
-              const { id, item, ...rest } = sub;
-              finalData.push({
-                SubId: sub.id,
-                SubName: sub.item,
-                groupName: group.groupName,
-                ...rest,
-              });
-            });
-          });
-
-          finalData.push(group.groupName);
-        });
-      }
-      return finalData;
-    };
+    //compress all data including subitems
     const keyMapping = {};
     const colData = columnData.columns;
     columnData?.subColumns?.map((sub) => {
       colData.push(sub);
     });
-    console.log("Cols:", colData);
     colData?.forEach((col) => {
       if (
         col.accessorKey &&
@@ -75,26 +59,31 @@ const Content = () => {
         keyMapping[col.accessorKey] = col.newItemName || col.key;
       }
     });
-    const renameKeys = (obj, keyMap) => {
-      if (obj instanceof Object) {
-        return Object.keys(obj).reduce((acc, key) => {
-          const newKey = keyMap[key] || key;
-          acc[newKey] = obj[key];
-          return acc;
-        }, {});
-      } else {
-        return obj;
-      }
-    };
-
-    const finalData = exportInitialData().map((row) =>
+    const finalData = exportInitialData(columnData, sub).map((row) =>
       renameKeys(row, keyMapping)
     );
     const columnHeaders = ["groupName"];
     finalData.forEach((obj) => {
       console.log(obj);
       Object.keys(obj).map((key) => {
-        let num = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+        let num = [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+        ];
         if (
           !num.includes(key) &&
           key !== "groupName" &&
@@ -104,10 +93,8 @@ const Content = () => {
         }
       });
     });
-
-    console.log("KeyMapping: ", columnHeaders);
+    //process data for exporting
     const preprocessedData = preprocessAllData(finalData);
-    console.log("preprocessData11: ", preprocessedData);
     const csvConfig = mkConfig({
       fieldSeparator: ",",
       filename: columnData.name,
@@ -140,10 +127,24 @@ const Content = () => {
       </div>
       <div className='w-full flex flex-col space-y-4'>
         {data?.grouptask && data?.grouptask?.length > 0 && (
-          <div>
-            <Button onClick={() => exportCsv()}>Download</Button>
+          <div className='w-full'>
+            <p>hello</p>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button>Download</Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label='Action event example'>
+                <DropdownItem key='new' onClick={() => exportCsv("noSub")}>
+                  Export without SubItems
+                </DropdownItem>
+                <DropdownItem key='delete' onClick={() => exportCsv("Sub")}>
+                  Export with SubItems
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         )}
+
         {data?.grouptask.map((groupData) => (
           <div
             className={`w-full  

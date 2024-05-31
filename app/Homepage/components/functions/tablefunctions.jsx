@@ -1,13 +1,13 @@
 import { flexRender } from "@tanstack/react-table";
 // needed for row & cell level scope DnD setup
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+
 import { Button } from "@nextui-org/react";
 import SubItemTable from "../SubItemTable";
 import { useAtom, useSetAtom } from "jotai";
 import { selectedProjectAtom, updateSubItemData } from "../../datastore";
-import { useEffect, useState } from "react";
-import { dataColumns } from "./hookfunctions";
+import { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 //functions for DnD based from tanstackDnD
 //Cell Component
@@ -26,12 +26,7 @@ export const RowDragHandleCell = ({ rowId }) => {
 //Row Component
 export const DraggableRow = ({ row, gId }) => {
   const [project, setProject] = useAtom(selectedProjectAtom);
-  const {
-    transform,
-    transition,
-    setNodeRef,
-    isDragging,
-  } = useSortable({
+  const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
   });
   const style = {

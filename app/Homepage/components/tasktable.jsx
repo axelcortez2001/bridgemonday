@@ -14,6 +14,8 @@ import {
   MouseSensor,
   TouchSensor,
   closestCenter,
+  DragEndEvent,
+  UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -22,7 +24,9 @@ import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
+  useSortable,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { DraggableRow, preprocessData } from "./functions/tablefunctions";
 import { mkConfig, generateCsv, download } from "export-to-csv";
@@ -156,12 +160,12 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
 
     const csv = generateCsv(csvConfig)(preprocessedData);
     console.log("preprocessData: ", csv);
-    // download(csvConfig)(csv);
+    download(csvConfig)(csv);
   };
   return (
     <DndContext
       collisionDetection={closestCenter}
-      // modifiers={[restrictToVerticalAxis]}
+      modifiers={[restrictToVerticalAxis]}
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >

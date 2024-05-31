@@ -16,8 +16,8 @@ export const RowDragHandleCell = ({ rowId }) => {
   return (
     // Alternatively, you could set these attributes on the rows themselves
     <button
-      // {...attributes}
-      // {...listeners}
+      {...attributes}
+      {...listeners}
       className=' h-10 w-1  hover:w-2 hover:bg-gray-400'
     ></button>
   );
@@ -31,12 +31,9 @@ export const DraggableRow = ({ row, gId }) => {
     transition,
     setNodeRef,
     isDragging,
-    attributes,
-    listeners,
   } = useSortable({
     id: row.original.id,
   });
-  console.log(transform);
   const style = {
     transform: CSS.Transform.toString(transform), // let dnd-kit do its thing
     transition: transition,
@@ -58,7 +55,7 @@ export const DraggableRow = ({ row, gId }) => {
   };
   return (
     <>
-      <tr ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <tr ref={setNodeRef} style={style}>
         {row.getVisibleCells().map((cell) => (
           <td
             key={cell.id}

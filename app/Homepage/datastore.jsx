@@ -1,7 +1,5 @@
 import { atom } from "jotai";
-import { RowDragHandleCell } from "./components/functions/tablefunctions";
 import EditableCell from "./components/tablecomponents/EditableCell";
-import AddDropDown from "./components/otherComponents/AddDropDown";
 import OptionCell from "./components/tablecomponents/OptionCell";
 import DateCell from "./components/tablecomponents/DateCell";
 import PersonCell from "./components/tablecomponents/PersonCell";
@@ -9,9 +7,6 @@ import DefaultDateCell from "./components/tablecomponents/DefaultDateCell";
 import DefaultTimeCell from "./components/tablecomponents/DefaultTimeCell";
 import NumberCell from "./components/tablecomponents/NumberCell";
 import DropDownCell from "./components/tablecomponents/DropDownCell";
-import EditableHeader from "./components/tablecomponents/EditableHeader";
-import AddSubItemDropDown from "./components/otherComponents/AddSubItemDropDown";
-import EditableSubHeader from "./components/tablecomponents/EditableSubHeader";
 import {
   addNewGrouptask,
   addWorkspace,
@@ -44,9 +39,7 @@ export const UserDataAtom = atom(async () => {
 //function to register user to database
 export const registerUser = atom(null, async (get, set) => {
   const data = get(UserDataAtom);
-  console.log("before user: ", data.value);
   const userResponse = await restinsert("/user", data.value);
-  console.log("UserResponse: " + userResponse);
   if (userResponse.success) {
     return { success: true, userResponse };
   } else {
@@ -57,15 +50,10 @@ export const registerUser = atom(null, async (get, set) => {
 //function to get all users
 export const userAtom = atom(async () => {
   const user = await getAllUsers("/user");
-  console.log("userasd: ", user.user);
   return user.user;
 });
 
-let projectid = 0;
-let groupId = 0;
-let taskid = 0;
 let statusId = 0;
-let itemId = 0;
 let dropId = 0;
 let subItemId = 0;
 
@@ -360,23 +348,12 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
 export const addSubItemColumn = atom(
   null,
   async (get, set, projectId, itemName) => {
-    let newItemName = itemName;
     let newAccessorName = itemName.toLocaleLowerCase() + uuidv4();
     const projects = get(projectsAtom);
     const foundProject = projects.find((project) => project._id === projectId);
     const itemCell = subtextItem.filter(
       (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
     );
-    //item duplication
-    const newItem = foundProject.subColumns.filter(
-      (column) =>
-        column?.accessorKey?.toLocaleLowerCase() ===
-        newItemName?.toLocaleLowerCase()
-    );
-    console.log("newOte,m: ", newItem);
-    if (newItem.length > 0) {
-      newItemName = newItemName + subItemId++;
-    }
     //newItemData
     const newItemData = {
       key: itemName.toLocaleLowerCase(),
@@ -575,7 +552,8 @@ export const deleteColumn = atom(null, async (get, set, projectId, key) => {
           return {
             ...group,
             task: group.task.map((task) => {
-              return { ...task, [newKey]: null };
+              const { [newKey]: _, ...rest } = task;
+              return rest;
             }),
           };
         }),
@@ -614,10 +592,8 @@ export const deleteSubColumn = atom(null, async (get, set, projectId, key) => {
               return {
                 ...task,
                 subItems: task?.subItems?.map((subItem) => {
-                  return {
-                    ...subItem,
-                    [newKey]: null,
-                  };
+                  const { [newKey]: _, ...rest } = subItem;
+                  return rest;
                 }),
               };
             }),

@@ -43,6 +43,9 @@ export const DraggableRow = ({ row, gId }) => {
   const projectId = project._id;
   const groupId = gId;
   const [data, setData] = useState(subData);
+  const handleData = (newData) => {
+    setData(newData);
+  };
   const handleAdd = async () => {
     console.log(data);
     const projectData = await addSubColumn(projectId, groupId, taskId, data);
@@ -73,7 +76,12 @@ export const DraggableRow = ({ row, gId }) => {
           <tr className=''>
             {/* 2nd row is a custom 1 cell row */}
             <td colSpan={row.getVisibleCells().length}>
-              <SubItemRow subItems={data} groupId={groupId} taskId={taskId} />
+              <SubItemRow
+                subItems={data}
+                groupId={groupId}
+                taskId={taskId}
+                setData={handleData}
+              />
             </td>
           </tr>
         </>
@@ -81,10 +89,21 @@ export const DraggableRow = ({ row, gId }) => {
     </>
   );
 };
-export const SubItemRow = ({ subItems, groupId, taskId }) => (
+export const SubItemRow = ({
+  subItems,
+  groupId,
+  taskId,
+  setData,
+  subColumns,
+}) => (
   <div className='pl-14'>
     {subItems !== undefined && subItems.length > 0 && (
-      <SubItemTable subItems={subItems} groupId={groupId} taskId={taskId} />
+      <SubItemTable
+        subItems={subItems}
+        groupId={groupId}
+        taskId={taskId}
+        setData={setData}
+      />
     )}
   </div>
 );

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
-  getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -13,8 +12,6 @@ import {
   MouseSensor,
   TouchSensor,
   closestCenter,
-  DragEndEvent,
-  UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -28,20 +25,35 @@ import { DraggableRow, preprocessData } from "./functions/tablefunctions";
 import { selectedProjectAtom, updateSubItemData } from "../datastore";
 import { dataColumns } from "./functions/hookfunctions";
 import { mkConfig, generateCsv, download } from "export-to-csv";
-const SubItemTable = ({ subItems, groupId, taskId }) => {
+const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
-  const [data, setData] = useState(subItems);
+  const [data, setSubData] = useState(subItems);
   const [selectedRows, setSelectedRows] = useState([]);
-  const columnData = dataColumns(projects.subColumns);
+  const [initialColumns, setInitialColumns] = useState(projects.subColumns);
+  const [columnValues, setColumnValues] = useState(
+    dataColumns(projects.subColumns)
+  );
+  useEffect(() => {
+    if (
+      JSON.stringify(projects.subColumns) !== JSON.stringify(initialColumns)
+    ) {
+      setInitialColumns(projects.subColumns);
+      setColumnValues(dataColumns(projects.subColumns));
+    }
+  }, [projects.subColumns]);
+
   useEffect(() => {
     const updateData = () => {
-      setData(subItems);
+      if (JSON.stringify(subItems) !== JSON.stringify(data)) {
+        setSubData(subItems);
+        setData(subItems);
+      }
     };
     updateData();
   }, [subItems]);
   const table = useReactTable({
     data: data || [],
-    columns: columnData,
+    columns: columnValues,
     getCoreRowModel: getCoreRowModel(),
     state: { selectedRows },
     getRowId: (row) => row.id,
@@ -64,6 +76,7 @@ const SubItemTable = ({ subItems, groupId, taskId }) => {
   useEffect(() => {
     const updateData = () => {
       try {
+        console.log("Trigger subtable");
         const type = "UpdateData";
         updateTableData(projectId, groupId, taskId, data, type);
       } catch (error) {

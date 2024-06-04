@@ -14,22 +14,19 @@
     },
     "categories": {
       "function": {
-        "user": {
-          "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
-          "s3Key": "amplify-builds/user-566b73532b4b52324e65-build.zip",
-          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge"
-        },
         "mondaydata": {
+          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge",
           "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
-          "s3Key": "amplify-builds/mondaydata-586e782b67516a674337-build.zip",
-          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge"
+          "s3Key": "amplify-builds/mondaydata-586e782b67516a674337-build.zip"
+        },
+        "user": {
+          "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge",
+          "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
+          "s3Key": "amplify-builds/user-566b73532b4b52324e65-build.zip"
         }
       },
       "auth": {
         "bridgemonday": {}
-      },
-      "api": {
-        "mondayREST": {}
       }
     }
   }

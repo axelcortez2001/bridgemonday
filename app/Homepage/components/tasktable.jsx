@@ -5,7 +5,7 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useAtom, useSetAtom } from "jotai";
+import {  useSetAtom } from "jotai";
 import { selectedProjectAtom, updateGroupData } from "../datastore";
 // needed for table body level scope DnD setup
 import {
@@ -14,8 +14,6 @@ import {
   MouseSensor,
   TouchSensor,
   closestCenter,
-  DragEndEvent,
-  UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -24,19 +22,20 @@ import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
-  useSortable,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-
 import { DraggableRow, preprocessData } from "./functions/tablefunctions";
 import { mkConfig, generateCsv, download } from "export-to-csv";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [selectedRows, setSelectedRows] = useState([]);
+  const [columns, setColumns] = useState(columnData);
   const [data, setData] = useState(groupData);
+  useEffect(() => {
+    setColumns(columnData);
+  }, [groupData]);
   const table = useReactTable({
     data,
-    columns: columnData,
+    columns: columns,
     getCoreRowModel: getCoreRowModel(),
     state: {
       selectedRows,
@@ -115,8 +114,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
         return arrayMove(data, oldIndex, newIndex);
       });
     }
-    console.log("Data: ", data);
-    console.log("DataIds: ", dataIds);
   }
   const sensors = useSensors(
     useSensor(MouseSensor, {}),

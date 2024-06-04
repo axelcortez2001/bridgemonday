@@ -21,13 +21,12 @@ import {
 const PersonCell = ({ getValue, row, column, table }) => {
   const projects = useAtom(selectedProjectAtom);
   const currentUser = useAtomValue(UserDataAtom);
-  const [personAtom, setPersonAtom] = useAtom(userAtom);
+  const personAtom = projects[0]?.organizer;
   const [filteredPerson, setFilteredPerson] = useState(personAtom);
   const initialValue = getValue();
+  console.log("initialValue", initialValue);
   const value = initialValue?.map((user) => user.sub) || [];
   const { updateData } = table.options.meta;
-  const setOrganizerData = useSetAtom(setOrganizers);
-  const removeOrganizerData = useSetAtom(removeOrganizer);
   //function to show and find user
   const findUserData = (userAtom, sub) => {
     const allusers = userAtom.filter((userMap) => sub?.includes(userMap.sub));
@@ -41,7 +40,7 @@ const PersonCell = ({ getValue, row, column, table }) => {
             alt='user'
           />
           <div
-            className='absolute flex items-center justify-center text-red-500 top-0 right-1 rounded-full border bg-gray-200 h-4 w-4
+            className='absolute flex items-center justify-center text-red-500 top-0 right-1 rounded-full border bg-gray-200 h-4 w-4 hover:cursor-pointer
           hover:bg-red-500 hover:text-white'
             onClick={() => deleteUserData(user)}
           >
@@ -95,13 +94,12 @@ const PersonCell = ({ getValue, row, column, table }) => {
       }
     };
     searchData();
-  }, [searchText, sertSearchText]);
+  }, [searchText, sertSearchText, personAtom]);
   //function to updateuserData
   const updateUserData = async (user) => {
     const projectId = projects[0]._id;
     const newData =
       initialValue !== undefined ? [...initialValue, user] : [user];
-    await setOrganizerData(projectId, user);
     await updateData(row.index, column.id, newData);
     sertSearchText("");
   };
@@ -110,8 +108,8 @@ const PersonCell = ({ getValue, row, column, table }) => {
     const projectId = projects[0]._id;
     const sub = data.sub;
     const newData = initialValue.filter((user) => user.sub !== data.sub);
-    await removeOrganizerData(projectId, sub);
     await updateData(row.index, column.id, newData);
+    sertSearchText("");
   };
   return (
     <div className='w-full flex flex-wrap items-center justify-center'>

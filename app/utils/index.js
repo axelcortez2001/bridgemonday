@@ -67,7 +67,6 @@ export const getWorkspace = async (path) => {
       path: path,
     });
     const { body } = await getOperation.response;
-    console.log("All Workspace: ", body.json());
     return await body.json();
   } catch (e) {
     console.log(e);

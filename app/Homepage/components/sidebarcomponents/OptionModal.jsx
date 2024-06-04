@@ -21,32 +21,59 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { SlOptions } from "react-icons/sl";
 import { useSetAtom } from "jotai";
 import { deleteProject, editProject } from "../../datastore";
+import LoadingComponent from "../otherComponents/LoadingComponent";
 
 export default function OptionModal({ task }) {
-  //function to delete
-  const deleteHandle = useSetAtom(deleteProject);
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete?")) {
-      const id = task._id;
-      deleteHandle(id);
-    } else {
-      alert("File Deleted");
-    }
-  };
-
   //modal options
   const [title, setTitle] = useState(task.name);
   const [privacy, setPrivacy] = useState(task.type);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [loading, setLoading] = useState(false);
+  //function to delete
+  const deleteHandle = useSetAtom(deleteProject);
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete?")) {
+      setLoading(true);
+      try {
+        const id = task._id;
+        const status = await deleteHandle(id);
+        if (status && status.success) {
+          alert("Project deleted");
+        } else {
+          alert("Error Deleting Project");
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("File Deleted");
+    }
+  };
   //function to edt
   const editHandle = useSetAtom(editProject);
-  const handleEdit = () => {
-    const id = task._id;
-    editHandle(id, title, privacy);
+  const handleEdit = async () => {
+    setLoading(true);
+    try {
+      const id = task._id;
+      const status = await editHandle(id, title, privacy);
+      if (status && status.success) {
+        onOpenChange(false);
+      } else {
+        onOpenChange(false);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
   };
   const iconClasses =
     "text-xl text-default-500 pointer-events-none flex-shrink-0";
-  return (
+  return loading ? (
+    <LoadingComponent />
+  ) : (
     <>
       <Dropdown>
         <DropdownTrigger>

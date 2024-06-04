@@ -2,14 +2,17 @@ import React, { useState } from "react";
 
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { addGroupTask, selectedProjectAtom } from "../datastore";
-import { MdKeyboardArrowLeft, MdKeyboardArrowDown } from "react-icons/md";
+import {
+  MdKeyboardArrowLeft,
+  MdKeyboardArrowDown,
+  MdKeyboardArrowUp,
+} from "react-icons/md";
 import {
   Button,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Input,
 } from "@nextui-org/react";
 import Tasktable from "./tasktable";
 import EditableGroupName from "./EditableGroupName";
@@ -18,10 +21,10 @@ import { mkConfig, generateCsv, download } from "export-to-csv";
 import {
   exportInitialData,
   preprocessAllData,
-  preprocessData,
   renameKeys,
 } from "./functions/tablefunctions";
-import { SlOptionsVertical } from "react-icons/sl";
+import { SlOptions } from "react-icons/sl";
+import ProjectOption from "./otherComponents/ProjectOption";
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
   //function to toggle dropdown of each groupTask
@@ -116,67 +119,64 @@ const Content = () => {
   };
 
   return (
-    <div className='p-2 flex flex-col w-full max-h-screen overflow-y-auto'>
-      <div className='w-full flex '>
-        <p>{data?.name}</p>
-      </div>
-      <div className='w-full justify-start mb-2'>
-        {data !== undefined && (
-          <Button onClick={() => handleAddGroup(data)}>New Group</Button>
-        )}
-      </div>
-      <div className='w-full flex flex-col space-y-4'>
-        {data?.grouptask && data?.grouptask?.length > 0 && (
-          <div className='w-full'>
-            <p>hello</p>
-            <Dropdown>
-              <DropdownTrigger>
-                <Button>Download</Button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label='Action event example'>
-                <DropdownItem key='new' onClick={() => exportCsv("noSub")}>
-                  Export without SubItems
-                </DropdownItem>
-                <DropdownItem key='delete' onClick={() => exportCsv("Sub")}>
-                  Export with SubItems
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        )}
+    <div className=' flex flex-col w-full max-h-screen overflow-y-auto'>
+      <div className='w-full p-2 flex justify-between bg-[#32449C] items-center'>
+        <div className='w-full flex '>
+          {data ? (
+            <p className='text-white text-xl'>{data?.name}</p>
+          ) : (
+            <p className='text-white text-xl'>Bridge Monday</p>
+          )}
+        </div>
 
-        {data?.grouptask.map((groupData) => (
+        <div className='justify-start flex gap-x-2 items-center h-full'>
+          {data && data !== undefined && (
+            <ProjectOption data={data} exportCsv={exportCsv} />
+          )}
+          {data && data !== undefined && (
+            <Button
+              className='bg-[#EF8B16] text-white text-md'
+              onClick={() => handleAddGroup(data)}
+            >
+              New Group
+            </Button>
+          )}
+        </div>
+      </div>
+      <div className='w-full p-2 flex flex-col space-y-4'>
+        {data?.grouptask?.map((groupData) => (
           <div
-            className={`w-full  
-            ${!openDrop.includes(groupData.id) ? "bg-gray-200 border" : ""}
-          hover:cursor-pointer flex flex-col items-center p-2`}
+            className={`w-full hover:cursor-pointer flex flex-col items-center p-2 border rounded-md shadow-md`}
             key={groupData.id}
           >
-            <div className='flex w-full justify-start items-center'>
-              {openDrop.includes(groupData.id) ? (
-                <MdKeyboardArrowDown
-                  onClick={() => toggleDropdown(groupData.id)}
-                />
-              ) : (
-                <MdKeyboardArrowLeft
-                  onClick={() => toggleDropdown(groupData.id)}
-                />
-              )}
+            <div className='flex w-full justify-between items-center'>
               <div
                 className={`${
-                  !openDrop.includes(groupData.id) ? "" : " font-semibold"
+                  !openDrop.includes(groupData.id)
+                    ? "font-semibold"
+                    : "text-xl font-bold"
                 }`}
               >
                 <EditableGroupName projectId={data._id} groupData={groupData} />
               </div>
+              {openDrop.includes(groupData.id) ? (
+                <MdKeyboardArrowUp
+                  size={32}
+                  onClick={() => toggleDropdown(groupData.id)}
+                />
+              ) : (
+                <MdKeyboardArrowDown
+                  size={32}
+                  onClick={() => toggleDropdown(groupData.id)}
+                />
+              )}
             </div>
             {groupData?.task?.length > 0 &&
               !openDrop.includes(groupData.id) && (
-                <div className='w-full flex items-center justify-start pl-5'>
-                  <p>{groupData?.task?.length} </p>{" "}
+                <div className='w-full flex items-center justify-start text-sm font-semibold'>
                   <span>
-                    item
-                    {groupData?.task?.length > 1 && "s"}{" "}
+                    {groupData?.task?.length} ITEM
+                    {groupData?.task?.length > 1 && "S"}{" "}
                   </span>
                 </div>
               )}

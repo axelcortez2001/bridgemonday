@@ -138,13 +138,15 @@ export const projectsAtom = atom([]);
 
 export const getProjects = atom(null, async (get, set) => {
   const workSpace = await getWorkspace("/modaydata");
-  set(projectsAtom, workSpace?.workspace);
+  console.log("WorkSpace", workSpace);
+  if (workSpace && workSpace?.success) {
+    set(projectsAtom, workSpace?.workspace);
+  }
 });
 
 export const setOrganizers = atom(null, async (get, set, projectId, user) => {
-  console.log(projectId);
   const projects = get(projectsAtom);
-  const updateProjects = projects.map((project) => {
+  const updateProjects = projects?.map((project) => {
     if (project._id === projectId) {
       return {
         ...project,
@@ -158,14 +160,20 @@ export const setOrganizers = atom(null, async (get, set, projectId, user) => {
     "/modaydata/update",
     updateProjects
   );
-  if (updated.success === true) {
+  if (updated && updated?.success === true) {
     set(projectsAtom, updateProjects);
+    return { success: true, message: "User added!" };
+  } else {
+    return { success: false, message: "Failed to add User" };
   }
 });
 export const removeOrganizer = atom(null, async (get, set, projectId, sub) => {
   const projects = get(projectsAtom);
+  console.log("Id1: " + projectId);
   const updatedProjects = projects.map((project) => {
     if (project._id === projectId) {
+      console.log("Id2: " + project._id);
+      console.log("Sub: ", sub);
       const updatedOrganizer = [...project.organizer];
       const index = updatedOrganizer.findIndex((org) => org.sub === sub);
       if (index !== -1) {
@@ -182,8 +190,11 @@ export const removeOrganizer = atom(null, async (get, set, projectId, sub) => {
     "/modaydata/update",
     updatedProjects
   );
-  if (updated.success === true) {
+  if (updated && updated?.success === true) {
     set(projectsAtom, updatedProjects);
+    return { success: true, message: "User deleted!" };
+  } else {
+    return { success: false, message: "Failed to remove User" };
   }
 });
 //selection of atom from sidebar
@@ -191,11 +202,11 @@ export const selectedProject = atom(null);
 
 export const selectedProjectAtom = atom((get) => {
   const projects = get(projectsAtom);
-  console.log("ProjectId: ", selectedProject);
   const selectedProjectId = get(selectedProject);
-  console.log("project Len: " + projects);
   if (projects && projects.length > 0) {
     return projects.find((project) => project._id === selectedProjectId);
+  } else {
+    return { message: "Project not found" };
   }
 });
 
@@ -214,8 +225,11 @@ export const addProject = atom(null, async (get, set, { title, privacy }) => {
     grouptask: [],
   };
   const returnProject = await addWorkspace("/modaydata", newProject);
-  if (returnProject && returnProject.success === true) {
+  if (returnProject && returnProject?.success === true) {
     set(projectsAtom, [...prevProject, returnProject.workspace]);
+    alert("Project Added");
+  } else {
+    alert("Failed to add project");
   }
 });
 
@@ -232,18 +246,26 @@ export const editProject = atom(null, async (get, set, id, title, privacy) => {
   const updatedProjects = prevProjects.map((project) =>
     project._id === id ? { ...project, name: title, type: privacy } : project
   );
-  set(projectsAtom, updatedProjects);
+  if (updatedProjectFromBackEnd && updatedProjectFromBackEnd?.success) {
+    set(projectsAtom, updatedProjects);
+    return { success: true };
+  } else {
+    alert("Error: Failed to edit project");
+    return { success: false };
+  }
 });
 
 //function to delete project
 export const deleteProject = atom(null, async (get, set, id) => {
   const prevProjects = get(projectsAtom);
   const deleted = await deleteWorkSpace("/modaydata", id);
-  if (deleted && deleted.success === true) {
+  if (deleted && deleted?.success === true) {
     const newProject = prevProjects.filter((project) => project._id !== id);
     set(projectsAtom, newProject);
+    return { success: true };
   } else {
     set(projectsAtom, prevProjects);
+    return { success: true };
   }
 });
 
@@ -257,7 +279,7 @@ export const addGroupTask = atom(null, async (get, set, projectId) => {
     id,
     groupData
   );
-  if (updatedProjects.success === true) {
+  if (updatedProjects && updatedProjects?.success === true) {
     const updatedProjects = projects.map((project) => {
       if (project._id === projectId) {
         return {
@@ -269,7 +291,34 @@ export const addGroupTask = atom(null, async (get, set, projectId) => {
       }
     });
     set(projectsAtom, updatedProjects);
+    alert("New GroupTask Added");
+  } else {
+    alert("Error: Failed to add group task");
   }
+});
+export const deleteGroupTask = atom(null, async (get, set, projectId) => {
+  const projects = get(projectsAtom);
+  const id = projectId;
+  // const updatedProjects = await deleteGrouptask(
+  //   "/modaydata/grouptask",
+  //   id
+  // );
+  // if (updatedProjects && updatedProjects?.success === true) {
+  //   const updatedProjects = projects.map((project) => {
+  //     if (project._id === projectId) {
+  //       return {
+  //        ...project,
+  //         grouptask: [],
+  //       };
+  //     } else {
+  //       return project;
+  //     }
+  //   });
+  //   set(projectsAtom, updatedProjects);
+  //   alert("GroupTask Deleted");
+  // } else {
+  //   alert("Error: Failed to delete group task");
+  // }
 });
 
 //function to add an item to a group

@@ -5,7 +5,7 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {  useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { selectedProjectAtom, updateGroupData } from "../datastore";
 // needed for table body level scope DnD setup
 import {
@@ -166,7 +166,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className='w-full items-center justify-center'>
+      <div className='w-full items-center justify-center overflow-x-auto'>
         {convertToArray().length > 0 && (
           <>
             <button

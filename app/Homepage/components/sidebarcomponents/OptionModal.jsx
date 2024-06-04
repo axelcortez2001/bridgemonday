@@ -16,8 +16,7 @@ import {
   RadioGroup,
   Radio,
 } from "@nextui-org/react";
-import { MdDeleteOutline } from "react-icons/md";
-import { MdOutlineModeEdit } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineModeEdit } from "react-icons/md";
 import { SlOptions } from "react-icons/sl";
 import { useSetAtom } from "jotai";
 import { deleteProject, editProject } from "../../datastore";

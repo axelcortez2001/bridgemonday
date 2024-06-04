@@ -143,7 +143,7 @@ const Content = () => {
           )}
         </div>
       </div>
-      <div className='w-full p-2 flex flex-col space-y-4'>
+      <div className='w-full max-w-full p-2 flex flex-col space-y-4'>
         {data?.grouptask?.map((groupData) => (
           <div
             className={`w-full hover:cursor-pointer flex flex-col items-center p-2 border rounded-md shadow-md`}

@@ -22,46 +22,59 @@ import {
 import { SlOptions } from "react-icons/sl";
 import OptionModal from "./sidebarcomponents/OptionModal";
 import { signOut } from "aws-amplify/auth";
+import LoadingComponent from "./otherComponents/LoadingComponent";
 
 const Sidebar = () => {
   const data = useAtomValue(projectsAtom);
   const [userData, setUserData] = useAtom(UserDataAtom || {});
   const addNew = useSetAtom(addProject);
   const setSelectedProject = useSetAtom(selectedProject);
+  const [loading, setLoading] = useState(false);
 
   const handleSelect = (task) => {
-    console.log("Trigger select: ", task._id);
     setSelectedProject(task._id);
   };
   //handlers
   //Add New Project Handler
   const [title, setTitle] = useState("");
   const [privacy, setPrivacy] = useState("shared");
-  const handleAddProject = () => {
+  const handleAddProject = async () => {
     if (title === "") {
       alert("Please enter a title");
       return;
     }
-    addNew({ title, privacy });
-    setTitle("");
-    setPrivacy("shared");
+    setLoading(true);
+    try {
+      const status = await addNew({ title, privacy });
+      if (status && status.success) {
+        alert("Project added");
+        setTitle("");
+        setPrivacy("shared");
+      } else {
+        alert("Error adding project");
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
   };
   //function to check if the user is owner or has access to the project
   const checkAccess = () => {
     if (userData && data) {
       console.log("data", data);
-      const accessData = data.filter(
-        (project) =>
-          project?.organizer?.some((person) => person?.sub === userData?.sub)
+      const accessData = data.filter((project) =>
+        project?.organizer?.some((person) => person?.sub === userData?.sub)
       );
       return accessData;
     }
     return [];
   };
-  console.log("Access: ", checkAccess());
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  return (
+  return loading ? (
+    <LoadingComponent />
+  ) : (
     <div className='w-60 min-w-60 h-screen flex flex-col border border-gray-900'>
       <div className='w-full p-2'>Home</div>
       <div className='w-full p-2'>My Work</div>

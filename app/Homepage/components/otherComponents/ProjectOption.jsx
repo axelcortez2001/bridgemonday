@@ -17,8 +17,9 @@ import {
   Radio,
 } from "@nextui-org/react";
 import { SlOptions } from "react-icons/sl";
-import { MdDeleteOutline } from "react-icons/md";
-import { MdOutlineModeEdit } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineModeEdit, MdIosShare } from "react-icons/md";
+import { TiExport, TiExportOutline } from "react-icons/ti";
+
 import { useAtom, useSetAtom } from "jotai";
 import {
   deleteProject,
@@ -183,6 +184,8 @@ const ProjectOption = ({ data, exportCsv }) => {
       setLoading(false);
     }
   };
+  const iconClasses =
+    "text-xl text-default-500 pointer-events-none flex-shrink-0";
   return loading ? (
     <LoadingComponent />
   ) : (
@@ -195,27 +198,51 @@ const ProjectOption = ({ data, exportCsv }) => {
         </DropdownTrigger>
         <DropdownMenu aria-label='Action event example'>
           {data && data !== undefined && (
-            <DropdownItem key='edit' onClick={() => modalClick("edit")}>
+            <DropdownItem
+              key='edit'
+              startContent={<MdOutlineModeEdit className={iconClasses} />}
+              onClick={() => modalClick("edit")}
+            >
               Edit
             </DropdownItem>
           )}
           {data?.type === "shared" && (
-            <DropdownItem key='share' onClick={() => modalClick("share")}>
+            <DropdownItem
+              key='share'
+              startContent={<MdIosShare className={iconClasses} />}
+              onClick={() => modalClick("share")}
+            >
               Share
             </DropdownItem>
           )}
           {data?.grouptask && data?.grouptask?.length > 0 && (
-            <DropdownItem key='noSub' onClick={() => exportCsv("noSub")}>
+            <DropdownItem
+              key='noSub'
+              startContent={<TiExportOutline className={iconClasses} />}
+              onClick={() => exportCsv("noSub")}
+            >
               Export CSV without SubItems
             </DropdownItem>
           )}
           {data?.grouptask && data?.grouptask?.length > 0 && (
-            <DropdownItem key='sub' onClick={() => exportCsv("Sub")}>
+            <DropdownItem
+              key='sub'
+              startContent={<TiExport className={iconClasses} />}
+              onClick={() => exportCsv("Sub")}
+            >
               Export CSV with SubItems
             </DropdownItem>
           )}
           {data && data !== undefined && (
-            <DropdownItem key='delete' onClick={() => handleDelete()}>
+            <DropdownItem
+              startContent={
+                <MdDeleteOutline className={cn(iconClasses, "text-danger")} />
+              }
+              className='text-danger'
+              color='danger'
+              key='delete'
+              onClick={() => handleDelete()}
+            >
               Delete
             </DropdownItem>
           )}

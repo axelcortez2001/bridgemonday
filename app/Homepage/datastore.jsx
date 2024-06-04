@@ -227,9 +227,10 @@ export const addProject = atom(null, async (get, set, { title, privacy }) => {
   const returnProject = await addWorkspace("/modaydata", newProject);
   if (returnProject && returnProject?.success === true) {
     set(projectsAtom, [...prevProject, returnProject.workspace]);
-    alert("Project Added");
+    return { success: true };
   } else {
     alert("Failed to add project");
+    return { success: false };
   }
 });
 
@@ -296,30 +297,33 @@ export const addGroupTask = atom(null, async (get, set, projectId) => {
     alert("Error: Failed to add group task");
   }
 });
-export const deleteGroupTask = atom(null, async (get, set, projectId) => {
-  const projects = get(projectsAtom);
-  const id = projectId;
-  // const updatedProjects = await deleteGrouptask(
-  //   "/modaydata/grouptask",
-  //   id
-  // );
-  // if (updatedProjects && updatedProjects?.success === true) {
-  //   const updatedProjects = projects.map((project) => {
-  //     if (project._id === projectId) {
-  //       return {
-  //        ...project,
-  //         grouptask: [],
-  //       };
-  //     } else {
-  //       return project;
-  //     }
-  //   });
-  //   set(projectsAtom, updatedProjects);
-  //   alert("GroupTask Deleted");
-  // } else {
-  //   alert("Error: Failed to delete group task");
-  // }
-});
+export const deleteGroupTask = atom(
+  null,
+  async (get, set, projectId, groupId) => {
+    const projects = get(projectsAtom);
+    const id = projectId;
+    const updatedProjects = projects.map((project) => {
+      if (project._id === projectId) {
+        const updatedGrouptask = project?.grouptask.filter(
+          (group) => group.id !== groupId
+        );
+        return {
+          ...project,
+          grouptask: updatedGrouptask,
+        };
+      } else {
+        return project;
+      }
+    });
+    const updated = await updateWholeWorkSpace(
+      "/modaydata/update",
+      updatedProjects
+    );
+    if (updated.success === true) {
+      set(projectsAtom, updatedProjects);
+    }
+  }
+);
 
 //function to add an item to a group
 export const addNewItem = atom(null, async (get, set, projectId, itemName) => {

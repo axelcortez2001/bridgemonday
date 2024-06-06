@@ -50,11 +50,19 @@ const workspaceModel = mongoose.model("workspace", workspaceSchema);
 
 app.get("/modaydata", async (req, res) => {
   try {
-    const workspace = await workspaceModel.find();
-    if (!workspace) {
+    const { sub } = req.query;
+    const workspaceData = await workspaceModel.find();
+    if (!workspaceData) {
       return res.status(404).json({ message: "WorkSpace Unavailable" });
     }
-    res.status(200).json({ success: true, workspace });
+    if (sub) {
+      const workspace = workspaceData.filter((space) =>
+        space?.organizer?.some((person) => person?.sub === sub)
+      );
+      res.status(200).json({ success: true, workspace });
+    } else {
+      res.status(404).json({ success: false, message: "WorkSpace Not Found" });
+    }
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }

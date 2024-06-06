@@ -1,19 +1,9 @@
 import React, { useState } from "react";
 
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { addGroupTask, selectedProjectAtom } from "../datastore";
-import {
-  MdKeyboardArrowLeft,
-  MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
-} from "react-icons/md";
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from "@nextui-org/react";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { Button } from "@nextui-org/react";
 import Tasktable from "./tasktable";
 import EditableGroupName from "./EditableGroupName";
 import { dataColumns } from "./functions/hookfunctions";
@@ -23,12 +13,13 @@ import {
   preprocessAllData,
   renameKeys,
 } from "./functions/tablefunctions";
-import { SlOptions } from "react-icons/sl";
 import ProjectOption from "./otherComponents/ProjectOption";
+import LoadingComponent from "./otherComponents/LoadingComponent";
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
   //function to toggle dropdown of each groupTask
   const [openDrop, setOpenDrop] = useState([]);
+  const [loading, setLoading] = useState(false);
   const toggleDropdown = (groupId) => {
     if (openDrop.includes(groupId)) {
       setOpenDrop(openDrop.filter((id) => id !== groupId));
@@ -40,12 +31,23 @@ const Content = () => {
   //Handlers
   //handler to add new group
   const addNewGroup = useSetAtom(addGroupTask);
-  const handleAddGroup = (data) => {
-    const id = data._id;
-    addNewGroup(id);
+  const handleAddGroup = async (data) => {
+    setLoading(true);
+    try {
+      const id = data._id;
+      const status = await addNewGroup(id);
+      if (status && status.success) {
+        alert("New GroupTask Added");
+      } else {
+        alert("Error: Failed to add group task");
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
   };
   const exportCsv = (sub) => {
-    console.log("Sub: ", sub);
     const columnData = JSON.parse(JSON.stringify(data));
     //compress all data including subitems
     const keyMapping = {};
@@ -118,7 +120,9 @@ const Content = () => {
     }
   };
 
-  return (
+  return loading ? (
+    <LoadingComponent />
+  ) : (
     <div className=' flex flex-col w-full max-h-screen overflow-y-auto'>
       <div className='w-full p-2 flex justify-between bg-[#32449C] items-center'>
         <div className='w-full flex '>

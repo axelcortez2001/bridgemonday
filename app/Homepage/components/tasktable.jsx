@@ -5,7 +5,7 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { selectedProjectAtom, updateGroupData } from "../datastore";
 // needed for table body level scope DnD setup
 import {
@@ -25,14 +25,20 @@ import {
 } from "@dnd-kit/sortable";
 import { DraggableRow, preprocessData } from "./functions/tablefunctions";
 import { mkConfig, generateCsv, download } from "export-to-csv";
+import { dataColumns } from "./functions/hookfunctions";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
+  const [projects, setProjects] = useAtom(selectedProjectAtom);
   const [selectedRows, setSelectedRows] = useState([]);
   const [columns, setColumns] = useState(columnData);
   const [data, setData] = useState(groupData);
+  const [initialColumns, setInitialColumns] = useState(projects.columns);
   useEffect(() => {
-    setColumns(columnData);
-  }, [groupData]);
+    if (JSON.stringify(projects.columns) !== JSON.stringify(initialColumns)) {
+      setInitialColumns(projects.columns);
+      setColumns(columnData);
+    }
+  }, [columnData]);
   const table = useReactTable({
     data,
     columns: columns,
@@ -70,7 +76,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       }
     };
     updateData();
-  }, [data]);
+  }, [updateTableData, data]);
 
   //function to delete a row or whole table row
   const convertToArray = () => {

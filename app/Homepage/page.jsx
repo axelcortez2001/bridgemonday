@@ -8,12 +8,12 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import config from "../../src/amplifyconfiguration.json";
 import { withAuthenticator } from "@aws-amplify/ui-react";
-import { getProjects, registerUser } from "./datastore";
-import { useSetAtom } from "jotai";
+import { getProjects, registerUser, UserDataAtom } from "./datastore";
+import { useAtom, useSetAtom } from "jotai";
 Amplify.configure(config);
 
-
 const Homepage = () => {
+  const userData = useAtom(UserDataAtom);
   const registerU = useSetAtom(registerUser);
   const getWorkSpaceData = useSetAtom(getProjects);
   useEffect(() => {
@@ -31,14 +31,16 @@ const Homepage = () => {
     };
     const fetchWorkSpace = async () => {
       try {
-        await getWorkSpaceData();
+        if (userData) {
+          await getWorkSpaceData();
+        }
       } catch (error) {
         console.log(error);
       }
     };
     handleSignin();
     fetchWorkSpace();
-  }, []);
+  }, [userData]);
 
   return (
     <Authenticator>

@@ -19,23 +19,45 @@ const EditableSubHeader = ({ data, accessorKey }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [newHeaderName, setNewHeaderName] = useState(data);
   const [oldName, setOldName] = useState(accessorKey);
-
+  const [loading, setLoading] = useState(false);
   const editHeader = useSetAtom(updateSubHeaderName);
   const projectId = projects._id;
   const key = accessorKey;
-  const handleBlur = () => {
-    editHeader(projectId, oldName, newHeaderName);
-    setIsClicked(false);
+  const handleBlur = async () => {
+    setLoading(true);
+    try {
+      const status = await editHeader(projectId, oldName, newHeaderName);
+      if (!status && status.success === false) {
+        alert("Error updating");
+      }
+      setIsClicked(false);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteHeader = useSetAtom(deleteSubColumn);
-  const handleDelete = () => {
-    deleteHeader(projectId, key);
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      const status = await deleteHeader(projectId, key);
+      if (!status && status.success === false) {
+        alert("Error deleting");
+      }
+      setIsClicked(false);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
   };
-  console.log("Accessor: ", key);
   return (
     <div className='hover:cursor-text flex flex-row items-center justify-center relative w-full'>
-      {!isClicked ? (
+      {loading ? (
+        <div className='text-gray-300 font-light text-sm'>updating...</div>
+      ) : !isClicked ? (
         <p onClick={() => setIsClicked(true)}>{data}</p>
       ) : (
         <Input

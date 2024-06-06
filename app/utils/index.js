@@ -52,7 +52,6 @@ export const getAllUsers = async (path) => {
       path: path,
     });
     const { body } = await getOperation.response;
-    console.log("All Users: ", body.json());
     return await body.json();
   } catch (e) {
     console.log(e);
@@ -60,11 +59,14 @@ export const getAllUsers = async (path) => {
 };
 
 //function to get all workspace
-export const getWorkspace = async (path) => {
+export const getWorkspace = async (path, sub) => {
   try {
     const getOperation = get({
       apiName: "mondayREST",
       path: path,
+      options: {
+        queryParams: { sub },
+      },
     });
     const { body } = await getOperation.response;
     return await body.json();

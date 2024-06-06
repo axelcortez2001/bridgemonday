@@ -10,11 +10,23 @@ const EditableGroupName = ({ projectId, groupData }) => {
   const [newGroupName, setGroupTitle] = useState(groupData.groupName);
   const delGroup = useSetAtom(deleteGroupTask);
   const groupId = groupData.id;
+  const [loading, setLoading] = useState(false);
 
   const updateName = useSetAtom(updateGroupName);
-  const handleBlur = () => {
-    updateName({ projectId, groupId, newGroupName });
-    setIsClicked(false);
+  const handleBlur = async () => {
+    setLoading(true);
+    try {
+      const status = await updateName({ projectId, groupId, newGroupName });
+      if (!status && !status.success) {
+        alert("Error updating group");
+      }
+      setIsClicked(false);
+    } catch (error) {
+      setIsClicked(false);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
   const handleDelete = () => {
     const groupId = groupData.id;
@@ -25,7 +37,9 @@ const EditableGroupName = ({ projectId, groupData }) => {
   return (
     <div className='flex w-full justify-between items-center'>
       <div className='hover:cursor-text'>
-        {!isClicked ? (
+        {loading ? (
+          <div className='text-gray-300 font-light text-sm'>Updating...</div>
+        ) : !isClicked ? (
           <p onClick={() => setIsClicked(true)}>{groupData.groupName}</p>
         ) : (
           <Input

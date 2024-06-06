@@ -37,6 +37,7 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
     if (
       JSON.stringify(projects.subColumns) !== JSON.stringify(initialColumns)
     ) {
+      console.log("Triggerasdas");
       setInitialColumns(projects.subColumns);
       setColumnValues(dataColumns(projects.subColumns));
     }

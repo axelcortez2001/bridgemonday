@@ -50,7 +50,7 @@ export const registerUser = atom(null, async (get, set) => {
 //function to get all users
 export const userAtom = atom(async () => {
   const user = await getAllUsers("/user");
-  return user.user;
+  return user?.user;
 });
 
 let statusId = 0;
@@ -137,8 +137,9 @@ export const defaultSubColumns = [
 export const projectsAtom = atom([]);
 
 export const getProjects = atom(null, async (get, set) => {
-  const workSpace = await getWorkspace("/modaydata");
-  console.log("WorkSpace", workSpace);
+  const user = get(UserDataAtom);
+  const sub = user.value.sub;
+  const workSpace = await getWorkspace("/modaydata", sub);
   if (workSpace && workSpace?.success) {
     set(projectsAtom, workSpace?.workspace);
   }
@@ -169,11 +170,8 @@ export const setOrganizers = atom(null, async (get, set, projectId, user) => {
 });
 export const removeOrganizer = atom(null, async (get, set, projectId, sub) => {
   const projects = get(projectsAtom);
-  console.log("Id1: " + projectId);
   const updatedProjects = projects.map((project) => {
     if (project._id === projectId) {
-      console.log("Id2: " + project._id);
-      console.log("Sub: ", sub);
       const updatedOrganizer = [...project.organizer];
       const index = updatedOrganizer.findIndex((org) => org.sub === sub);
       if (index !== -1) {
@@ -292,9 +290,9 @@ export const addGroupTask = atom(null, async (get, set, projectId) => {
       }
     });
     set(projectsAtom, updatedProjects);
-    alert("New GroupTask Added");
+    return { success: true };
   } else {
-    alert("Error: Failed to add group task");
+    return { success: false };
   }
 });
 export const deleteGroupTask = atom(
@@ -319,8 +317,11 @@ export const deleteGroupTask = atom(
       "/modaydata/update",
       updatedProjects
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProjects);
+      return { success: true };
+    } else {
+      return { success: false };
     }
   }
 );
@@ -347,7 +348,6 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
         return highestID === item.id;
       }
     });
-    console.log("Highest: ", highestID);
     newItemName = newItemName + (newItem.length + 1);
   }
   //newItemData
@@ -392,8 +392,11 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
     "/modaydata/update",
     updatedProjects
   );
-  if (updated.success === true) {
+  if (updated && updated.success === true) {
     set(projectsAtom, updatedProjects);
+    return { success: true };
+  } else {
+    return { success: false };
   }
 });
 
@@ -451,8 +454,11 @@ export const addSubItemColumn = atom(
       "/modaydata/update",
       updatedProjects
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProjects);
+      return { success: true };
+    } else {
+      return { success: false };
     }
   }
 );
@@ -485,7 +491,7 @@ export const addNewStatus = atom(
       "/modaydata/update",
       updatedProject
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProject);
       return newDefaultStatus;
     }
@@ -516,9 +522,11 @@ export const addNewDropDown = atom(
       "/modaydata/update",
       updatedProject
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProject);
-      return newDefaultStatus;
+      return { success: true };
+    } else {
+      return { success: false };
     }
   }
 );
@@ -548,8 +556,11 @@ export const updateGroupName = atom(
       "/modaydata/update",
       updatedProjects
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProjects);
+      return { success: true };
+    } else {
+      return { success: false };
     }
   }
 );
@@ -581,8 +592,11 @@ export const updateHeaderName = atom(
       "/modaydata/update",
       updatedProjects
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProjects);
+      return { success: true };
+    } else {
+      return { success: false };
     }
   }
 );
@@ -619,8 +633,11 @@ export const deleteColumn = atom(null, async (get, set, projectId, key) => {
     "/modaydata/update",
     updatedProject
   );
-  if (updated.success === true) {
+  if (updated && updated.success === true) {
     set(projectsAtom, updatedProject);
+    return { success: true };
+  } else {
+    return { success: false };
   }
 });
 //function to delete subcolumns
@@ -661,8 +678,11 @@ export const deleteSubColumn = atom(null, async (get, set, projectId, key) => {
     "/modaydata/update",
     updatedProject
   );
-  if (updated.success === true) {
+  if (updated && updated.success === true) {
     set(projectsAtom, updatedProject);
+    return { success: true };
+  } else {
+    return { success: false };
   }
 });
 //function to update subheaderName
@@ -694,6 +714,9 @@ export const updateSubHeaderName = atom(
     );
     if (updated.success === true) {
       set(projectsAtom, updatedProjects);
+      return { success: true };
+    } else {
+      return { success: false };
     }
   }
 );

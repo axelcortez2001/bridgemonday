@@ -67,10 +67,14 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   //update the all table data of an specfic table
   const updateTableData = useSetAtom(updateGroupData);
   useEffect(() => {
-    const updateData = () => {
+    const updateData = async () => {
       try {
+        console.log("Triiger");
         const type = "UpdateData";
-        updateTableData(projectId, groupId, data, type);
+        const status = await updateTableData(projectId, groupId, data, type);
+        if (!status && status.success === false) {
+          alert("Error updating");
+        }
       } catch (error) {
         console.log(error);
       }
@@ -96,13 +100,12 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const addNewRow = async () => {
     try {
       const type = "Add Row";
-      const updatedProject = await updateTableData(
-        projectId,
-        groupId,
-        data,
-        type
-      );
-      setData(updatedProject);
+      const status = await updateTableData(projectId, groupId, data, type);
+      if (status && status.success === true) {
+        setData(status?.task);
+      } else {
+        alert("Error adding task!");
+      }
     } catch (error) {
       console.log(error);
     }

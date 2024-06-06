@@ -712,7 +712,7 @@ export const updateSubHeaderName = atom(
       "/modaydata/update",
       updatedProjects
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProjects);
       return { success: true };
     } else {
@@ -769,7 +769,7 @@ export const updateGroupData = atom(
       "/modaydata/update",
       updatedProjects
     );
-    if (updated.success === true) {
+    if (updated && updated.success === true) {
       set(projectsAtom, updatedProjects);
       const updatedProject = updatedProjects.find(
         (project) => project._id === projectId
@@ -777,7 +777,9 @@ export const updateGroupData = atom(
       const updatedGroupTask = updatedProject.grouptask.find(
         (groupTask) => groupTask.id === groupId
       );
-      return updatedGroupTask.task;
+      return { success: true, task: updatedGroupTask.task };
+    } else {
+      return { success: false };
     }
   }
 );
@@ -852,7 +854,7 @@ export const updateSubItemData = atom(
       const updatedSubItem = updatedGroupTask.task.find(
         (task) => task.id === taskId
       );
-      return updatedSubItem.subItems;
-    }
+      return { success: true, task: updatedSubItem.subItems };
+    } else return { success: false };
   }
 );

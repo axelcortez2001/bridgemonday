@@ -48,8 +48,12 @@ export const DraggableRow = ({ row, gId }) => {
   };
   const handleAdd = async () => {
     console.log(data);
-    const projectData = await addSubColumn(projectId, groupId, taskId, data);
-    setData(projectData);
+    const status = await addSubColumn(projectId, groupId, taskId, data);
+    if (status && status.success === true) {
+      setData(status.task);
+    } else {
+      alert("Error adding task");
+    }
   };
   return (
     <>

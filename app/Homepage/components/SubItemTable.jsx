@@ -75,11 +75,20 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   //function to update subitemdata
   const updateTableData = useSetAtom(updateSubItemData);
   useEffect(() => {
-    const updateData = () => {
+    const updateData = async () => {
       try {
         console.log("Trigger subtable");
         const type = "UpdateData";
-        updateTableData(projectId, groupId, taskId, data, type);
+        const status = await updateTableData(
+          projectId,
+          groupId,
+          taskId,
+          data,
+          type
+        );
+        if (!status && status.success === false) {
+          alert("Error updating subtable");
+        }
       } catch (error) {
         console.log(error);
       }

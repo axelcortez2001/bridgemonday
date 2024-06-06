@@ -31,11 +31,16 @@ import {
 } from "../../datastore";
 import LoadingComponent from "./LoadingComponent";
 const ProjectOption = ({ data, exportCsv }) => {
-  const [title, setTitle] = useState(data?.name);
-  const [privacy, setPrivacy] = useState(data?.type);
+  const [title, setTitle] = useState(data.name);
+  const [privacy, setPrivacy] = useState(data.type);
   const [modalSelected, setModalSelected] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    setTitle(data.name);
+    setPrivacy(data.type);
+  }, [data]);
 
   //for user sharing
   const [personAtom, setPersonAtom] = useAtom(userAtom);
@@ -255,7 +260,6 @@ const ProjectOption = ({ data, exportCsv }) => {
               <>
                 <ModalHeader className='flex flex-col gap-1'>Edit</ModalHeader>
                 <ModalBody>
-                  {" "}
                   <Input
                     placeholder='Title'
                     value={title}

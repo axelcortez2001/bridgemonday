@@ -58,11 +58,11 @@ let dropId = 0;
 let subItemId = 0;
 
 export const statusesData = [
-  { id: statusId++, color: "bg-green-500", text: "Done" },
-  { id: statusId++, color: "bg-orange-500", text: "Working On It" },
-  { id: statusId++, color: "bg-red-500", text: "Stuck" },
-  { id: statusId++, color: "bg-blue-500", text: "On Hold" },
-  { id: statusId++, color: "bg-gray-500", text: "None" },
+  { id: statusId++, color: "bg-a-green", text: "Done" },
+  { id: statusId++, color: "bg-a-orange", text: "Working On It" },
+  { id: statusId++, color: "bg-a-red", text: "Stuck" },
+  { id: statusId++, color: "bg-a-blue", text: "On Hold" },
+  { id: statusId++, color: "bg-a-grey", text: "None" },
 ];
 export const textItem = [
   {

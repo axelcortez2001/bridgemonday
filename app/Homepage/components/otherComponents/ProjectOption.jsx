@@ -197,7 +197,7 @@ const ProjectOption = ({ data, exportCsv }) => {
     <>
       <Dropdown>
         <DropdownTrigger>
-          <Button className='bg-[#EF8B16] text-white text-md'>
+          <Button isIconOnly size="sm" className='bg-a-orange text-white text-md'>
             <SlOptions />
           </Button>
         </DropdownTrigger>

@@ -175,25 +175,25 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className='w-full items-center justify-center overflow-x-auto'>
+      <div className="w-full items-center justify-center overflow-x-visible">
         {convertToArray().length > 0 && (
           <>
             <button
               onClick={deleteSelectedRows}
-              className='mb-2 p-2 rounded-md bg-red-500 text-white'
+              className="mb-2 p-2 rounded-md bg-red-500 text-white"
             >
               Delete
             </button>
             <button
               onClick={exportCsv}
-              className='mb-2 p-2 rounded-md bg-blue-500 text-white'
+              className="mb-2 p-2 rounded-md bg-blue-500 text-white"
             >
               Export CSV
             </button>
           </>
         )}
         <table
-          className='p-2 border border-gray-900 '
+          className="p-2 border-2 border-a-grey  "
           style={{ width: table?.getTotalSize() }}
         >
           <thead>
@@ -201,16 +201,19 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
-                    className='px-6 py-3 border'
+                    className="p-[5px] border-2 border-a-grey h-[52px] min-h-[0px] min-w-[80px]"
                     key={header.id}
                     style={{ position: "relative", maxwidth: header.getSize() }}
                   >
                     {header.isPlaceholder ? null : (
                       <>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        <div className="min-w-[40px]">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </div>
+
                         <div
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
@@ -234,9 +237,14 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
                 <DraggableRow key={row.id} row={row} gId={groupId} />
               ))}
             </SortableContext>
-            <tr className='w-full flex items-center justify-center p-1 min-h-9 hover:cursor-pointer'>
+            <tr className="w-full flex items-center justify-center p-1 hover:cursor-pointer h-[52px]">
               <div>
-                <button onClick={() => addNewRow()}>+add item</button>
+                <button
+                  className="font-[12px] font-helvetica"
+                  onClick={() => addNewRow()}
+                >
+                  Add Item
+                </button>
               </div>
             </tr>
           </tbody>

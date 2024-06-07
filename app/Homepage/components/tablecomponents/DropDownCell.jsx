@@ -15,6 +15,7 @@ import {
 } from "@nextui-org/react";
 import { addNewDropDown, selectedProjectAtom } from "../../datastore";
 import { useAtom, useSetAtom } from "jotai";
+import styles from "@/app/styles";
 
 const DropDownCell = ({ getValue, row, column, table }) => {
   const { text, color } = getValue() || {};
@@ -39,10 +40,11 @@ const DropDownCell = ({ getValue, row, column, table }) => {
     }
   };
   const colorSelection = [
-    { color: "bg-blue-700" },
-    { color: "bg-red-700" },
-    { color: "bg-green-700" },
-    { color: "bg-yellow-700" },
+    { color: "bg-a-green" },
+    { color: "bg-a-orange" },
+    { color: "bg-a-red" },
+    { color: "bg-a-blue" },
+    { color: "bg-a-grey" },
   ];
 
   const addDropDown = useSetAtom(addNewDropDown);
@@ -71,20 +73,38 @@ const DropDownCell = ({ getValue, row, column, table }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
-      <Dropdown>
-        <DropdownTrigger>
-          <Button
-            variant='bordered'
-            className={`capitalize w-full ${checkColor(color)}`}
-          >
-            {selectedValue}
-          </Button>
-        </DropdownTrigger>
+      <Dropdown className="min-w-[0px] w-[180px]">
+        <div className={`${styles.flexCenter}`}>
+          <DropdownTrigger>
+            <Button
+              variant="bordered"
+              className={`capitalize w-[90%] ${checkColor(
+                color
+              )} min-h-[0px] h-[36px] rounded-lg border-1 ${
+                checkColor(color) === "bg-a-grey" ||
+                checkColor(color) === "bg-a-green"
+                  ? "text-a-black"
+                  : "text-a-white"
+              }`}
+            >
+              <div
+                className={`${
+                  selectedValue === "" ? "flex" : "hidden"
+                } text-a-black`}
+              >
+                Select
+              </div>
+              <div className={`${selectedValue !== "" ? "flex" : "hidden"}`}>
+                {selectedValue}
+              </div>
+            </Button>
+          </DropdownTrigger>
+        </div>
         <DropdownMenu
-          aria-label='Single selection example'
-          variant='flat'
+          aria-label="Single selection example"
+          variant="flat"
           disallowEmptySelection
-          selectionMode='single'
+          selectionMode="single"
           selectedKeys={selectedKeys}
           onSelectionChange={setSelectedKeys}
         >
@@ -99,24 +119,24 @@ const DropDownCell = ({ getValue, row, column, table }) => {
             </DropdownItem>
           ))}
           <DropdownItem
-            className='bg-gray-200'
+            className="bg-gray-200"
             key={" "}
             onClick={onOpen}
-            textValue='Add New'
+            textValue="Add New"
           >
-            +Add New DropDown
+            Add New DropDown
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className=''>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className='flex flex-col gap-1'>
-                Add New DropDown
+              <ModalHeader className="flex flex-col gap-1">
+                New DropDown
               </ModalHeader>
               <ModalBody>
-                <div className='w-full grid grid-cols-3 gap-2'>
+                <div className="w-full grid grid-cols-3 gap-2">
                   {selectedProject?.defaultDropDown.map((status, index) => (
                     <div
                       key={index}
@@ -128,7 +148,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
                 </div>
                 <div>
                   <p>Select Color</p>
-                  <div className='flex flex-row gap-x-1'>
+                  <div className="flex flex-row gap-x-1">
                     {colorSelection.map((color, index) => (
                       <div
                         key={index}
@@ -140,14 +160,14 @@ const DropDownCell = ({ getValue, row, column, table }) => {
                     ))}
                   </div>
                 </div>
-                <div className='flex items-center gap-x-2'>
+                <div className="flex items-center gap-x-2">
                   <div
                     className={`h-8 w-8 rounded-md border ${
                       newColor && checkColor(newColor)
                     }`}
                   ></div>
                   <Input
-                    placeholder='Text here...'
+                    placeholder="Text here..."
                     value={newDropDown}
                     onChange={(e) => setNewDropDown(e.target.value)}
                     required
@@ -155,10 +175,10 @@ const DropDownCell = ({ getValue, row, column, table }) => {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color='danger' variant='light' onPress={onClose}>
+                <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color='primary' onClick={() => handleDropDown()}>
+                <Button color="primary" onClick={() => handleDropDown()}>
                   Add
                 </Button>
               </ModalFooter>

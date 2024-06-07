@@ -17,7 +17,7 @@
         "mondaydata": {
           "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge",
           "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
-          "s3Key": "amplify-builds/mondaydata-31637444513659437a2f-build.zip"
+          "s3Key": "amplify-builds/mondaydata-5635526e663535327332-build.zip"
         },
         "user": {
           "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge",
@@ -27,9 +27,6 @@
       },
       "auth": {
         "bridgemonday": {}
-      },
-      "api": {
-        "mondayREST": {}
       }
     }
   }

@@ -18,6 +18,9 @@ import {
   Input,
 } from "@nextui-org/react";
 
+import { IoAddOutline } from "react-icons/io5";
+import { IoIosRemove } from "react-icons/io";
+
 const PersonCell = ({ getValue, row, column, table }) => {
   const projects = useAtom(selectedProjectAtom);
   const currentUser = useAtomValue(UserDataAtom);
@@ -33,18 +36,19 @@ const PersonCell = ({ getValue, row, column, table }) => {
     return (
       allusers !== undefined &&
       allusers.map((user, index) => (
-        <div className='flex p-2 relative' key={index}>
+        <div key={index} className="px-[4px] relative">
           <img
-            className='w-8 h-8 rounded-full'
+            className="w-8 h-8 rounded-full"
             src={user?.picture}
-            alt='user'
+            alt="user"
           />
+
           <div
-            className='absolute flex items-center justify-center text-red-500 top-0 right-1 rounded-full border bg-gray-200 h-4 w-4 hover:cursor-pointer
-          hover:bg-red-500 hover:text-white'
+            className="absolute flex items-center justify-center text-red-500 top-0 right-0 rounded-full border bg-gray-200 h-4 w-4 hover:cursor-pointer
+          hover:bg-a-red hover:text-white"
             onClick={() => deleteUserData(user)}
           >
-            x
+            <IoIosRemove className="size-[200%]"/>
           </div>
         </div>
       ))
@@ -63,15 +67,15 @@ const PersonCell = ({ getValue, row, column, table }) => {
       allusers !== undefined &&
       allusers.map((user, index) => (
         <div
-          className='border rounded-md p-1 flex items-center justify-start space-x-2 
-        hover:bg-gray-200 hover:bg-opacity-80 hover:cursor-pointer'
+          className="border rounded-md p-1 flex items-center justify-start space-x-2 
+        hover:bg-gray-200 hover:bg-opacity-80 hover:cursor-pointer"
           onClick={() => updateUserData(user)}
           key={index}
         >
           <img
-            className='w-8 h-8 rounded-full'
+            className="w-8 h-8 rounded-full"
             src={user?.picture}
-            alt='user'
+            alt="user"
           />
           <p>{user.name}</p>
         </div>
@@ -112,55 +116,55 @@ const PersonCell = ({ getValue, row, column, table }) => {
     sertSearchText("");
   };
   return (
-    <div className='w-full flex flex-wrap items-center justify-center'>
+    <div className="w-full flex flex-wrap items-center justify-center">
       {value !== undefined ? (
         <>
-          {value.map((user) => findUserData(personAtom, user))}
-          <div
-            onClick={onOpen}
-            className='flex p-2 border rounded-full h-5 w-5 justify-center items-center 
-          hover:cursor-pointer hover:bg-gray-500 '
-          >
-            +
+          <div className="flex justify-center items-center">
+            {value.map((user) => findUserData(personAtom, user))}
+            <Button
+              isIconOnly
+              onPress={onOpen}
+              size="sm"
+              className="rounded-full mx-[4px]"
+            >
+              <IoAddOutline className="size-[50%]" />
+            </Button>
           </div>
         </>
       ) : (
-        <div
-          onClick={onOpen}
-          className='flex p-2 border rounded-full h-5 w-5 justify-center items-center 
-          hover:cursor-pointer hover:bg-gray-500 '
-        >
-          +
-        </div>
+        <Button isIconOnly onPress={onOpen} size="sm" className="rounded-full">
+          <IoAddOutline className="size-[50%]" />
+        </Button>
       )}
+
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        className=' max-h-96 h-96'
+        className=" max-h-96 h-96"
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className='flex flex-col gap-1'>
+              <ModalHeader className="flex flex-col gap-1">
                 Add New User
               </ModalHeader>
               <ModalBody>
-                <div className='flex'>{findUserData(personAtom, value)}</div>
+                <div className="flex">{findUserData(personAtom, value)}</div>
                 <Input
-                  placeholder='Search here...'
+                  placeholder="Search here..."
                   value={searchText}
                   onChange={(e) => sertSearchText(e.target.value)}
                   required
                 ></Input>
                 <p>Suggested</p>
-                <div className='w-full max-h-40 overflow-y-auto '>
-                  <div className='flex flex-col gap-y-1 max-h-full overflow-y-auto'>
+                <div className="w-full max-h-40 overflow-y-auto ">
+                  <div className="flex flex-col gap-y-1 max-h-full overflow-y-auto">
                     {showSuggested(filteredPerson, value)}
                   </div>
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color='danger' variant='light' onPress={onClose}>
+                <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
                 {/* <Button color='primary' onPress={onClose}>

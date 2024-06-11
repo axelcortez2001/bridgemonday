@@ -117,10 +117,15 @@ app.put("/modaydata", async (req, res) => {
 app.put("/modaydata/update", async (req, res) => {
   const { workData } = req.body;
   try {
-    // Delete all existing documents
-    await workspaceModel.deleteMany({});
-    // Insert new data
-    const newProjects = await workspaceModel.insertMany(workData);
+    const bulkOperations = workData.map((data) => ({
+      updateOne: {
+        filter: { _id: data._id },
+        update: { $set: data },
+        upsert: true,
+      },
+    }));
+    // Update Data
+    const newProjects = await workspaceModel.bulkWrite(bulkOperations);
     res.status(200).json({ success: true, newProjects });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });

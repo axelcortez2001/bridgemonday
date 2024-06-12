@@ -18,7 +18,7 @@ export const RowDragHandleCell = ({ rowId }) => {
     <button
       {...attributes}
       {...listeners}
-      className=' h-10 w-1  hover:w-2 hover:bg-gray-400'
+      className=' h-10 w-1  hover:w-2 hover:bg-a-blue ease-in duration-200'
     ></button>
   );
 };
@@ -62,7 +62,7 @@ export const DraggableRow = ({ row, gId }) => {
           <td
             key={cell.id}
             style={{ width: cell.column.getSize() }}
-            className={row.getIsSelected() ? "bg-gray-200" : ""}
+            className={`${row.getIsSelected() ? "bg-gray-200" : "border-b"} py-[4px]`}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>
@@ -70,10 +70,10 @@ export const DraggableRow = ({ row, gId }) => {
       </tr>
       {row.getIsExpanded() && (
         <>
-          <tr className=' '>
+          <tr>
             <td colSpan={row.getVisibleCells().length}>
-              <div className='w-full pl-14'>
-                <Button onClick={() => handleAdd()}>Add SubItem</Button>
+              <div className='w-full ml-14 border-l-1 pl-[8px]'>
+                <Button size="sm" className="mt-[8px] font-[12px] font-helvetica bg-a-blue text-white font-helvetica" onClick={() => handleAdd()}>Add SubItem</Button>
               </div>
             </td>
           </tr>
@@ -167,7 +167,7 @@ export const preprocessAllData = (data) => {
               return val.email;
             });
             processedRow[key] = JSON.stringify(returnedValue);
-          } else if (value.text !== undefined) {
+          } else if (value && value.text !== undefined) {
             processedRow[key] = value.text;
           } else processedRow[key] = JSON.stringify(value);
         } else {

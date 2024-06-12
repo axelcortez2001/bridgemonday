@@ -66,7 +66,7 @@ const DefaultDateCell = ({ getValue, row, column, table }) => {
 
   return (
     <input
-      className={`w-full h-full min-h-10 ${focused ? "focus" : ""}`}
+      className={`w-full h-full min-h-10 bg-inherit ${focused ? "focus" : ""}`}
       onClick={handleSelectCell}
       onFocus={handleFocus}
       onBlur={handleBlur}

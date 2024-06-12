@@ -6,6 +6,15 @@ import {
   parseAbsoluteToLocal,
   getLocalTimeZone,
 } from "@internationalized/date";
+import styles from "@/app/styles";
+
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+} from "@nextui-org/react";
 
 const DateCustomInput = forwardRef(({ value, onClick, clearDate }, ref) => (
   <div
@@ -16,6 +25,7 @@ const DateCustomInput = forwardRef(({ value, onClick, clearDate }, ref) => (
     {value ? (
       <>
         {value}
+        
         <div
           className="text-md text-red-500 "
           onClick={(e) => {
@@ -27,7 +37,7 @@ const DateCustomInput = forwardRef(({ value, onClick, clearDate }, ref) => (
         </div>
       </>
     ) : (
-      <div className="w-full flex justify-center items-center">
+      <div>
         <IoCalendarOutline />
       </div>
     )}
@@ -42,9 +52,10 @@ const DateCell = ({ getValue, row, column, table }) => {
   //   const [date, setDate] = useState(parseAbsoluteToLocal(dateData));
 
   return (
-    <div className="w-full flex items-center justify-center">
+    <div className={`${styles.flexCenter} min-w-[160px]`}>
       <DatePicker
-        className="w-full flex items-center justify-center"
+        portalId="root-portal"
+        classNames={{ calendarContent: "bg-a-black" }}
         label="Start Date"
         dateFormat="MMM d YYYY"
         selected={date}

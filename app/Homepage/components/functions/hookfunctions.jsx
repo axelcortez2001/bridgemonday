@@ -14,6 +14,7 @@ import NumberCell from "../tablecomponents/NumberCell";
 import OptionCell from "../tablecomponents/OptionCell";
 import PersonCell from "../tablecomponents/PersonCell";
 import { RowDragHandleCell } from "./tablefunctions";
+import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
 export const checkHeader = (id) => {
   if (id !== undefined) {
@@ -38,18 +39,18 @@ export const dataColumns = (columns) => {
           key: column.key,
           header: ({ table }) => (
             <input
-              type='checkbox'
+              type="checkbox"
               checked={table.getIsAllRowsSelected()}
               indeterminate={table.getIsSomeRowsSelected()}
               onChange={table.getToggleAllRowsSelectedHandler()}
             />
           ),
           cell: ({ row }) => (
-            <div className='w-full flex h-full items-center'>
+            <div className="w-full flex h-full items-center">
               <RowDragHandleCell rowId={row.id} />
               <input
-                className='border h-4 w-4'
-                type='checkbox'
+                className="border h-[12px] w-full"
+                type="checkbox"
                 checked={row.getIsSelected()}
                 onChange={row.getToggleSelectedHandler()}
               />
@@ -65,12 +66,17 @@ export const dataColumns = (columns) => {
           cell: ({ row }) => {
             return row.getCanExpand() ? (
               <button
+                className=" flex justify-center w-full"
                 {...{
                   onClick: row.getToggleExpandedHandler(),
                   style: { cursor: "pointer" },
                 }}
               >
-                {row.getIsExpanded() ? "👇" : "👉"}
+                {row.getIsExpanded() ? (
+                  <MdKeyboardArrowDown size={28} />
+                ) : (
+                  <MdKeyboardArrowRight size={28} />
+                )}
               </button>
             ) : (
               "🔵"

@@ -26,7 +26,7 @@ const AddSubItemDropDown = () => {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <button variant='bordered' className='max-w-2'>
+        <button variant='bordered' className='border rounded-md h-8 w-8 bg-[#32449C] text-white'>
           +
         </button>
       </DropdownTrigger>

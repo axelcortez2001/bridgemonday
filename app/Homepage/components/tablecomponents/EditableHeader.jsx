@@ -47,16 +47,18 @@ const EditableHeader = ({ data, accessorKey }) => {
   };
   const deleteHeader = useSetAtom(deleteColumn);
   const handleDelete = async () => {
-    setLoading(true);
-    try {
-      const status = await deleteHeader(projectId, key);
-      if (status && status.success) {
-        alert("Column deleted");
+    if (window.confirm("Are you sure you want to delete")) {
+      setLoading(true);
+      try {
+        const status = await deleteHeader(projectId, key);
+        if (status && status.success) {
+          alert("Column deleted");
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
     }
   };
   return (

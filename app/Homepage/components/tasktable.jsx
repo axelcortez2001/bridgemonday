@@ -26,6 +26,10 @@ import {
 import { DraggableRow, preprocessData } from "./functions/tablefunctions";
 import { mkConfig, generateCsv, download } from "export-to-csv";
 import { dataColumns } from "./functions/hookfunctions";
+import styles from "@/app/styles";
+import { Button } from "@nextui-org/react";
+import { MdOutlineDelete } from "react-icons/md";
+import { CiExport } from "react-icons/ci";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
@@ -175,25 +179,37 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className="w-full items-center justify-center overflow-x-visible">
+      <div className="w-full items-center justify-center overflow-x-auto">
         {convertToArray().length > 0 && (
           <>
-            <button
-              onClick={deleteSelectedRows}
-              className="mb-2 p-2 rounded-md bg-red-500 text-white"
+            <div
+              className={`fixed bg-a-white rounded-[12px] left-[50%] bottom-[8px]`}
             >
-              Delete
-            </button>
-            <button
-              onClick={exportCsv}
-              className="mb-2 p-2 rounded-md bg-blue-500 text-white"
-            >
-              Export CSV
-            </button>
+              <div className={`px-[4px] py-[2px]`}>
+                <Button
+                  className="w-[132px] justify-start font-helvetica text-[14px] text-a-blue border-r-1"
+                  radius="none"
+                  variant="light"
+                  startContent={<CiExport className="size-[48%]" />}
+                  onPress={exportCsv}
+                >
+                  Export CSV
+                </Button>
+                <Button
+                  className="w-[132px] justify-start font-helvetica text-[14px] text-a-red"
+                  radius="none"
+                  variant="light"
+                  startContent={<MdOutlineDelete className="size-[48%]" />}
+                  onPress={deleteSelectedRows}
+                >
+                  Delete Task
+                </Button>
+              </div>
+            </div>
           </>
         )}
         <table
-          className="p-2 border-2 border-a-grey  "
+          className="p-2 border-l"
           style={{ width: table?.getTotalSize() }}
         >
           <thead>
@@ -201,9 +217,12 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
-                    className="p-[5px] border-2 border-a-grey h-[52px] min-h-[0px] min-w-[80px]"
+                    className="p-[5px] border-b h-[52px] min-h-[0px] min-w-[80px]"
                     key={header.id}
-                    style={{ position: "relative", maxwidth: header.getSize() }}
+                    style={{
+                      position: "relative",
+                      maxwidth: header.getSize(),
+                    }}
                   >
                     {header.isPlaceholder ? null : (
                       <>
@@ -239,12 +258,13 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
             </SortableContext>
             <tr className="w-full flex items-center justify-center p-1 hover:cursor-pointer h-[52px]">
               <div>
-                <button
-                  className="font-[12px] font-helvetica"
-                  onClick={() => addNewRow()}
+                <Button
+                  className="font-[12px] my-[8px] ml-[8px] font-helvetica bg-a-blue text-white font-helvetica"
+                  onPress={() => addNewRow()}
+                  size="sm"
                 >
                   Add Item
-                </button>
+                </Button>
               </div>
             </tr>
           </tbody>

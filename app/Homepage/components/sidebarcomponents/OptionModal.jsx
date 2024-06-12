@@ -46,8 +46,6 @@ export default function OptionModal({ task }) {
       } finally {
         setLoading(false);
       }
-    } else {
-      alert("File Deleted");
     }
   };
   //function to edt

@@ -13,7 +13,11 @@ import {
   useDisclosure,
   Input,
 } from "@nextui-org/react";
-import { addNewDropDown, selectedProjectAtom } from "../../datastore";
+import {
+  addNewDropDown,
+  selectedProjectAtom,
+  updateDefaultDropDown,
+} from "../../datastore";
 import { useAtom, useSetAtom } from "jotai";
 import styles from "@/app/styles";
 
@@ -21,6 +25,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
   const { text, color } = getValue() || {};
   const { updateData } = table.options.meta;
   const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom);
+  const [updateDropDown, setUpdateDropDown] = useState(null);
   const [newDropDown, setNewDropDown] = useState("");
   const [newColor, setNewColor] = useState("");
   //provided by nextui template
@@ -69,15 +74,57 @@ const DropDownCell = ({ getValue, row, column, table }) => {
       alert("Please fill out all fields");
     }
   };
+  const handleSetDropDown = (stat) => {
+    setNewColor(stat.color);
+    setNewDropDown(stat.text);
+    setUpdateDropDown(stat);
+  };
+  const handleClose = () => {
+    setNewColor("");
+    setNewDropDown("");
+    setUpdateDropDown(null);
+    onOpenChange(false);
+  };
+  const updateStat = useSetAtom(updateDefaultDropDown);
+  const handleUpdateDropDown = () => {
+    const oldStat = updateDropDown?.text;
+
+    if (newDropDown === "") {
+      alert("Please fill out all fields");
+      return;
+    } else {
+      if (oldStat.toLocaleLowerCase() === newDropDown.toLocaleLowerCase()) {
+        setNewColor("");
+        setNewDropDown("");
+        setUpdateDropDown(null);
+      } else if (selectedProject) {
+        const prevStatus = selectedProject?.defaultDropDown.find(
+          (prev) =>
+            prev?.text.toLocaleLowerCase() === newDropDown.toLocaleLowerCase()
+        );
+        if (prevStatus === undefined) {
+          const id = selectedProject._id;
+          updateStat(id, oldStat, newDropDown, newColor);
+          setNewColor("");
+          setNewDropDown("");
+          setUpdateDropDown(null);
+        } else {
+          alert("Dropdown already exists: ");
+          setNewColor(updateDropDown.color);
+          setNewDropDown(updateDropDown.text);
+        }
+      }
+    }
+  };
   //modal
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
-      <Dropdown className="min-w-[0px] w-[180px]">
+      <Dropdown className='min-w-[0px] w-[180px]'>
         <div className={`${styles.flexCenter}`}>
           <DropdownTrigger>
             <Button
-              variant="bordered"
+              variant='bordered'
               className={`capitalize w-[90%] ${checkColor(
                 color
               )} min-h-[0px] h-[36px] rounded-lg border-1 ${
@@ -101,10 +148,10 @@ const DropDownCell = ({ getValue, row, column, table }) => {
           </DropdownTrigger>
         </div>
         <DropdownMenu
-          aria-label="Single selection example"
-          variant="flat"
+          aria-label='Single selection example'
+          variant='flat'
           disallowEmptySelection
-          selectionMode="single"
+          selectionMode='single'
           selectedKeys={selectedKeys}
           onSelectionChange={setSelectedKeys}
         >
@@ -119,36 +166,40 @@ const DropDownCell = ({ getValue, row, column, table }) => {
             </DropdownItem>
           ))}
           <DropdownItem
-            className="bg-gray-200"
+            className='bg-gray-200'
             key={" "}
             onClick={onOpen}
-            textValue="Add New"
+            textValue='Add New'
           >
             Add New DropDown
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className=''>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
+              <ModalHeader className='flex flex-col gap-1'>
                 New DropDown
               </ModalHeader>
               <ModalBody>
-                <div className="w-full grid grid-cols-3 gap-2">
+                <div className='w-full grid grid-cols-3 gap-2'>
                   {selectedProject?.defaultDropDown.map((status, index) => (
                     <div
                       key={index}
-                      className={`rounded-md ${checkColor(status.color)} p-2`}
+                      onClick={() => handleSetDropDown(status)}
+                      className={`rounded-md hover:cursor-pointer ${checkColor(
+                        status.color
+                      )} p-2`}
                     >
                       {status.text}
                     </div>
                   ))}
                 </div>
+
                 <div>
                   <p>Select Color</p>
-                  <div className="flex flex-row gap-x-1">
+                  <div className='flex flex-row gap-x-1'>
                     {colorSelection.map((color, index) => (
                       <div
                         key={index}
@@ -160,14 +211,14 @@ const DropDownCell = ({ getValue, row, column, table }) => {
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center gap-x-2">
+                <div className='flex items-center gap-x-2'>
                   <div
                     className={`h-8 w-8 rounded-md border ${
                       newColor && checkColor(newColor)
                     }`}
                   ></div>
                   <Input
-                    placeholder="Text here..."
+                    placeholder='Text here...'
                     value={newDropDown}
                     onChange={(e) => setNewDropDown(e.target.value)}
                     required
@@ -175,12 +226,21 @@ const DropDownCell = ({ getValue, row, column, table }) => {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button color='danger' variant='light' onPress={handleClose}>
                   Close
                 </Button>
-                <Button color="primary" onClick={() => handleDropDown()}>
-                  Add
-                </Button>
+                {updateDropDown === null ? (
+                  <Button color='primary' onClick={() => handleDropDown()}>
+                    Add
+                  </Button>
+                ) : (
+                  <Button
+                    color='primary'
+                    onClick={() => handleUpdateDropDown()}
+                  >
+                    Save
+                  </Button>
+                )}
               </ModalFooter>
             </>
           )}

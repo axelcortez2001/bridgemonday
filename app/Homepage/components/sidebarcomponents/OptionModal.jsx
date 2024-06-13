@@ -18,8 +18,8 @@ import {
 } from "@nextui-org/react";
 import { MdDeleteOutline, MdOutlineModeEdit } from "react-icons/md";
 import { SlOptions } from "react-icons/sl";
-import { useSetAtom } from "jotai";
-import { deleteProject, editProject } from "../../datastore";
+import { useAtom, useSetAtom } from "jotai";
+import { deleteProject, editProject, UserDataAtom } from "../../datastore";
 import LoadingComponent from "../otherComponents/LoadingComponent";
 
 export default function OptionModal({ task }) {
@@ -28,23 +28,40 @@ export default function OptionModal({ task }) {
   const [privacy, setPrivacy] = useState(task.type);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
+
+  const userData = useAtom(UserDataAtom);
   //function to delete
+  const checkOwner = (sub) => {
+    const initialUser = sub?.filter((user) => user.organizer === true);
+    const owner = initialUser[0].sub;
+    if (owner === userData[0].sub) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   const deleteHandle = useSetAtom(deleteProject);
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete?")) {
-      setLoading(true);
-      try {
-        const id = task._id;
-        const status = await deleteHandle(id);
-        if (status && status.success) {
-          alert("Project deleted");
+      if (task && task?.organizer && userData) {
+        if (checkOwner(task.organizer) === true) {
+          setLoading(true);
+          try {
+            const id = task._id;
+            const status = await deleteHandle(id);
+            if (status && status.success) {
+              alert("Project deleted");
+            } else {
+              alert("Error Deleting Project");
+            }
+          } catch (e) {
+            console.log(e);
+          } finally {
+            setLoading(false);
+          }
         } else {
-          alert("Error Deleting Project");
+          alert("You are not the owner of this project");
         }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
       }
     }
   };

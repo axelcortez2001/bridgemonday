@@ -17,17 +17,23 @@ import {
   Radio,
 } from "@nextui-org/react";
 import { SlOptions } from "react-icons/sl";
-import { MdDeleteOutline, MdOutlineModeEdit, MdIosShare } from "react-icons/md";
+import {
+  MdDeleteOutline,
+  MdOutlineModeEdit,
+  MdIosShare,
+  MdOutlineSwapHoriz,
+} from "react-icons/md";
 import { TiExport, TiExportOutline } from "react-icons/ti";
 
 import { useAtom, useSetAtom } from "jotai";
 import {
+  changeOwnerShip,
   deleteProject,
   editProject,
   removeOrganizer,
-  selectedProjectAtom,
   setOrganizers,
   userAtom,
+  UserDataAtom,
 } from "../../datastore";
 import LoadingComponent from "./LoadingComponent";
 const ProjectOption = ({ data, exportCsv }) => {
@@ -36,7 +42,8 @@ const ProjectOption = ({ data, exportCsv }) => {
   const [modalSelected, setModalSelected] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  
+  const [ownerLoading, setOwnerLoading] = useState(false);
+
   useEffect(() => {
     setTitle(data.name);
     setPrivacy(data.type);
@@ -44,6 +51,7 @@ const ProjectOption = ({ data, exportCsv }) => {
 
   //for user sharing
   const [personAtom, setPersonAtom] = useAtom(userAtom);
+  const userData = useAtom(UserDataAtom);
   const initialValue = data?.organizer?.map((organizer) => organizer);
   const [filteredPerson, setFilteredPerson] = useState(personAtom);
   const [searchText, sertSearchText] = useState("");
@@ -65,8 +73,17 @@ const ProjectOption = ({ data, exportCsv }) => {
   }, [searchText, sertSearchText]);
   //show owner
   const showOwner = (sub) => {
-    const initialUser = sub?.filter((user) => user.identities !== undefined);
+    const initialUser = sub?.filter((user) => user.organizer === true);
     return initialUser[0].name;
+  };
+  const checkOwner = (sub) => {
+    const initialUser = sub?.filter((user) => user.organizer === true);
+    const owner = initialUser[0].sub;
+    if (owner === userData[0].sub) {
+      return true;
+    } else {
+      return false;
+    }
   };
   //function to remove shared user
   const deleteUserData = async (user) => {
@@ -93,35 +110,37 @@ const ProjectOption = ({ data, exportCsv }) => {
   };
   //show suggested User
   const showSuggested = (userAtom, sub) => {
-    const initialUser = sub?.filter((user) => user.identities !== undefined);
-    const initialUserAtom = userAtom.filter(
-      (user) => initialUser[0].sub !== user.sub
-    );
-    const allusers = initialUserAtom.filter((user) =>
-      sub.every((subUser) => user.sub !== subUser.sub)
-    );
-    return (
-      allusers !== undefined &&
-      allusers.map((user, index) => (
-        <div
-          className='border rounded-md p-1 flex items-center justify-start space-x-2 
+    const initialUser = sub?.filter((user) => user.organizer === false);
+    if (initialUser) {
+      const initialUserAtom = userAtom.filter(
+        (user) => initialUser[0]?.sub !== user.sub
+      );
+      const allusers = initialUserAtom.filter((user) =>
+        sub.every((subUser) => user.sub !== subUser.sub)
+      );
+      return (
+        allusers !== undefined &&
+        allusers.map((user, index) => (
+          <div
+            className='border rounded-md p-1 flex items-center justify-start space-x-2 
         hover:bg-gray-200 hover:bg-opacity-80 hover:cursor-pointer'
-          onClick={() => updateUserData(user)}
-          key={index}
-        >
-          <img
-            className='w-8 h-8 rounded-full'
-            src={user?.picture}
-            alt='user'
-          />
-          <p>{user.name}</p>
-        </div>
-      ))
-    );
+            onClick={() => updateUserData(user)}
+            key={index}
+          >
+            <img
+              className='w-8 h-8 rounded-full'
+              src={user?.picture}
+              alt='user'
+            />
+            <p>{user.name}</p>
+          </div>
+        ))
+      );
+    }
   };
   //fuinction to show shared User
   const findUserData = (userAtom, sub) => {
-    const initialUser = sub?.filter((user) => user.identities !== undefined);
+    const initialUser = sub?.filter((user) => user.organizer === true);
     const initialUserAtom = userAtom.filter(
       (user) => initialUser[0].sub !== user.sub
     );
@@ -148,23 +167,80 @@ const ProjectOption = ({ data, exportCsv }) => {
       ))
     );
   };
-  //handlers
-  const deleteHandle = useSetAtom(deleteProject);
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete?")) {
-      setLoading(true);
+  //fuinction to show shared User
+  const changeOwner = useSetAtom(changeOwnerShip);
+  const handleChange = async (user) => {
+    const userSub = user.sub;
+    const id = data._id;
+    if (
+      window.confirm(
+        `Are you sure you want to change ownership to ${user.name}`
+      )
+    ) {
+      setOwnerLoading(true);
       try {
-        const id = data?._id;
-        const status = await deleteHandle(id);
-        if (status && status.success) {
-          alert("Project deleted");
+        const status = await changeOwner(id, userSub);
+        if (status && status.success === true) {
+          alert(`${user.name} is now the owner`);
         } else {
-          alert("Error Deleting Project");
+          alert("Error encountered");
         }
       } catch (e) {
         console.log(e);
       } finally {
-        setLoading(false);
+        setOwnerLoading(false);
+        onOpenChange(false);
+      }
+    }
+  };
+  const showChangeOwnership = (userAtom, sub) => {
+    const initialUser = sub?.filter((user) => user.organizer === true);
+    const initialUserAtom = userAtom.filter(
+      (user) => initialUser[0].sub !== user.sub
+    );
+    const allusers = initialUserAtom.filter((user) =>
+      sub.some((subUser) => user.sub === subUser.sub)
+    );
+    return (
+      allusers !== undefined &&
+      allusers.map((user, index) => (
+        <div
+          className='border rounded-md p-1 flex items-center justify-start space-x-2 
+      hover:bg-gray-200 hover:bg-opacity-80 hover:cursor-pointer'
+          key={index}
+          onClick={() => handleChange(user)}
+        >
+          <img
+            className='w-8 h-8 rounded-full'
+            src={user?.picture}
+            alt='user'
+          />
+          <p>{user.name}</p>
+        </div>
+      ))
+    );
+  };
+  //handlers
+  const deleteHandle = useSetAtom(deleteProject);
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete?")) {
+      if (checkOwner(initialValue) === true) {
+        setLoading(true);
+        try {
+          const id = data?._id;
+          const status = await deleteHandle(id);
+          if (status && status.success) {
+            alert("Project deleted");
+          } else {
+            alert("Error Deleting Project");
+          }
+        } catch (e) {
+          console.log(e);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        alert("Please contact the owner of the project");
       }
     }
   };
@@ -197,7 +273,11 @@ const ProjectOption = ({ data, exportCsv }) => {
     <>
       <Dropdown>
         <DropdownTrigger>
-          <Button isIconOnly size="sm" className='bg-a-orange text-white text-md'>
+          <Button
+            isIconOnly
+            size='sm'
+            className='bg-a-orange text-white text-md'
+          >
             <SlOptions />
           </Button>
         </DropdownTrigger>
@@ -218,6 +298,15 @@ const ProjectOption = ({ data, exportCsv }) => {
               onClick={() => modalClick("share")}
             >
               Share
+            </DropdownItem>
+          )}
+          {data?.type === "shared" && checkOwner(initialValue) === true && (
+            <DropdownItem
+              key='share'
+              startContent={<MdOutlineSwapHoriz className={iconClasses} />}
+              onClick={() => modalClick("change")}
+            >
+              Change Ownership
             </DropdownItem>
           )}
           {data?.grouptask && data?.grouptask?.length > 0 && (
@@ -255,6 +344,7 @@ const ProjectOption = ({ data, exportCsv }) => {
       </Dropdown>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         {modalSelected === "edit" ? (
+          //Edit Project
           <ModalContent>
             {(onClose) => (
               <>
@@ -294,7 +384,8 @@ const ProjectOption = ({ data, exportCsv }) => {
               </>
             )}
           </ModalContent>
-        ) : (
+        ) : modalSelected === "share" ? (
+          //Share to other users
           <ModalContent>
             {(onClose) => (
               <>
@@ -326,6 +417,43 @@ const ProjectOption = ({ data, exportCsv }) => {
                     Close
                   </Button>
                 </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        ) : (
+          //Change Ownership
+          <ModalContent>
+            {(onClose) => (
+              <>
+                {ownerLoading ? (
+                  <>
+                    <LoadingComponent />
+                  </>
+                ) : (
+                  <>
+                    <ModalHeader className='flex flex-col gap-1'>
+                      Change Ownership
+                    </ModalHeader>
+                    <ModalBody>
+                      <p>
+                        <span className='font-semibold'>Owner: </span>{" "}
+                        {showOwner(initialValue)}
+                      </p>
+                      <p>Select User</p>
+
+                      <div className='w-full max-h-40 overflow-y-auto '>
+                        <div className='flex flex-col gap-y-1 max-h-full overflow-y-auto'>
+                          {showChangeOwnership(filteredPerson, initialValue)}
+                        </div>
+                      </div>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button color='danger' variant='light' onPress={onClose}>
+                        Close
+                      </Button>
+                    </ModalFooter>
+                  </>
+                )}
               </>
             )}
           </ModalContent>

@@ -139,6 +139,7 @@ export const projectsAtom = atom([]);
 export const getProjects = atom(null, async (get, set) => {
   const user = get(UserDataAtom);
   const sub = user.value.sub;
+  console.log("Trigger getting Data");
   const workSpace = await getWorkspace("/modaydata", sub);
   if (workSpace && workSpace?.success) {
     set(projectsAtom, workSpace?.workspace);
@@ -146,6 +147,7 @@ export const getProjects = atom(null, async (get, set) => {
 });
 
 export const setOrganizers = atom(null, async (get, set, projectId, user) => {
+  user["organizer"] = false;
   const projects = get(projectsAtom);
   const updateProjects = projects?.map((project) => {
     if (project._id === projectId) {
@@ -212,12 +214,14 @@ export const selectedProjectAtom = atom((get) => {
 export const addProject = atom(null, async (get, set, { title, privacy }) => {
   const prevProject = get(projectsAtom);
   const userData = get(UserDataAtom);
+  const owner = userData.value;
+  owner["organizer"] = true;
   const newProject = {
     name: title,
     type: privacy,
     columns: defaultColumn,
     subColumns: defaultSubColumns,
-    organizer: [userData.value],
+    organizer: [owner],
     defaultStatus: statusesData,
     defaultDropDown: [],
     grouptask: [],
@@ -858,3 +862,134 @@ export const updateSubItemData = atom(
     } else return { success: false };
   }
 );
+export const updateDefaultStatus = atom(
+  null,
+  async (get, set, id, oldStat, newStatus, newColor) => {
+    const user = get(UserDataAtom);
+    const sub = user.value.sub;
+    const oldProjects = get(projectsAtom);
+    const workSpace = await getWorkspace("/modaydata", sub);
+    if (workSpace && workSpace?.success) {
+      const projects = workSpace?.workspace;
+      if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+        alert("Oops, project data changed!");
+        set(projectsAtom, projects);
+        return;
+      }
+      const updatedProjects = projects.map((project) => {
+        if (project._id === id) {
+          return {
+            ...project,
+            defaultStatus: project.defaultStatus.map((status) => {
+              if (status.text === oldStat) {
+                return {
+                  text: newStatus,
+                  color: newColor,
+                };
+              }
+              return status;
+            }),
+          };
+        }
+        return project;
+      });
+      const updated = await updateWholeWorkSpace(
+        "/modaydata/update",
+        updatedProjects
+      );
+      if (updated.success === true) {
+        set(projectsAtom, updatedProjects);
+        return { success: true };
+      } else return { success: false };
+    }
+  }
+);
+
+export const updateDefaultDropDown = atom(
+  null,
+  async (get, set, id, oldStat, newDropDown, newColor) => {
+    const user = get(UserDataAtom);
+    const sub = user.value.sub;
+    const oldProjects = get(projectsAtom);
+    const workSpace = await getWorkspace("/modaydata", sub);
+    if (workSpace && workSpace?.success) {
+      const projects = workSpace?.workspace;
+      if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+        alert("Oops, project data changed!");
+        set(projectsAtom, projects);
+        return;
+      }
+      const updatedProjects = projects.map((project) => {
+        if (project._id === id) {
+          return {
+            ...project,
+            defaultDropDown: project?.defaultDropDown?.map((status) => {
+              if (status.text === oldStat) {
+                return {
+                  text: newDropDown,
+                  color: newColor,
+                };
+              }
+              return status;
+            }),
+          };
+        }
+        return project;
+      });
+      const updated = await updateWholeWorkSpace(
+        "/modaydata/update",
+        updatedProjects
+      );
+      if (updated.success === true) {
+        set(projectsAtom, updatedProjects);
+        return { success: true };
+      } else return { success: false };
+    }
+  }
+);
+export const changeOwnerShip = atom(null, async (get, set, id, userSub) => {
+  console.log("Trigger");
+  const user = get(UserDataAtom);
+  const sub = user.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", sub);
+  if (workSpace && workSpace?.success) {
+    const projects = workSpace?.workspace;
+    if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+      alert("Oops, project data changed!");
+      set(projectsAtom, projects);
+      return;
+    }
+
+    const updatedProjects = projects.map((project) => {
+      if (project._id === id) {
+        const newOrganizerData = project?.organizer.map((organizer) => {
+          if (organizer.sub === userSub) {
+            return {
+              ...organizer,
+              organizer: true,
+            };
+          } else {
+            return {
+              ...organizer,
+              organizer: false,
+            };
+          }
+        });
+        return {
+          ...project,
+          organizer: newOrganizerData,
+        };
+      }
+      return project;
+    });
+    const updated = await updateWholeWorkSpace(
+      "/modaydata/update",
+      updatedProjects
+    );
+    if (updated.success === true) {
+      set(projectsAtom, updatedProjects);
+      return { success: true };
+    } else return { success: false };
+  }
+});

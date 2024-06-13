@@ -7,9 +7,7 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
   const [focused, setFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState(selectedValue);
-  const [formattedContent, setFormattedContent] = useState(
-    selectedValue ? format(selectedValue, "hh:mm:ss aa") : selectedValue
-  );
+
 
   function isValidTimeFormat(text) {
     const timeFormatRegex = /^(0[1-9]|1[0-2]):[0-5][0-9]:[0-5][0-9] (AM|PM)$/i;
@@ -40,24 +38,18 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
 
   const handleBlur = () => {
     if (focused) {
-      if (isValid(new Date(content)) || content === "") {
-        
-        if (isValidTimeFormat(formattedContent) || formattedContent === "") {
-          setFocused(false);
-          table.options.meta.updateData(row.index, column.id, content);
-        } else {
-          alert("Invalid Time Format");
-          setFocused(false);
-          setContent(selectedValue);
-        }
-      } else {
-  
-        alert("Invalid Date Format");
+      if (isValidTimeFormat(content) || content === "") {
         setFocused(false);
-        setContent(
-          selectedValue ? format(selectedValue, "yyyy-MM-dd") : selectedValue
-        );
+        table.options.meta.updateData(row.index, column.id, content);
+      } else {
+        alert("Invalid Time Format");
+        setFocused(false);
+        setContent(selectedValue);
       }
+    } else {
+      alert("Invalid Date Format");
+      setFocused(false);
+      setContent(selectedValue);
     }
   };
 
@@ -65,8 +57,8 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
     if (event.ctrlKey && event.key === ":") {
       event.preventDefault();
       const today = new Date();
-      setContent(today);
-      setFormattedContent(format(today, "hh:mm:ss aa"));
+      setContent(format(today, "hh:mm:ss aa"));
+      
     }
   }, []);
 
@@ -86,7 +78,7 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
       onFocus={handleFocus}
       onBlur={handleBlur}
       onDoubleClick={() => setIsOpen(!isOpen)}
-      value={formattedContent}
+      value={content}
       onChange={(e) => setContent(e.target.value)}
     />
   );

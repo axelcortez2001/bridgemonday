@@ -148,6 +148,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   });
   const exportCsv = () => {
     const rowData = table.getRowModel().rows.map((row) => row.original);
+    console.log(rowData);
     const keyMapping = {};
     columnData.forEach((col) => {
       if (
@@ -179,7 +180,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className="w-full items-center justify-center overflow-x-auto">
+      <div className='w-full items-center justify-center overflow-x-auto'>
         {convertToArray().length > 0 && (
           <>
             <div
@@ -187,19 +188,19 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
             >
               <div className={`px-[4px] py-[2px]`}>
                 <Button
-                  className="w-[132px] justify-start font-helvetica text-[14px] text-a-blue border-r-1"
-                  radius="none"
-                  variant="light"
-                  startContent={<CiExport className="size-[48%]" />}
+                  className='w-[132px] justify-start font-helvetica text-[14px] text-a-blue border-r-1'
+                  radius='none'
+                  variant='light'
+                  startContent={<CiExport className='size-[48%]' />}
                   onPress={exportCsv}
                 >
                   Export CSV
                 </Button>
                 <Button
-                  className="w-[132px] justify-start font-helvetica text-[14px] text-a-red"
-                  radius="none"
-                  variant="light"
-                  startContent={<MdOutlineDelete className="size-[48%]" />}
+                  className='w-[132px] justify-start font-helvetica text-[14px] text-a-red'
+                  radius='none'
+                  variant='light'
+                  startContent={<MdOutlineDelete className='size-[48%]' />}
                   onPress={deleteSelectedRows}
                 >
                   Delete Task
@@ -209,7 +210,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
           </>
         )}
         <table
-          className="p-2 border-l"
+          className='p-2 border-l'
           style={{ width: table?.getTotalSize() }}
         >
           <thead>
@@ -217,7 +218,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
-                    className="p-[5px] border-b h-[52px] min-h-[0px] min-w-[80px]"
+                    className='p-[5px] border-b h-[52px] min-h-[0px] min-w-[80px]'
                     key={header.id}
                     style={{
                       position: "relative",
@@ -226,7 +227,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
                   >
                     {header.isPlaceholder ? null : (
                       <>
-                        <div className="min-w-[40px]">
+                        <div className='min-w-[40px]'>
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
@@ -256,12 +257,12 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
                 <DraggableRow key={row.id} row={row} gId={groupId} />
               ))}
             </SortableContext>
-            <tr className="w-full flex items-center justify-center p-1 hover:cursor-pointer h-[52px]">
+            <tr className='w-full flex items-center justify-center p-1 hover:cursor-pointer h-[52px]'>
               <div>
                 <Button
-                  className="font-[12px] my-[8px] ml-[8px] font-helvetica bg-a-blue text-white font-helvetica"
+                  className='font-[12px] my-[8px] ml-[8px] font-helvetica bg-a-blue text-white font-helvetica'
                   onPress={() => addNewRow()}
-                  size="sm"
+                  size='sm'
                 >
                   Add Item
                 </Button>

@@ -62,7 +62,9 @@ export const DraggableRow = ({ row, gId }) => {
           <td
             key={cell.id}
             style={{ width: cell.column.getSize() }}
-            className={`${row.getIsSelected() ? "bg-gray-200" : "border-b"} py-[4px]`}
+            className={`${
+              row.getIsSelected() ? "bg-gray-200" : "border-b"
+            } py-[4px]`}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>
@@ -73,7 +75,13 @@ export const DraggableRow = ({ row, gId }) => {
           <tr>
             <td colSpan={row.getVisibleCells().length}>
               <div className='w-full ml-14 border-l-1 pl-[8px]'>
-                <Button size="sm" className="mt-[8px] font-[12px] font-helvetica bg-a-blue text-white font-helvetica" onClick={() => handleAdd()}>Add SubItem</Button>
+                <Button
+                  size='sm'
+                  className='mt-[8px] font-[12px] font-helvetica bg-a-blue text-white font-helvetica'
+                  onClick={() => handleAdd()}
+                >
+                  Add SubItem
+                </Button>
               </div>
             </td>
           </tr>
@@ -133,12 +141,12 @@ export const preprocessData = (data, convertedArray) => {
     for (const key in row) {
       const value = row[key];
       if (Array.isArray(value) || typeof value === "object") {
-        if (value.length > 0) {
+        if (value && value.length > 0) {
           const returnedValue = value.map((val) => {
             return val.email;
           });
           processedRow[key] = JSON.stringify(returnedValue);
-        } else if (value.text !== undefined) {
+        } else if (value && value.text !== undefined) {
           processedRow[key] = value.text;
         } else processedRow[key] = JSON.stringify(value);
       } else {

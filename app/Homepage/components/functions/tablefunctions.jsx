@@ -55,6 +55,7 @@ export const DraggableRow = ({ row, gId }) => {
       alert("Error adding task");
     }
   };
+  console.log("subDataaa: " + JSON.stringify(subData));
   return (
     <>
       <tr ref={setNodeRef} style={style}>
@@ -77,7 +78,7 @@ export const DraggableRow = ({ row, gId }) => {
               <div className='w-full ml-14 border-l-1 pl-[8px]'>
                 <Button
                   size='sm'
-                  className='mt-[8px] font-[12px] font-helvetica bg-a-blue text-white font-helvetica'
+                  className='mt-[8px] font-[12px] bg-a-blue text-white font-helvetica'
                   onClick={() => handleAdd()}
                 >
                   Add SubItem

@@ -37,6 +37,7 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   const [columnValues, setColumnValues] = useState(
     dataColumns(projects.subColumns)
   );
+  console.log("SubDataAtTable: ", data);
   useEffect(() => {
     if (
       JSON.stringify(projects.subColumns) !== JSON.stringify(initialColumns)
@@ -90,8 +91,12 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
           data,
           type
         );
-        if (!status && status.success === false) {
-          alert("Error updating subtable");
+        if (status && status.success === false) {
+          if (status.newSubItem) {
+            setSubData(status.newSubItem);
+          } else {
+            alert("Error updating subtable");
+          }
         }
       } catch (error) {
         console.log(error);

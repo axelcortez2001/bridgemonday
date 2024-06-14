@@ -36,6 +36,7 @@ import {
   UserDataAtom,
 } from "../../datastore";
 import LoadingComponent from "./LoadingComponent";
+import { toast } from "sonner";
 const ProjectOption = ({ data, exportCsv }) => {
   const [title, setTitle] = useState(data.name);
   const [privacy, setPrivacy] = useState(data.type);
@@ -91,9 +92,9 @@ const ProjectOption = ({ data, exportCsv }) => {
     const sub = user.sub;
     const status = await removeOrganizerData(projectId, sub);
     if (status && status.success) {
-      alert(status.message);
+      toast.success(status.message);
     } else {
-      alert(status.message);
+      toast.error(status.message);
     }
     sertSearchText("");
   };
@@ -102,9 +103,9 @@ const ProjectOption = ({ data, exportCsv }) => {
     const projectId = data._id;
     const status = await setOrganizerData(projectId, user);
     if (status && status.success) {
-      alert(status.message);
+      toast(status.message);
     } else {
-      alert(status.message);
+      toast(status.message);
     }
     sertSearchText("");
   };
@@ -230,9 +231,9 @@ const ProjectOption = ({ data, exportCsv }) => {
           const id = data?._id;
           const status = await deleteHandle(id);
           if (status && status.success) {
-            alert("Project deleted");
+            toast(status.message);
           } else {
-            alert("Error Deleting Project");
+            toast(status.message);
           }
         } catch (e) {
           console.log(e);
@@ -257,6 +258,7 @@ const ProjectOption = ({ data, exportCsv }) => {
       if (status && status.success) {
         onOpenChange(false);
       } else {
+        toast(status.message);
         onOpenChange(false);
       }
     } catch (error) {

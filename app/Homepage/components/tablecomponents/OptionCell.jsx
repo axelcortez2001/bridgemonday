@@ -21,6 +21,7 @@ import {
 } from "../../datastore";
 import { useAtom, useSetAtom } from "jotai";
 import styles from "@/app/styles";
+import { toast } from "sonner";
 
 const OptionCell = ({ getValue, row, column, table }) => {
   const { text, color } = getValue() || {};
@@ -96,7 +97,7 @@ const OptionCell = ({ getValue, row, column, table }) => {
   const handleUpdateStatus = () => {
     const oldStat = updateStatus?.text;
     if (newStatus === "") {
-      alert("Please fill out all fields");
+      toast("Please fill out all fields");
       return;
     } else {
       if (oldStat.toLocaleLowerCase() === newStatus.toLocaleLowerCase()) {
@@ -115,7 +116,7 @@ const OptionCell = ({ getValue, row, column, table }) => {
           setNewStatus("");
           setUpdateStatus(null);
         } else {
-          alert("Status already exists: ");
+          toast("Status already exists: ");
           setNewColor(updateStatus.color);
           setNewStatus(updateStatus.text);
         }

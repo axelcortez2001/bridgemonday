@@ -3,13 +3,7 @@ import React, { useState } from "react";
 import { useAtom, useSetAtom } from "jotai";
 import { addGroupTask, selectedProjectAtom } from "../datastore";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Button,
-} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import Tasktable from "./tasktable";
 import EditableGroupName from "./EditableGroupName";
 import { dataColumns } from "./functions/hookfunctions";
@@ -21,11 +15,13 @@ import {
 } from "./functions/tablefunctions";
 import ProjectOption from "./otherComponents/ProjectOption";
 import LoadingComponent from "./otherComponents/LoadingComponent";
+import { toast } from "sonner";
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
   //function to toggle dropdown of each groupTask
   const [openDrop, setOpenDrop] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const toggleDropdown = (groupId) => {
     if (openDrop.includes(groupId)) {
       setOpenDrop(openDrop.filter((id) => id !== groupId));
@@ -43,9 +39,9 @@ const Content = () => {
       const id = data._id;
       const status = await addNewGroup(id);
       if (status && status.success) {
-        alert("New GroupTask Added");
+        toast(status.message);
       } else {
-        alert("Error: Failed to add group task");
+        toast(status.message);
       }
     } catch (e) {
       console.log(e);
@@ -129,24 +125,28 @@ const Content = () => {
   return loading ? (
     <LoadingComponent />
   ) : (
-    <div className="flex flex-col w-full max-h-screen overflow-y-auto sm:pl-[240px] bg-a-grey">
-      <div className="w-full p-2 flex h-[56px] justify-between bg-a-blue items-center">
-        <div className="w-full flex ml-[44px] sm:ml-[0px]">
+    <div className='flex flex-col w-full max-h-screen overflow-y-auto sm:pl-[240px] bg-a-grey'>
+      <div className='w-full p-2 flex h-[56px] justify-between bg-a-blue items-center'>
+        <div className='w-full flex ml-[44px] sm:ml-[0px]'>
           {data ? (
-            <p className="text-white text-[20px] font-helvetica font-bold tracking-wide">{data?.name}</p>
+            <p className='text-white text-[20px] font-helvetica font-bold tracking-wide'>
+              {data?.name}
+            </p>
           ) : (
-            <p className="text-white text-[20px] font-helvetica font-bold tracking-wide">Bridge Monday</p>
+            <p className='text-white text-[20px] font-helvetica font-bold tracking-wide'>
+              Bridge Workspace
+            </p>
           )}
         </div>
 
-        <div className="justify-start flex gap-x-2 items-center h-full">
+        <div className='justify-start flex gap-x-2 items-center h-full'>
           {data && data !== undefined && (
             <ProjectOption data={data} exportCsv={exportCsv} />
           )}
           {data && data !== undefined && (
             <Button
-              className="bg-a-orange text-white text-md"
-              size="sm"
+              className='bg-a-orange text-white text-md'
+              size='sm'
               onClick={() => handleAddGroup(data)}
             >
               New Group
@@ -155,13 +155,13 @@ const Content = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-full p-[8px] flex flex-col space-y-2">
+      <div className='w-full max-w-full p-[8px] flex flex-col space-y-2'>
         {data?.grouptask?.map((groupData) => (
           <div
             className={`w-full hover:cursor-pointer flex flex-col items-center p-2 border rounded-md shadow-md bg-a-white`}
             key={groupData.id}
           >
-            <div className="flex w-full justify-between items-center">
+            <div className='flex w-full justify-between items-center'>
               <div
                 className={`${
                   !openDrop.includes(groupData.id)
@@ -171,7 +171,7 @@ const Content = () => {
               >
                 <EditableGroupName projectId={data._id} groupData={groupData} />
               </div>
-              
+
               {openDrop.includes(groupData.id) ? (
                 <MdKeyboardArrowUp
                   size={32}
@@ -186,7 +186,7 @@ const Content = () => {
             </div>
             {groupData?.task?.length > 0 &&
               !openDrop.includes(groupData.id) && (
-                <div className="w-full flex items-center justify-start text-sm font-semibold">
+                <div className='w-full flex items-center justify-start text-sm font-semibold'>
                   <span>
                     {groupData?.task?.length} ITEM
                     {groupData?.task?.length > 1 && "S"}{" "}

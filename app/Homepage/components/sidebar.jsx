@@ -28,6 +28,7 @@ import styles from "@/app/styles";
 
 import { IoMenu } from "react-icons/io5";
 import { IoAddOutline } from "react-icons/io5";
+import { toast } from "sonner";
 
 const Sidebar = () => {
   const data = useAtomValue(projectsAtom);
@@ -61,11 +62,11 @@ const Sidebar = () => {
     try {
       const status = await addNew({ title, privacy });
       if (status && status.success) {
-        alert("Project added");
+        toast(status.message);
         setTitle("");
         setPrivacy("shared");
       } else {
-        alert("Error adding project");
+        toast(status.message);
       }
     } catch (e) {
       console.log(e);

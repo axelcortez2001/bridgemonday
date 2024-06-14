@@ -19,6 +19,7 @@ import {
 } from "../utils";
 import { fetchUserAttributes } from "aws-amplify/auth";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 
 //fetch curentUser
 async function fetchUserData() {
@@ -145,56 +146,85 @@ export const getProjects = atom(null, async (get, set) => {
     set(projectsAtom, workSpace?.workspace);
   }
 });
-
+//share to other users
 export const setOrganizers = atom(null, async (get, set, projectId, user) => {
   user["organizer"] = false;
-  const projects = get(projectsAtom);
-  const updateProjects = projects?.map((project) => {
-    if (project._id === projectId) {
+  const userData = get(UserDataAtom);
+  const sub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", sub);
+  if (workSpace && workSpace?.success) {
+    const projects = workSpace?.workspace;
+    if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, projects);
       return {
-        ...project,
-        organizer: [...project.organizer, user],
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
       };
-    }
-    return project;
-  });
+    } else {
+      const updateProjects = projects?.map((project) => {
+        if (project._id === projectId) {
+          return {
+            ...project,
+            organizer: [...project.organizer, user],
+          };
+        }
+        return project;
+      });
 
-  const updated = await updateWholeWorkSpace(
-    "/modaydata/update",
-    updateProjects
-  );
-  if (updated && updated?.success === true) {
-    set(projectsAtom, updateProjects);
-    return { success: true, message: "User added!" };
-  } else {
-    return { success: false, message: "Failed to add User" };
+      const updated = await updateWholeWorkSpace(
+        "/modaydata/update",
+        updateProjects
+      );
+      if (updated && updated?.success === true) {
+        set(projectsAtom, updateProjects);
+        return { success: true, message: "User added!" };
+      } else {
+        return { success: false, message: "Failed to add User" };
+      }
+    }
   }
 });
+//remove specific shared users
 export const removeOrganizer = atom(null, async (get, set, projectId, sub) => {
-  const projects = get(projectsAtom);
-  const updatedProjects = projects.map((project) => {
-    if (project._id === projectId) {
-      const updatedOrganizer = [...project.organizer];
-      const index = updatedOrganizer.findIndex((org) => org.sub === sub);
-      if (index !== -1) {
-        updatedOrganizer.splice(index, 1);
-      }
+  const userData = get(UserDataAtom);
+  const userSub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", userSub);
+  if (workSpace && workSpace?.success) {
+    const projects = workSpace?.workspace;
+    if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, projects);
       return {
-        ...project,
-        organizer: updatedOrganizer,
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
       };
+    } else {
+      const updatedProjects = projects.map((project) => {
+        if (project._id === projectId) {
+          const updatedOrganizer = [...project.organizer];
+          const index = updatedOrganizer.findIndex((org) => org.sub === sub);
+          if (index !== -1) {
+            updatedOrganizer.splice(index, 1);
+          }
+          return {
+            ...project,
+            organizer: updatedOrganizer,
+          };
+        }
+        return project;
+      });
+      const updated = await updateWholeWorkSpace(
+        "/modaydata/update",
+        updatedProjects
+      );
+      if (updated && updated?.success === true) {
+        set(projectsAtom, updatedProjects);
+        return { success: true, message: "User deleted!" };
+      } else {
+        return { success: false, message: "Failed to remove User" };
+      }
     }
-    return project;
-  });
-  const updated = await updateWholeWorkSpace(
-    "/modaydata/update",
-    updatedProjects
-  );
-  if (updated && updated?.success === true) {
-    set(projectsAtom, updatedProjects);
-    return { success: true, message: "User deleted!" };
-  } else {
-    return { success: false, message: "Failed to remove User" };
   }
 });
 //selection of atom from sidebar
@@ -203,6 +233,7 @@ export const selectedProject = atom(null);
 export const selectedProjectAtom = atom((get) => {
   const projects = get(projectsAtom);
   const selectedProjectId = get(selectedProject);
+  console.log("Main Trigger");
   if (projects && projects.length > 0) {
     return projects.find((project) => project._id === selectedProjectId);
   } else {
@@ -212,63 +243,103 @@ export const selectedProjectAtom = atom((get) => {
 
 //function to add new project
 export const addProject = atom(null, async (get, set, { title, privacy }) => {
-  const prevProject = get(projectsAtom);
   const userData = get(UserDataAtom);
+  const sub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", sub);
   const owner = userData.value;
   owner["organizer"] = true;
-  const newProject = {
-    name: title,
-    type: privacy,
-    columns: defaultColumn,
-    subColumns: defaultSubColumns,
-    organizer: [owner],
-    defaultStatus: statusesData,
-    defaultDropDown: [],
-    grouptask: [],
-  };
-  const returnProject = await addWorkspace("/modaydata", newProject);
-  if (returnProject && returnProject?.success === true) {
-    set(projectsAtom, [...prevProject, returnProject.workspace]);
-    return { success: true };
-  } else {
-    alert("Failed to add project");
-    return { success: false };
+  if (workSpace && workSpace?.success) {
+    const prevProject = workSpace?.workspace;
+    if (JSON.stringify(prevProject) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, prevProject);
+      return {
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
+      };
+    } else {
+      const newProject = {
+        name: title,
+        type: privacy,
+        columns: defaultColumn,
+        subColumns: defaultSubColumns,
+        organizer: [owner],
+        defaultStatus: statusesData,
+        defaultDropDown: [],
+        grouptask: [],
+      };
+      const returnProject = await addWorkspace("/modaydata", newProject);
+      if (returnProject && returnProject?.success === true) {
+        set(projectsAtom, [...prevProject, returnProject.workspace]);
+        return { success: true, message: "Project Added" };
+      } else {
+        return { success: false, message: "Error Adding Project" };
+      }
+    }
   }
 });
 
 //function to edit project
 export const editProject = atom(null, async (get, set, id, title, privacy) => {
-  const prevProjects = get(projectsAtom);
-  const updatedProjectFromBackEnd = await editWorkSpace(
-    "/modaydata",
-    id,
-    title,
-    privacy
-  );
-  console.log("Updated", updatedProjectFromBackEnd);
-  const updatedProjects = prevProjects.map((project) =>
-    project._id === id ? { ...project, name: title, type: privacy } : project
-  );
-  if (updatedProjectFromBackEnd && updatedProjectFromBackEnd?.success) {
-    set(projectsAtom, updatedProjects);
-    return { success: true };
-  } else {
-    alert("Error: Failed to edit project");
-    return { success: false };
+  const userData = get(UserDataAtom);
+  const sub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", sub);
+  if (workSpace && workSpace?.success) {
+    const prevProjects = workSpace?.workspace;
+    if (JSON.stringify(prevProjects) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, prevProjects);
+      return {
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
+      };
+    } else {
+      const updatedProjectFromBackEnd = await editWorkSpace(
+        "/modaydata",
+        id,
+        title,
+        privacy
+      );
+      const updatedProjects = prevProjects.map((project) =>
+        project._id === id
+          ? { ...project, name: title, type: privacy }
+          : project
+      );
+      if (updatedProjectFromBackEnd && updatedProjectFromBackEnd?.success) {
+        set(projectsAtom, updatedProjects);
+        return { success: true };
+      } else {
+        return { success: false, message: "Error: Failed to edit project" };
+      }
+    }
   }
 });
 
 //function to delete project
 export const deleteProject = atom(null, async (get, set, id) => {
-  const prevProjects = get(projectsAtom);
-  const deleted = await deleteWorkSpace("/modaydata", id);
-  if (deleted && deleted?.success === true) {
-    const newProject = prevProjects.filter((project) => project._id !== id);
-    set(projectsAtom, newProject);
-    return { success: true };
-  } else {
-    set(projectsAtom, prevProjects);
-    return { success: true };
+  const userData = get(UserDataAtom);
+  const sub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", sub);
+  if (workSpace && workSpace?.success) {
+    const prevProjects = workSpace?.workspace;
+    if (JSON.stringify(prevProjects) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, prevProjects);
+      return {
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
+      };
+    } else {
+      const deleted = await deleteWorkSpace("/modaydata", id);
+      if (deleted && deleted?.success === true) {
+        const newProject = prevProjects.filter((project) => project._id !== id);
+        set(projectsAtom, newProject);
+        return { success: true, message: "Project Deleted" };
+      } else {
+        set(projectsAtom, prevProjects);
+        return { success: true, message: "Error Deleting Project" };
+      }
+    }
   }
 });
 
@@ -294,9 +365,9 @@ export const addGroupTask = atom(null, async (get, set, projectId) => {
       }
     });
     set(projectsAtom, updatedProjects);
-    return { success: true };
+    return { success: true, message: "GroupTask Added" };
   } else {
-    return { success: false };
+    return { success: false, message: "Failed to add new GroupTask" };
   }
 });
 export const deleteGroupTask = atom(
@@ -359,8 +430,6 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
     key: itemName.toLocaleLowerCase(),
     accessorKey: newAccessorName,
     newItemName: itemName,
-    // header: <EditableHeader data={newItemName} accessorKey={newItemName} />,
-    // cell: itemCell[0].cell,
   };
 
   //add the column before the add button
@@ -729,61 +798,83 @@ export const updateSubHeaderName = atom(
 export const updateGroupData = atom(
   null,
   async (get, set, projectId, groupId, data, type) => {
-    const projects = get(projectsAtom);
-    const getId = (task) => {
-      let taskIdData = 0;
-      const len = task?.length || 0;
-      for (let i = 0; i < len; i++) {
-        if (task[i].id >= taskIdData) {
-          taskIdData = task[i].id + 1;
+    const user = get(UserDataAtom);
+    const sub = user.value.sub;
+    const oldProjects = get(projectsAtom);
+    const workSpace = await getWorkspace("/modaydata", sub);
+    if (workSpace && workSpace?.success) {
+      const projects = workSpace?.workspace;
+      if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+        toast("Oops, project data changed! Updating updated project");
+        set(projectsAtom, projects);
+        const foundProject = projects.find(
+          (project) => project._id === projectId
+        );
+        const foundTask = foundProject?.grouptask.find(
+          (grouptask) => grouptask.id === groupId
+        );
+        if (foundTask) {
+          return { success: false, newTask: foundTask?.task };
+        } else {
+          return { success: false };
+        }
+      } else {
+        const getId = (task) => {
+          let taskIdData = 0;
+          const len = task?.length || 0;
+          for (let i = 0; i < len; i++) {
+            if (task[i].id >= taskIdData) {
+              taskIdData = task[i].id + 1;
+            }
+          }
+          return taskIdData;
+        };
+
+        const updatedProjects = projects.map((project) => {
+          if (project._id === projectId) {
+            return {
+              ...project,
+              grouptask: project.grouptask.map((groupTask) => {
+                if (groupTask.id === groupId) {
+                  if (type === "UpdateData") {
+                    return {
+                      ...groupTask,
+                      task: data,
+                    };
+                  } else {
+                    const newRow = {
+                      id: getId(groupTask?.task) || 0,
+                      item: "New Task",
+                    };
+                    return {
+                      ...groupTask,
+                      task: [...data, newRow],
+                    };
+                  }
+                }
+                return groupTask;
+              }),
+            };
+          }
+          return project;
+        });
+        const updated = await updateWholeWorkSpace(
+          "/modaydata/update",
+          updatedProjects
+        );
+        if (updated && updated.success === true) {
+          set(projectsAtom, updatedProjects);
+          const updatedProject = updatedProjects.find(
+            (project) => project._id === projectId
+          );
+          const updatedGroupTask = updatedProject.grouptask.find(
+            (groupTask) => groupTask.id === groupId
+          );
+          return { success: true, task: updatedGroupTask.task };
+        } else {
+          return { success: false };
         }
       }
-      return taskIdData;
-    };
-
-    const updatedProjects = projects.map((project) => {
-      if (project._id === projectId) {
-        return {
-          ...project,
-          grouptask: project.grouptask.map((groupTask) => {
-            if (groupTask.id === groupId) {
-              if (type === "UpdateData") {
-                return {
-                  ...groupTask,
-                  task: data,
-                };
-              } else {
-                const newRow = {
-                  id: getId(groupTask?.task) || 0,
-                  item: "New Task",
-                };
-                return {
-                  ...groupTask,
-                  task: [...data, newRow],
-                };
-              }
-            }
-            return groupTask;
-          }),
-        };
-      }
-      return project;
-    });
-    const updated = await updateWholeWorkSpace(
-      "/modaydata/update",
-      updatedProjects
-    );
-    if (updated && updated.success === true) {
-      set(projectsAtom, updatedProjects);
-      const updatedProject = updatedProjects.find(
-        (project) => project._id === projectId
-      );
-      const updatedGroupTask = updatedProject.grouptask.find(
-        (groupTask) => groupTask.id === groupId
-      );
-      return { success: true, task: updatedGroupTask.task };
-    } else {
-      return { success: false };
     }
   }
 );
@@ -792,74 +883,98 @@ export const updateGroupData = atom(
 export const updateSubItemData = atom(
   null,
   async (get, set, projectId, groupId, taskId, data, type) => {
-    const projects = get(projectsAtom);
-    const getId = (task) => {
-      let taskIdData = 0;
-      const len = task?.length || 0;
-      for (let i = 0; i < len; i++) {
-        if (task[i].id >= taskIdData) {
-          taskIdData = task[i].id + 1;
+    const user = get(UserDataAtom);
+    const sub = user.value.sub;
+    const oldProjects = get(projectsAtom);
+    const workSpace = await getWorkspace("/modaydata", sub);
+    if (workSpace && workSpace?.success) {
+      const projects = workSpace?.workspace;
+      if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+        toast("Oops, project data changed! Updating updated project");
+        set(projectsAtom, projects);
+        const foundProject = projects.find(
+          (project) => project._id === projectId
+        );
+        const foundTask = foundProject?.grouptask.find(
+          (grouptask) => grouptask.id === groupId
+        );
+        const foundSubItems = foundTask?.task.find(
+          (task) => task.id === taskId
+        );
+        if (foundSubItems) {
+          return { success: false, newSubItem: foundSubItems?.subItems };
+        } else {
+          return { success: false };
         }
-      }
-      return taskIdData;
-    };
-
-    const updatedProjects = projects.map((project) => {
-      if (project._id === projectId) {
-        return {
-          ...project,
-          grouptask: project.grouptask.map((grouptask) => {
-            if (grouptask.id === groupId) {
-              return {
-                ...grouptask,
-                task: grouptask.task.map((task) => {
-                  console.log("Before Updating Project " + task);
-                  if (task.id === taskId) {
-                    if (type === "UpdateData") {
-                      return {
-                        ...task,
-                        subItems: data,
-                      };
-                    } else {
-                      const newRow = {
-                        id: getId(task.subItems),
-                        item: "New SubTask",
-                      };
-                      return {
-                        ...task,
-                        subItems: task.subItems
-                          ? [...task.subItems, newRow]
-                          : [newRow],
-                      };
-                    }
-                  }
-                  return task;
-                }),
-              };
+      } else {
+        const getId = (task) => {
+          let taskIdData = 0;
+          const len = task?.length || 0;
+          for (let i = 0; i < len; i++) {
+            if (task[i].id >= taskIdData) {
+              taskIdData = task[i].id + 1;
             }
-            return grouptask;
-          }),
+          }
+          return taskIdData;
         };
+
+        const updatedProjects = projects.map((project) => {
+          if (project._id === projectId) {
+            return {
+              ...project,
+              grouptask: project.grouptask.map((grouptask) => {
+                if (grouptask.id === groupId) {
+                  return {
+                    ...grouptask,
+                    task: grouptask.task.map((task) => {
+                      if (task.id === taskId) {
+                        if (type === "UpdateData") {
+                          return {
+                            ...task,
+                            subItems: data,
+                          };
+                        } else {
+                          const newRow = {
+                            id: getId(task.subItems),
+                            item: "New SubTask",
+                          };
+                          return {
+                            ...task,
+                            subItems: task.subItems
+                              ? [...task.subItems, newRow]
+                              : [newRow],
+                          };
+                        }
+                      }
+                      return task;
+                    }),
+                  };
+                }
+                return grouptask;
+              }),
+            };
+          }
+          return project;
+        });
+        const updated = await updateWholeWorkSpace(
+          "/modaydata/update",
+          updatedProjects
+        );
+        if (updated.success === true) {
+          set(projectsAtom, updatedProjects);
+          const updatedProject = updatedProjects.find(
+            (project) => project._id === projectId
+          );
+          const updatedGroupTask = updatedProject.grouptask.find(
+            (groupTask) => groupTask.id === groupId
+          );
+          const updatedSubItem = updatedGroupTask.task.find(
+            (task) => task.id === taskId
+          );
+          return { success: true, task: updatedSubItem.subItems };
+        } else return { success: false };
       }
-      return project;
-    });
-    const updated = await updateWholeWorkSpace(
-      "/modaydata/update",
-      updatedProjects
-    );
-    if (updated.success === true) {
-      set(projectsAtom, updatedProjects);
-      const updatedProject = updatedProjects.find(
-        (project) => project._id === projectId
-      );
-      const updatedGroupTask = updatedProject.grouptask.find(
-        (groupTask) => groupTask.id === groupId
-      );
-      const updatedSubItem = updatedGroupTask.task.find(
-        (task) => task.id === taskId
-      );
-      return { success: true, task: updatedSubItem.subItems };
-    } else return { success: false };
+    }
   }
 );
 export const updateDefaultStatus = atom(
@@ -948,7 +1063,6 @@ export const updateDefaultDropDown = atom(
   }
 );
 export const changeOwnerShip = atom(null, async (get, set, id, userSub) => {
-  console.log("Trigger");
   const user = get(UserDataAtom);
   const sub = user.value.sub;
   const oldProjects = get(projectsAtom);
@@ -956,7 +1070,7 @@ export const changeOwnerShip = atom(null, async (get, set, id, userSub) => {
   if (workSpace && workSpace?.success) {
     const projects = workSpace?.workspace;
     if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
-      alert("Oops, project data changed!");
+      toast("Oops, project data changed! Updating updated project");
       set(projectsAtom, projects);
       return;
     }

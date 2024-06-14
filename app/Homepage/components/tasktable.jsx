@@ -30,6 +30,7 @@ import styles from "@/app/styles";
 import { Button } from "@nextui-org/react";
 import { MdOutlineDelete } from "react-icons/md";
 import { CiExport } from "react-icons/ci";
+import { toast } from "sonner";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
@@ -73,11 +74,14 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   useEffect(() => {
     const updateData = async () => {
       try {
-        console.log("Triiger");
         const type = "UpdateData";
         const status = await updateTableData(projectId, groupId, data, type);
-        if (!status && status.success === false) {
-          alert("Error updating");
+        if (status && status.success === false) {
+          if (status.newTask) {
+            setData(status.newTask);
+          } else {
+            toast("Error updating");
+          }
         }
       } catch (error) {
         console.log(error);
@@ -108,7 +112,11 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       if (status && status.success === true) {
         setData(status?.task);
       } else {
-        alert("Error adding task!");
+        if (status.newTask) {
+          setData(status.newTask);
+        } else {
+          alert("Error adding task!");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -116,10 +124,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   };
   const dataIds = React.useMemo(() => data?.map(({ id }) => id), [data]);
   function handleDragEnd(event) {
-    console.log("Dragging trigger");
     const { active, over } = event;
-    console.log("Active: ", event);
-    console.log("Over: ", over);
     if (active && over && active.id !== over.id) {
       setData((data) => {
         const oldIndex = dataIds.indexOf(active.id);
@@ -260,7 +265,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
             <tr className='w-full flex items-center justify-center p-1 hover:cursor-pointer h-[52px]'>
               <div>
                 <Button
-                  className='font-[12px] my-[8px] ml-[8px] font-helvetica bg-a-blue text-white font-helvetica'
+                  className='font-[12px] my-[8px] ml-[8px] bg-a-blue text-white font-helvetica'
                   onPress={() => addNewRow()}
                   size='sm'
                 >

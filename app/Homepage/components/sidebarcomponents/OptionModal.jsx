@@ -21,6 +21,7 @@ import { SlOptions } from "react-icons/sl";
 import { useAtom, useSetAtom } from "jotai";
 import { deleteProject, editProject, UserDataAtom } from "../../datastore";
 import LoadingComponent from "../otherComponents/LoadingComponent";
+import { toast } from "sonner";
 
 export default function OptionModal({ task }) {
   //modal options
@@ -50,9 +51,9 @@ export default function OptionModal({ task }) {
             const id = task._id;
             const status = await deleteHandle(id);
             if (status && status.success) {
-              alert("Project deleted");
+              toast(status.message);
             } else {
-              alert("Error Deleting Project");
+              toast(status.message);
             }
           } catch (e) {
             console.log(e);
@@ -75,6 +76,7 @@ export default function OptionModal({ task }) {
       if (status && status.success) {
         onOpenChange(false);
       } else {
+        toast(status.message);
         onOpenChange(false);
       }
     } catch (e) {

@@ -153,7 +153,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   });
   const exportCsv = () => {
     const rowData = table.getRowModel().rows.map((row) => row.original);
-    console.log(rowData);
     const keyMapping = {};
     columnData.forEach((col) => {
       if (

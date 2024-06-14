@@ -42,20 +42,23 @@ export const DraggableRow = ({ row, gId }) => {
   const taskId = row.original.id;
   const projectId = project._id;
   const groupId = gId;
-  const [data, setData] = useState(subData);
+  const [data, setData] = useState(subData || []);
   const handleData = (newData) => {
     setData(newData);
   };
   const handleAdd = async () => {
-    console.log(data);
+
     const status = await addSubColumn(projectId, groupId, taskId, data);
     if (status && status.success === true) {
       setData(status.task);
     } else {
-      alert("Error adding task");
+      if (status.newSubItem) {
+        setData(status.newSubItem);
+      } else {
+        alert("Error adding task");
+      }
     }
   };
-  console.log("subDataaa: " + JSON.stringify(subData));
   return (
     <>
       <tr ref={setNodeRef} style={style}>
@@ -122,7 +125,6 @@ export const SubItemRow = ({
 );
 const removeSubItems = (data) => {
   return data.map((row) => {
-    console.log(row instanceof Object);
     if (row instanceof Object) {
       const { subItems, ...rest } = row;
       return rest;

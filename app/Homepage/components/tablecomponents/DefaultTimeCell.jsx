@@ -8,7 +8,6 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState(selectedValue);
 
-
   function isValidTimeFormat(text) {
     const timeFormatRegex = /^(0[1-9]|1[0-2]):[0-5][0-9]:[0-5][0-9] (AM|PM)$/i;
     if (timeFormatRegex.test(text)) {
@@ -58,7 +57,6 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
       event.preventDefault();
       const today = new Date();
       setContent(format(today, "hh:mm:ss aa"));
-      
     }
   }, []);
 
@@ -70,7 +68,9 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
       };
     }
   }, [focused, handleKeyPress]);
-
+  useEffect(() => {
+    setContent(selectedValue);
+  }, [selectedValue]);
   return (
     <input
       className={`w-full h-full min-h-10 bg-inherit ${focused ? "focus" : ""}`}

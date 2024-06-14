@@ -77,7 +77,6 @@ const Sidebar = () => {
   //function to check if the user is owner or has access to the project
   const checkAccess = () => {
     if (userData && data) {
-      console.log("data", data);
       const accessData = data.filter((project) =>
         project?.organizer?.some((person) => person?.sub === userData?.sub)
       );

@@ -27,7 +27,6 @@ const PersonCell = ({ getValue, row, column, table }) => {
   const personAtom = projects[0]?.organizer;
   const [filteredPerson, setFilteredPerson] = useState(personAtom);
   const initialValue = getValue();
-  console.log("initialValue", initialValue);
   const value = initialValue?.map((user) => user.sub) || [];
   const { updateData } = table.options.meta;
   //function to show and find user

@@ -82,7 +82,6 @@ const OptionCell = ({ getValue, row, column, table }) => {
     }
   };
   const handleSetStat = (stat) => {
-    console.log(stat);
     setNewColor(stat.color);
     setNewStatus(stat.text);
     setUpdateStatus(stat);

@@ -140,7 +140,6 @@ export const projectsAtom = atom([]);
 export const getProjects = atom(null, async (get, set) => {
   const user = get(UserDataAtom);
   const sub = user.value.sub;
-  console.log("Trigger getting Data");
   const workSpace = await getWorkspace("/modaydata", sub);
   if (workSpace && workSpace?.success) {
     set(projectsAtom, workSpace?.workspace);
@@ -233,7 +232,6 @@ export const selectedProject = atom(null);
 export const selectedProjectAtom = atom((get) => {
   const projects = get(projectsAtom);
   const selectedProjectId = get(selectedProject);
-  console.log("Main Trigger");
   if (projects && projects.length > 0) {
     return projects.find((project) => project._id === selectedProjectId);
   } else {
@@ -417,7 +415,6 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
   );
   if (newItem.length > 0) {
     let highestID = 0;
-    console.log(newItem);
     newItem.map((item) => {
       if (item.id > highestID) {
         return highestID === item.id;

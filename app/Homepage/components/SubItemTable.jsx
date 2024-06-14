@@ -31,18 +31,27 @@ import { CiExport } from "react-icons/ci";
 
 const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
-  const [data, setSubData] = useState(subItems);
+  const [data, setSubData] = useState(subItems || []);
   const [selectedRows, setSelectedRows] = useState([]);
   const [initialColumns, setInitialColumns] = useState(projects.subColumns);
   const [columnValues, setColumnValues] = useState(
     dataColumns(projects.subColumns)
   );
-  console.log("SubDataAtTable: ", data);
+  const deleteSelectedRows = async () => {
+    if (window.confirm("Are you sure you want to delete") === true) {
+      const selectedRowIds = convertToArray();
+      const newData = data.filter(
+        (row, index) => !selectedRowIds.includes(row.id)
+      );
+      // setData(newData);
+      setSubData(newData);
+      table.reset();
+    }
+  };
   useEffect(() => {
     if (
       JSON.stringify(projects.subColumns) !== JSON.stringify(initialColumns)
     ) {
-      console.log("Triggerasdas");
       setInitialColumns(projects.subColumns);
       setColumnValues(dataColumns(projects.subColumns));
     }
@@ -82,7 +91,6 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   useEffect(() => {
     const updateData = async () => {
       try {
-        console.log("Trigger subtable");
         const type = "UpdateData";
         const status = await updateTableData(
           projectId,
@@ -94,35 +102,29 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
         if (status && status.success === false) {
           if (status.newSubItem) {
             setSubData(status.newSubItem);
+            setData(status.newSubItem);
           } else {
             alert("Error updating subtable");
           }
+        } else {
+          setData(data);
         }
       } catch (error) {
         console.log(error);
       }
     };
-    updateData();
+    if (data && data.length >= 0) {
+      updateData();
+    }
   }, [updateTableData, data]);
 
   //function to delete a row or whole table row
   const convertToArray = () => {
     return Object.keys(table.getState().rowSelection).map(Number);
   };
-  const deleteSelectedRows = () => {
-    if (window.confirm("Are you sure you want to delete") === true) {
-      const selectedRowIds = convertToArray();
-      const newData = data.filter(
-        (row, index) => !selectedRowIds.includes(row.id)
-      );
-      console.log("New Table Data: ", newData);
-      setData(newData);
-      table.reset();
-    }
-  };
 
   const dataIds = React.useMemo(() => data?.map(({ id }) => id), [data]);
-  console.log("SubData: ", data);
+
   function handleDragEnd(event) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {

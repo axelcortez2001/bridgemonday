@@ -71,7 +71,6 @@ const Content = () => {
     );
     const columnHeaders = ["groupName"];
     finalData.forEach((obj) => {
-      console.log(obj);
       Object.keys(obj).map((key) => {
         let num = [
           "0",

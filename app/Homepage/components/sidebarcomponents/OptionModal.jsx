@@ -61,7 +61,7 @@ export default function OptionModal({ task }) {
             setLoading(false);
           }
         } else {
-          alert("You are not the owner of this project");
+          toast("You are not the owner of this project");
         }
       }
     }

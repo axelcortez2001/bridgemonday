@@ -1,6 +1,7 @@
 import { select } from "@nextui-org/theme";
 import { format } from "date-fns";
 import React, { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 
 const DefaultDateCell = ({ getValue, row, column, table }) => {
   const selectedValue = getValue();
@@ -33,7 +34,7 @@ const DefaultDateCell = ({ getValue, row, column, table }) => {
         setFocused(false);
         table.options.meta.updateData(row.index, column.id, content);
       } else {
-        alert("Invalid Date Format");
+        toast("Invalid Date Format");
         setFocused(false);
         setContent(
           selectedValue ? format(selectedValue, "yyyy-MM-dd") : selectedValue

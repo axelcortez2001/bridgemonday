@@ -16,6 +16,7 @@ import {
 } from "@nextui-org/react";
 import { SlOptionsVertical } from "react-icons/sl";
 import { MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
+import { toast } from "sonner";
 
 const EditableSubHeader = ({ data, accessorKey }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
@@ -31,7 +32,7 @@ const EditableSubHeader = ({ data, accessorKey }) => {
     try {
       const status = await editHeader(projectId, oldName, newHeaderName);
       if (!status && status.success === false) {
-        alert("Error updating");
+        toast("Error updating");
       }
       setIsClicked(false);
     } catch (e) {
@@ -48,7 +49,7 @@ const EditableSubHeader = ({ data, accessorKey }) => {
       try {
         const status = await deleteHeader(projectId, key);
         if (status && status.success) {
-          alert("Column deleted");
+          toast("Column deleted");
         }
       } catch (e) {
         console.log(e);

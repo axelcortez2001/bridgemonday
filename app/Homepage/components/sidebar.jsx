@@ -48,6 +48,7 @@ const Sidebar = () => {
 
   const handleSelect = (task) => {
     setSelectedProject(task._id);
+    setToggle(false);
   };
   //handlers
   //Add New Project Handler
@@ -55,7 +56,7 @@ const Sidebar = () => {
   const [privacy, setPrivacy] = useState("shared");
   const handleAddProject = async () => {
     if (title === "") {
-      alert("Please enter a title");
+      toast("Please enter a title");
       return;
     }
     setLoading(true);
@@ -88,7 +89,7 @@ const Sidebar = () => {
 
   return (
     <div>
-      <div className='sm:hidden fixed z-30'>
+      <div className='md:hidden absolute z-50'>
         <Button
           isIconOnly
           onPress={handleOpen}
@@ -100,7 +101,7 @@ const Sidebar = () => {
       </div>
 
       <div
-        className={`fixed sm:left-0 z-20 ${
+        className={`fixed md:left-0 z-40 ${
           toggle ? `${styles.slideIn}` : `${styles.slideOut}`
         } ${styles.sideBar}`}
       >
@@ -116,11 +117,9 @@ const Sidebar = () => {
         <div
           className={`${styles.flexCenter} justify-between m-[12px] border-t-1 border-a-grey pt-[12px]`}
         >
-          <span className='text-[16px] font-helvetica font-bold'>
-            PROJECTS:
-          </span>
+          <span className='text-base font-bold'>PROJECTS:</span>
           <Button onPress={onOpen} isIconOnly size='sm' className='bg-a-orange'>
-            <IoAddOutline className='text-a-white size-[80%]' />
+            <IoAddOutline className='text-a-white size-[70%]' />
           </Button>
         </div>
 
@@ -131,7 +130,7 @@ const Sidebar = () => {
             checkAccess !== undefined &&
             checkAccess().map((task) => (
               <div
-                className='w-[90%] py-[4px] px-[8px] mb-[4px] font-helvetica rounded-[8px] hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
+                className='w-[90%] py-[4px] px-[8px] mb-[4px] font-medium rounded-[8px] hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
                 key={task.id}
                 onClick={() => handleSelect(task)}
               >
@@ -193,6 +192,11 @@ const Sidebar = () => {
           </ModalContent>
         </Modal>
       </div>
+      <div
+        className={`w-screen h-full fixed ease-in-out duration-500 sm:hidden ${
+          toggle ? `bg-a-black/30 backdrop-blur-md z-30` : `bg-none`
+        }`}
+      ></div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { format, isValid } from "date-fns";
 import React, { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 
 const DefaultTimeCell = ({ getValue, row, column, table }) => {
   const selectedValue = getValue();
@@ -41,12 +42,12 @@ const DefaultTimeCell = ({ getValue, row, column, table }) => {
         setFocused(false);
         table.options.meta.updateData(row.index, column.id, content);
       } else {
-        alert("Invalid Time Format");
+        toast("Invalid Time Format");
         setFocused(false);
         setContent(selectedValue);
       }
     } else {
-      alert("Invalid Date Format");
+      toast("Invalid Date Format");
       setFocused(false);
       setContent(selectedValue);
     }

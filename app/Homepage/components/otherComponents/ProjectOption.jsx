@@ -182,9 +182,9 @@ const ProjectOption = ({ data, exportCsv }) => {
       try {
         const status = await changeOwner(id, userSub);
         if (status && status.success === true) {
-          alert(`${user.name} is now the owner`);
+          toast(`${user.name} is now the owner`);
         } else {
-          alert("Error encountered");
+          toast("Error encountered");
         }
       } catch (e) {
         console.log(e);
@@ -241,7 +241,7 @@ const ProjectOption = ({ data, exportCsv }) => {
           setLoading(false);
         }
       } else {
-        alert("Please contact the owner of the project");
+        toast("Please contact the owner of the project");
       }
     }
   };

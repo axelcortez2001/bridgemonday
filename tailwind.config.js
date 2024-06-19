@@ -9,6 +9,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      transitionProperty: {
+        height: "height",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -24,7 +27,7 @@ module.exports = {
         "a-grey": "#D9D9D9",
       },
       fontFamily: {
-        helvetica: ["helvetica", "sans"]
+        helvetica: ["helvetica", "sans"],
       },
     },
     screens: {

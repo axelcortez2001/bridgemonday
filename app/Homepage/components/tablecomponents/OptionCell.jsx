@@ -74,11 +74,11 @@ const OptionCell = ({ getValue, row, column, table }) => {
           setNewColor("");
           onOpenChange(false);
         } else {
-          alert("Status already exists: ");
+          toast("Status already exists: ");
         }
       }
     } else {
-      alert("Please fill out all fields");
+      toast("Please fill out all fields");
     }
   };
   const handleSetStat = (stat) => {
@@ -142,10 +142,8 @@ const OptionCell = ({ getValue, row, column, table }) => {
               <div
                 className={`${
                   selectedValue === "" ? "flex" : "hidden"
-                } text-a-black`}
-              >
-                Select
-              </div>
+                }text-a-black text-sm font-medium`}
+              ></div>
               <div className={`${selectedValue !== "" ? "flex" : "hidden"}`}>
                 {selectedValue}
               </div>

@@ -8,6 +8,7 @@ import { selectedProjectAtom, updateSubItemData } from "../../datastore";
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { toast } from "sonner";
 
 //functions for DnD based from tanstackDnD
 //Cell Component
@@ -47,7 +48,6 @@ export const DraggableRow = ({ row, gId }) => {
     setData(newData);
   };
   const handleAdd = async () => {
-
     const status = await addSubColumn(projectId, groupId, taskId, data);
     if (status && status.success === true) {
       setData(status.task);
@@ -55,7 +55,7 @@ export const DraggableRow = ({ row, gId }) => {
       if (status.newSubItem) {
         setData(status.newSubItem);
       } else {
-        alert("Error adding task");
+        toast("Error adding task");
       }
     }
   };
@@ -81,7 +81,7 @@ export const DraggableRow = ({ row, gId }) => {
               <div className='w-full ml-14 border-l-1 pl-[8px]'>
                 <Button
                   size='sm'
-                  className='mt-[8px] font-[12px] bg-a-blue text-white font-helvetica'
+                  className='mt-[8px] text-sm bg-a-blue text-white'
                   onClick={() => handleAdd()}
                 >
                   Add SubItem

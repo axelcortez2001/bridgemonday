@@ -20,6 +20,7 @@ import {
 } from "../../datastore";
 import { useAtom, useSetAtom } from "jotai";
 import styles from "@/app/styles";
+import { toast } from "sonner";
 
 const DropDownCell = ({ getValue, row, column, table }) => {
   const { text, color } = getValue() || {};
@@ -67,11 +68,11 @@ const DropDownCell = ({ getValue, row, column, table }) => {
           setNewColor("");
           onOpenChange(false);
         } else {
-          alert("DropDown already exists: ");
+          toast("DropDown already exists: ");
         }
       }
     } else {
-      alert("Please fill out all fields");
+      toast("Please fill out all fields");
     }
   };
   const handleSetDropDown = (stat) => {
@@ -90,7 +91,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
     const oldStat = updateDropDown?.text;
 
     if (newDropDown === "") {
-      alert("Please fill out all fields");
+      toast("Please fill out all fields");
       return;
     } else {
       if (oldStat.toLocaleLowerCase() === newDropDown.toLocaleLowerCase()) {
@@ -109,7 +110,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
           setNewDropDown("");
           setUpdateDropDown(null);
         } else {
-          alert("Dropdown already exists: ");
+          toast("Dropdown already exists: ");
           setNewColor(updateDropDown.color);
           setNewDropDown(updateDropDown.text);
         }
@@ -137,7 +138,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
               <div
                 className={`${
                   selectedValue === "" ? "flex" : "hidden"
-                } text-a-black`}
+                } text-a-black text-sm font-medium`}
               >
                 Select
               </div>

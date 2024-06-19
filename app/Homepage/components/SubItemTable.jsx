@@ -28,6 +28,7 @@ import { mkConfig, generateCsv, download } from "export-to-csv";
 import { Button } from "@nextui-org/react";
 import { MdOutlineDelete } from "react-icons/md";
 import { CiExport } from "react-icons/ci";
+import { toast } from "sonner";
 
 const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
@@ -104,7 +105,7 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
             setSubData(status.newSubItem);
             setData(status.newSubItem);
           } else {
-            alert("Error updating subtable");
+            toast("Error updating subtable");
           }
         } else {
           setData(data);
@@ -180,34 +181,6 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
       sensors={sensors}
     >
       <div className='w-full items-center justify-center py-[8px] border-l-1 pl-[8px]'>
-        {convertToArray().length > 0 && (
-          <>
-            <div
-              className={`fixed bg-a-white rounded-[12px] left-[50%] bottom-[8px]`}
-            >
-              <div className={`px-[4px] py-[2px]`}>
-                <Button
-                  className='w-[156px] justify-start font-helvetica text-[14px] text-a-blue border-r-1'
-                  radius='none'
-                  variant='light'
-                  startContent={<CiExport className='size-[48%]' />}
-                  onPress={exportCsv}
-                >
-                  Export CSV
-                </Button>
-                <Button
-                  className='w-[156px] justify-start font-helvetica text-[14px] text-a-red'
-                  radius='none'
-                  variant='light'
-                  startContent={<MdOutlineDelete className='size-[48%]' />}
-                  onPress={deleteSelectedRows}
-                >
-                  Delete Sub Task
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
         <table
           className='p-2 border border-a-grey'
           style={{ width: table?.getTotalSize() }}
@@ -255,6 +228,34 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
           </tbody>
         </table>
       </div>
+      {convertToArray().length > 0 && (
+        <>
+          <div
+            className={`fixed bg-a-white rounded-[12px] left-[50%] bottom-[8px]`}
+          >
+            <div className={`px-[4px] py-[2px]`}>
+              <Button
+                className='w-[156px] justify-start font-helvetica text-[14px] text-a-blue border-r-1'
+                radius='none'
+                variant='light'
+                startContent={<CiExport className='size-[48%]' />}
+                onPress={exportCsv}
+              >
+                Export CSV
+              </Button>
+              <Button
+                className='w-[156px] justify-start font-helvetica text-[14px] text-a-red'
+                radius='none'
+                variant='light'
+                startContent={<MdOutlineDelete className='size-[48%]' />}
+                onPress={deleteSelectedRows}
+              >
+                Delete Sub Task
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </DndContext>
   );
 };

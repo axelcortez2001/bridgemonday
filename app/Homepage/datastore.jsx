@@ -984,7 +984,7 @@ export const updateDefaultStatus = atom(
     if (workSpace && workSpace?.success) {
       const projects = workSpace?.workspace;
       if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
-        alert("Oops, project data changed!");
+        toast("Oops, project data changed!");
         set(projectsAtom, projects);
         return;
       }
@@ -1027,7 +1027,7 @@ export const updateDefaultDropDown = atom(
     if (workSpace && workSpace?.success) {
       const projects = workSpace?.workspace;
       if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
-        alert("Oops, project data changed!");
+        toast("Oops, project data changed!");
         set(projectsAtom, projects);
         return;
       }

@@ -115,7 +115,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
         if (status.newTask) {
           setData(status.newTask);
         } else {
-          alert("Error adding task!");
+          toast("Error adding task!");
         }
       }
     } catch (error) {
@@ -185,34 +185,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       sensors={sensors}
     >
       <div className='w-full items-center justify-center overflow-x-auto'>
-        {convertToArray().length > 0 && (
-          <>
-            <div
-              className={`fixed bg-a-white rounded-[12px] left-[50%] bottom-[8px]`}
-            >
-              <div className={`px-[4px] py-[2px]`}>
-                <Button
-                  className='w-[132px] justify-start font-helvetica text-[14px] text-a-blue border-r-1'
-                  radius='none'
-                  variant='light'
-                  startContent={<CiExport className='size-[48%]' />}
-                  onPress={exportCsv}
-                >
-                  Export CSV
-                </Button>
-                <Button
-                  className='w-[132px] justify-start font-helvetica text-[14px] text-a-red'
-                  radius='none'
-                  variant='light'
-                  startContent={<MdOutlineDelete className='size-[48%]' />}
-                  onPress={deleteSelectedRows}
-                >
-                  Delete Task
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
         <table
           className='p-2 border-l'
           style={{ width: table?.getTotalSize() }}
@@ -264,7 +236,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
             <tr className='w-full flex items-center justify-center p-1 hover:cursor-pointer h-[52px]'>
               <div>
                 <Button
-                  className='font-[12px] my-[8px] ml-[8px] bg-a-blue text-white font-helvetica'
+                  className='text-sm my-[8px] ml-[8px] font-helvetica bg-a-blue text-white '
                   onPress={() => addNewRow()}
                   size='sm'
                 >
@@ -275,6 +247,34 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
           </tbody>
         </table>
       </div>
+      {convertToArray().length > 0 && (
+        <>
+          <div
+            className={`fixed bg-a-white rounded-[12px] left-[50%] bottom-[8px]`}
+          >
+            <div className={`px-[4px] py-[2px]`}>
+              <Button
+                className='w-[132px] justify-start font-helvetica text-[14px] text-a-blue border-r-1'
+                radius='none'
+                variant='light'
+                startContent={<CiExport className='size-[48%]' />}
+                onPress={exportCsv}
+              >
+                Export CSV
+              </Button>
+              <Button
+                className='w-[132px] justify-start font-helvetica text-[14px] text-a-red'
+                radius='none'
+                variant='light'
+                startContent={<MdOutlineDelete className='size-[48%]' />}
+                onPress={deleteSelectedRows}
+              >
+                Delete Task
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </DndContext>
   );
 };

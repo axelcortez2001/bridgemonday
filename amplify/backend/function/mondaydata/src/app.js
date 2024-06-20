@@ -41,6 +41,7 @@ const workspaceSchema = new mongoose.Schema({
   subColumns: [],
   organizer: [],
   grouptask: [],
+  charts: [],
 });
 const workspaceModel = mongoose.model("workspace", workspaceSchema);
 
@@ -127,6 +128,27 @@ app.put("/modaydata/update", async (req, res) => {
     // Update Data
     const newProjects = await workspaceModel.bulkWrite(bulkOperations);
     res.status(200).json({ success: true, newProjects });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+//function to add chart
+app.put("/modaydata/addChart", async (req, res) => {
+  const { id, chartData } = req.body;
+  try {
+    // Update Data
+    const projectData = await workspaceModel.findByIdAndUpdate(
+      id,
+      {
+        charts: chartData,
+      },
+      { new: true }
+    );
+    if (!projectData) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    res.status(200).json({ success: true, projectData });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }

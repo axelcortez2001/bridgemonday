@@ -2,13 +2,7 @@ import React, { useState } from "react";
 import { useAtom, useSetAtom } from "jotai";
 import { addGroupTask, selectedProjectAtom } from "../datastore";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import Tasktable from "./tasktable";
 import EditableGroupName from "./EditableGroupName";
 import { dataColumns } from "./functions/hookfunctions";
@@ -22,12 +16,17 @@ import ProjectOption from "./otherComponents/ProjectOption";
 import LoadingComponent from "./otherComponents/LoadingComponent";
 import { IoAddOutline } from "react-icons/io5";
 import { toast } from "sonner";
+import Dashboard from "./DashboardComponents/Dashboard";
+import Filter from "./FilterComponents/Filter";
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
   //function to toggle dropdown of each groupTask
   const [openDrop, setOpenDrop] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [locationStatus, setLocationStatus] = useState("table");
 
+  //filtering function
+  console.log("Main Data: ", data);
   const toggleDropdown = (groupId) => {
     if (openDrop.includes(groupId)) {
       setOpenDrop(openDrop.filter((id) => id !== groupId));
@@ -172,62 +171,87 @@ const Content = () => {
           </div>
         </div>
       </div>
-
-      <div className='w-full max-w-full p-[4px] md:p-[8px] space-y-2 md:space-y-2 flex flex-col mt-1 md:mt-0'>
-        {data?.grouptask?.map((groupData) => (
-          <div
-            className={`w-full hover:cursor-pointer md:mt-[0px] flex flex-col items-center p-2 border rounded-md shadow-md duration-300 ease-in bg-a-white`}
-            key={groupData.id}
-          >
-            <div className='flex w-full justify-between items-center'>
-              <div className='flex justify-start space-x-2'>
-                <div
-                  className={`${
-                    !openDrop.includes(groupData.id)
-                      ? "font-semibold"
-                      : "text-base font-bold"
-                  }`}
-                >
-                  <EditableGroupName
-                    projectId={data._id}
-                    groupData={groupData}
-                  />
+      {data && data !== undefined && (
+        <>
+          <div className='p-3 border w-full flex gap-x-5'>
+            <div
+              className={`hover:cursor-pointer ${
+                locationStatus === "table" && "underline"
+              }`}
+              onClick={() => setLocationStatus("table")}
+            >
+              Main Table
+            </div>
+            <div
+              className={`hover:cursor-pointer ${
+                locationStatus === "dashboard" && "underline"
+              }`}
+              onClick={() => setLocationStatus("dashboard")}
+            >
+              Dashboard
+            </div>
+          </div>
+        </>
+      )}
+      {locationStatus === "table" ? (
+        <div className='w-full max-w-full p-[4px] md:p-[8px] space-y-2 md:space-y-2 flex flex-col mt-1 md:mt-0'>
+          {data?.grouptask?.map((groupData) => (
+            <div
+              className={`w-full hover:cursor-pointer md:mt-[0px] flex flex-col items-center p-2 border rounded-md shadow-md duration-300 ease-in bg-a-white`}
+              key={groupData.id}
+            >
+              <div className='flex w-full justify-between items-center'>
+                <div className='flex justify-start space-x-2'>
+                  <div
+                    className={`${
+                      !openDrop.includes(groupData.id)
+                        ? "font-semibold"
+                        : "text-base font-bold"
+                    }`}
+                  >
+                    <EditableGroupName
+                      projectId={data._id}
+                      groupData={groupData}
+                    />
+                  </div>
+                  {groupData?.task?.length > 0 &&
+                    !openDrop.includes(groupData.id) && (
+                      <div className='w-full flex items-center justify-start text-sm font-medium'>
+                        <span>
+                          - {groupData?.task?.length} Item
+                          {groupData?.task?.length > 1 && "s"}{" "}
+                        </span>
+                      </div>
+                    )}
                 </div>
-                {groupData?.task?.length > 0 &&
-                  !openDrop.includes(groupData.id) && (
-                    <div className='w-full flex items-center justify-start text-sm font-medium'>
-                      <span>
-                        - {groupData?.task?.length} Item
-                        {groupData?.task?.length > 1 && "s"}{" "}
-                      </span>
-                    </div>
-                  )}
+
+                {openDrop.includes(groupData.id) ? (
+                  <MdKeyboardArrowUp
+                    size={28}
+                    onClick={() => toggleDropdown(groupData.id)}
+                  />
+                ) : (
+                  <MdKeyboardArrowDown
+                    size={28}
+                    onClick={() => toggleDropdown(groupData.id)}
+                  />
+                )}
               </div>
 
-              {openDrop.includes(groupData.id) ? (
-                <MdKeyboardArrowUp
-                  size={28}
-                  onClick={() => toggleDropdown(groupData.id)}
-                />
-              ) : (
-                <MdKeyboardArrowDown
-                  size={28}
-                  onClick={() => toggleDropdown(groupData.id)}
+              {openDrop.includes(groupData.id) && (
+                <Tasktable
+                  projectId={data._id}
+                  groupId={groupData.id}
+                  groupData={groupData.task}
+                  columnData={dataColumns(data.columns)}
                 />
               )}
             </div>
-
-            {openDrop.includes(groupData.id) && (
-              <Tasktable
-                projectId={data._id}
-                groupId={groupData.id}
-                groupData={groupData.task}
-                columnData={dataColumns(data.columns)}
-              />
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <Dashboard data={data} />
+      )}
     </div>
   );
 };

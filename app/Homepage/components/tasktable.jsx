@@ -59,7 +59,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     enableColumnResizing: true,
     getRowCanExpand: () => true,
     getExpandedRowModel: getExpandedRowModel(),
-
     meta: {
       updateData: (rowIndex, columnId, value) =>
         setData((prev) =>
@@ -75,6 +74,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     const updateData = async () => {
       try {
         const type = "UpdateData";
+        console.log("Trigger");
         const status = await updateTableData(projectId, groupId, data, type);
         if (status && status.success === false) {
           if (status.newTask) {

@@ -8,6 +8,7 @@ import DefaultTimeCell from "./components/tablecomponents/DefaultTimeCell";
 import NumberCell from "./components/tablecomponents/NumberCell";
 import DropDownCell from "./components/tablecomponents/DropDownCell";
 import {
+  addChartToBE,
   addNewGrouptask,
   addWorkspace,
   deleteWorkSpace,
@@ -265,6 +266,7 @@ export const addProject = atom(null, async (get, set, { title, privacy }) => {
         defaultStatus: statusesData,
         defaultDropDown: [],
         grouptask: [],
+        charts: [],
       };
       const returnProject = await addWorkspace("/modaydata", newProject);
       if (returnProject && returnProject?.success === true) {
@@ -409,24 +411,29 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
     (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
   );
   //item duplication
-  const newItem = foundProject.columns.filter(
-    (column) =>
-      column?.key?.toLocaleLowerCase() === itemName?.toLocaleLowerCase()
+  const newItem = foundProject.columns.filter((column) =>
+    column?.newItemName
+      ?.toLocaleLowerCase()
+      .startsWith(itemName?.toLocaleLowerCase())
   );
   if (newItem.length > 0) {
-    let highestID = 0;
-    newItem.map((item) => {
-      if (item.id > highestID) {
-        return highestID === item.id;
+    let highestSuffix = 0;
+    newItem.forEach((item) => {
+      const suffixMatch = item.newItemName.match(/(\d+)$/);
+      if (suffixMatch) {
+        const suffix = parseInt(suffixMatch[0], 10);
+        if (suffix > highestSuffix) {
+          highestSuffix = suffix;
+        }
       }
     });
-    newItemName = newItemName + (newItem.length + 1);
+    newItemName = `${itemName}${highestSuffix + 1}`;
   }
   //newItemData
   const newItemData = {
     key: itemName.toLocaleLowerCase(),
     accessorKey: newAccessorName,
-    newItemName: itemName,
+    newItemName: newItemName,
   };
 
   //add the column before the add button
@@ -474,17 +481,37 @@ export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
 export const addSubItemColumn = atom(
   null,
   async (get, set, projectId, itemName) => {
+    let newItemName = itemName;
     let newAccessorName = itemName.toLocaleLowerCase() + uuidv4();
     const projects = get(projectsAtom);
     const foundProject = projects.find((project) => project._id === projectId);
     const itemCell = subtextItem.filter(
       (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
     );
+    //item duplication
+    const newItem = foundProject.subColumns.filter((column) =>
+      column?.newItemName
+        ?.toLocaleLowerCase()
+        .startsWith(itemName?.toLocaleLowerCase())
+    );
+    if (newItem.length > 0) {
+      let highestSuffix = 0;
+      newItem.forEach((item) => {
+        const suffixMatch = item.newItemName.match(/(\d+)$/);
+        if (suffixMatch) {
+          const suffix = parseInt(suffixMatch[0], 10);
+          if (suffix > highestSuffix) {
+            highestSuffix = suffix;
+          }
+        }
+      });
+      newItemName = `${itemName}${highestSuffix + 1}`;
+    }
     //newItemData
     const newItemData = {
       key: itemName.toLocaleLowerCase(),
       accessorKey: newAccessorName,
-      newItemName: itemName,
+      newItemName: newItemName,
     };
 
     //add the column before the add button
@@ -640,33 +667,44 @@ export const updateHeaderName = atom(
   null,
   async (get, set, projectId, oldName, newHeaderName) => {
     const projects = get(projectsAtom);
-    const updatedProjects = projects.map((project) => {
-      if (project._id === projectId) {
-        const updatedColumns = project.columns.map((column) => {
-          if (
-            column?.accessorKey?.toLocaleLowerCase() ===
-            oldName?.toLocaleLowerCase()
-          ) {
-            return {
-              ...column,
-              newItemName: newHeaderName,
-            };
-          }
-          return column;
-        });
-        return { ...project, columns: updatedColumns };
-      }
-      return project;
-    });
-    const updated = await updateWholeWorkSpace(
-      "/modaydata/update",
-      updatedProjects
+    const foundProject = projects.find((project) => project._id === projectId);
+    //item duplication
+    const newItem = foundProject.columns.filter((column) =>
+      column?.newItemName
+        ?.toLocaleLowerCase()
+        .startsWith(newHeaderName?.toLocaleLowerCase())
     );
-    if (updated && updated.success === true) {
-      set(projectsAtom, updatedProjects);
-      return { success: true };
+    if (newItem.length > 0) {
+      toast("Header name already exists");
     } else {
-      return { success: false };
+      const updatedProjects = projects.map((project) => {
+        if (project._id === projectId) {
+          const updatedColumns = project.columns.map((column) => {
+            if (
+              column?.accessorKey?.toLocaleLowerCase() ===
+              oldName?.toLocaleLowerCase()
+            ) {
+              return {
+                ...column,
+                newItemName: newHeaderName,
+              };
+            }
+            return column;
+          });
+          return { ...project, columns: updatedColumns };
+        }
+        return project;
+      });
+      const updated = await updateWholeWorkSpace(
+        "/modaydata/update",
+        updatedProjects
+      );
+      if (updated && updated.success === true) {
+        set(projectsAtom, updatedProjects);
+        return { success: true };
+      } else {
+        return { success: false };
+      }
     }
   }
 );
@@ -760,33 +798,44 @@ export const updateSubHeaderName = atom(
   null,
   async (get, set, projectId, oldName, newHeaderName) => {
     const projects = get(projectsAtom);
-    const updatedProjects = projects.map((project) => {
-      if (project._id === projectId) {
-        const updatedColumns = project?.subColumns?.map((column) => {
-          if (
-            column?.accessorKey?.toLocaleLowerCase() ===
-            oldName?.toLocaleLowerCase()
-          ) {
-            return {
-              ...column,
-              newItemName: newHeaderName,
-            };
-          }
-          return column;
-        });
-        return { ...project, subColumns: updatedColumns };
-      }
-      return project;
-    });
-    const updated = await updateWholeWorkSpace(
-      "/modaydata/update",
-      updatedProjects
+    const foundProject = projects.find((project) => project._id === projectId);
+    //item duplication
+    const newItem = foundProject.subColumns.filter((column) =>
+      column?.newItemName
+        ?.toLocaleLowerCase()
+        .startsWith(newHeaderName?.toLocaleLowerCase())
     );
-    if (updated && updated.success === true) {
-      set(projectsAtom, updatedProjects);
-      return { success: true };
+    if (newItem.length > 0) {
+      toast("Header name already exists");
     } else {
-      return { success: false };
+      const updatedProjects = projects.map((project) => {
+        if (project._id === projectId) {
+          const updatedColumns = project?.subColumns?.map((column) => {
+            if (
+              column?.accessorKey?.toLocaleLowerCase() ===
+              oldName?.toLocaleLowerCase()
+            ) {
+              return {
+                ...column,
+                newItemName: newHeaderName,
+              };
+            }
+            return column;
+          });
+          return { ...project, subColumns: updatedColumns };
+        }
+        return project;
+      });
+      const updated = await updateWholeWorkSpace(
+        "/modaydata/update",
+        updatedProjects
+      );
+      if (updated && updated.success === true) {
+        set(projectsAtom, updatedProjects);
+        return { success: true };
+      } else {
+        return { success: false };
+      }
     }
   }
 );
@@ -1104,3 +1153,32 @@ export const changeOwnerShip = atom(null, async (get, set, id, userSub) => {
     } else return { success: false };
   }
 });
+//No validation yet
+export const addChart = atom(
+  null,
+  (get, set, projectId, chartTitle, chartKey) => {
+    const chartType = "pie";
+    const chartId = uuidv4();
+    const projects = get(projectsAtom);
+    const foundProject = projects.find((project) => project._id === projectId);
+    let chartData = [];
+    if (foundProject && foundProject?.charts) {
+      const addedChartData = {
+        id: chartId,
+        title: chartTitle,
+        type: chartType,
+        key: chartKey,
+      };
+      if (foundProject?.charts?.length === 0) {
+        chartData = addedChartData;
+      } else {
+        const updatedChartData = [...foundProject.charts, addedChartData];
+        chartData = updatedChartData;
+      }
+    } else {
+      toast("Project not found");
+    }
+    const id = projectId;
+    addChartToBE("/modaydata/addChart", id, chartData);
+  }
+);

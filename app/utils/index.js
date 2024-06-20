@@ -191,3 +191,19 @@ export const addOrganizer = async (path, projectId, user) => {
     console.log(error);
   }
 };
+
+export const addChartToBE = async (path, id, chartData) => {
+  try {
+    const insertOperation = put({
+      apiName: "mondayREST",
+      path: path,
+      options: {
+        body: { id, chartData },
+      },
+    });
+    const { body } = await insertOperation.response;
+    return await body.json();
+  } catch (error) {
+    console.log(error);
+  }
+};

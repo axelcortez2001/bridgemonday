@@ -133,7 +133,7 @@ app.put("/modaydata/update", async (req, res) => {
   }
 });
 //function to add chart
-app.put("/modaydata/addChart", async (req, res) => {
+app.put("/modaydata/updateChart", async (req, res) => {
   const { id, chartData } = req.body;
   try {
     // Update Data

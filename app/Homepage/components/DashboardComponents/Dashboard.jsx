@@ -6,8 +6,10 @@ import {
   getAllCharts,
   getAllColumns,
 } from "../functions/DashboardFunctions";
+
 import NewChart from "./NewChart";
 import ChartComponent from "./ChartComponent";
+import EditableChartName from "./EditableChartName";
 
 const Dashboard = ({ data }) => {
   // Get all projects data
@@ -34,14 +36,15 @@ const Dashboard = ({ data }) => {
     }, {});
     return { ...chart, data };
   });
+
   return (
     <div className='w-full max-h-screen overflow-y-auto flex flex-col p-2 gap-4'>
       <div className='flex flex-row w-full border p-2 gap-3'>
         <NewChart data={data} columndata={columndata} />
         <Filter data={data} />
       </div>
-      <div className='flex flex-wrap'>
-        <div className='border h-32 w-60'>
+      <div className='flex flex-wrap gap-3'>
+        <div className='border h-32 w-60 bg-white rounded-xl'>
           <div className='w-full h-auto text-center p-2 border-b text-xl font-bold'>
             Number of Projects
           </div>
@@ -49,17 +52,17 @@ const Dashboard = ({ data }) => {
             {projectdata.length}
           </div>
         </div>
-      </div>
-      <div className='flex flex-wrap'>
         {processedChartData.map((chart) => (
           <div
             key={chart.id}
-            className={`border h-auto   m-2 ${
-              chart.type === "bar" ? "w-full" : "w-auto"
-            }`}
+            className={`border h-auto  ${
+              chart.type === "bar" || chart.type === "line"
+                ? "w-[600px]"
+                : "w-[500px]"
+            } bg-white rounded-xl`}
           >
-            <div className='w-full h-auto text-center p-2 border-b text-xl font-bold'>
-              {chart.title}
+            <div className='w-full h-auto  p-2 border-b text-xl font-bold'>
+              <EditableChartName chart={chart} data={data} />
             </div>
             <ChartComponent chart={chart} className='w-full' />
           </div>

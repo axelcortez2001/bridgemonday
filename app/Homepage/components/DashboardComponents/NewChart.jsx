@@ -9,11 +9,11 @@ import { useSetAtom } from "jotai";
 import { addChart } from "../../datastore";
 const NewChart = ({ columndata, data }) => {
   const addNewChart = useSetAtom(addChart);
-  const handleAddChart = (chartData) => {
+  const handleAddChart = async (chartData) => {
     const projectId = data._id;
     const chartTitle = chartData.newItemName;
     const chartKey = chartData.accessorKey;
-    addNewChart(projectId, chartTitle, chartKey);
+    const status = await addNewChart(projectId, chartTitle, chartKey);
   };
   return (
     <Dropdown className=''>

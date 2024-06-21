@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Pie, Bar, Line, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -24,7 +24,6 @@ ChartJS.register(
   LineElement,
   ChartDataLabels
 );
-
 const colorMapping = {
   "bg-a-blue": "#32449C",
   "bg-a-orange": "#EF8B16",
@@ -34,8 +33,7 @@ const colorMapping = {
   "bg-a-black": "#393939",
   "bg-a-grey": "#D9D9D9",
 };
-
-const ChartComponent = ({ chart }) => {
+const SettingChartComponent = ({ chart }) => {
   const labels = Object.keys(chart.data);
   const values = labels.map((label) => chart.data[label].count);
   const maxValue = Math.max(...values);
@@ -108,15 +106,6 @@ const ChartComponent = ({ chart }) => {
         suggestedMax: maxValue + 1,
       },
     },
-
-    onClick: (event, elements) => {
-      if (elements.length > 0) {
-        const elementIndex = elements[0].index;
-        const label = labels[elementIndex];
-        const value = values[elementIndex];
-        alert(`You clicked on ${label}: ${value}`);
-      }
-    },
   };
   const chartData = {
     labels,
@@ -129,13 +118,12 @@ const ChartComponent = ({ chart }) => {
       },
     ],
   };
-
   return (
     <>
       {chart.type === "pie" && (
         <div
           className='chart-container w-full'
-          style={{ height: "400px", width: "full" }}
+          style={{ height: "500px", width: "full" }}
         >
           <Pie data={chartData} options={options} className='w-full' />
         </div>
@@ -143,7 +131,7 @@ const ChartComponent = ({ chart }) => {
       {chart.type === "doughnut" && (
         <div
           className='chart-container w-full'
-          style={{ height: "400px", width: "full" }}
+          style={{ height: "500px", width: "full" }}
         >
           <Doughnut data={chartData} options={options} className='w-full' />
         </div>
@@ -157,4 +145,4 @@ const ChartComponent = ({ chart }) => {
   );
 };
 
-export default ChartComponent;
+export default SettingChartComponent;

@@ -1153,10 +1153,12 @@ export const changeOwnerShip = atom(null, async (get, set, id, userSub) => {
     } else return { success: false };
   }
 });
+//FOR CHART DATA
+// ADD CHART
 //No validation yet
 export const addChart = atom(
   null,
-  (get, set, projectId, chartTitle, chartKey) => {
+  async (get, set, projectId, chartTitle, chartKey) => {
     const chartType = "pie";
     const chartId = uuidv4();
     const projects = get(projectsAtom);
@@ -1179,6 +1181,112 @@ export const addChart = atom(
       toast("Project not found");
     }
     const id = projectId;
-    addChartToBE("/modaydata/addChart", id, chartData);
+    const updated = await addChartToBE("/modaydata/updateChart", id, chartData);
+
+    if (updated.success === true) {
+      const updatedProject = projects.map((project) => {
+        if (project._id === projectId) {
+          return updated.projectData;
+        } else {
+          return project;
+        }
+      });
+      set(projectsAtom, updatedProject);
+      return { success: true };
+    } else return { success: false };
+  }
+);
+//delete chart
+export const deleteChart = atom(null, async (get, set, projectId, chartId) => {
+  const projects = get(projectsAtom);
+  const foundProject = projects.find((project) => project._id === projectId);
+  let chartData = [];
+  if (foundProject && foundProject?.charts) {
+    const updatedChartData = foundProject.charts.filter(
+      (chart) => chart.id !== chartId
+    );
+    chartData = updatedChartData;
+  } else {
+    toast("Project not found");
+  }
+  const id = projectId;
+  const updated = await addChartToBE("/modaydata/updateChart", id, chartData);
+  if (updated.success === true) {
+    const updatedProject = projects.map((project) => {
+      if (project._id === projectId) {
+        return updated.projectData;
+      } else {
+        return project;
+      }
+    });
+    set(projectsAtom, updatedProject);
+    return { success: true, message: "Chart Deleted" };
+  } else return { success: false, message: "Error deleting chart." };
+});
+//rename chart
+export const renameChart = atom(
+  null,
+  async (get, set, projectId, chartId, newName) => {
+    const projects = get(projectsAtom);
+    const foundProject = projects.find((project) => project._id === projectId);
+    let chartData = [];
+    if (foundProject && foundProject?.charts) {
+      const updatedChartData = foundProject.charts.map((chart) => {
+        if (chart.id === chartId) {
+          return { ...chart, title: newName };
+        } else {
+          return chart;
+        }
+      });
+      chartData = updatedChartData;
+    } else {
+      toast("Project not found");
+    }
+    const id = projectId;
+    const updated = await addChartToBE("/modaydata/updateChart", id, chartData);
+    if (updated.success === true) {
+      const updatedProject = projects.map((project) => {
+        if (project._id === projectId) {
+          return updated.projectData;
+        } else {
+          return project;
+        }
+      });
+      set(projectsAtom, updatedProject);
+      return { success: true };
+    } else return { success: false, message: "Error Updating chart name." };
+  }
+);
+export const updateChartType = atom(
+  null,
+  async (get, set, projectId, chartId, newchartData) => {
+    const projects = get(projectsAtom);
+    const foundProject = projects.find((project) => project._id === projectId);
+    let chartData = [];
+    if (foundProject && foundProject?.charts) {
+      const updatedChartData = foundProject.charts.map((chart) => {
+        if (chart.id === chartId) {
+          return newchartData;
+        } else {
+          return chart;
+        }
+      });
+      chartData = updatedChartData;
+    } else {
+      toast("Project not found");
+    }
+    const id = projectId;
+    const updated = await addChartToBE("/modaydata/updateChart", id, chartData);
+    if (updated.success === true) {
+      const updatedProject = projects.map((project) => {
+        if (project._id === projectId) {
+          return updated.projectData;
+        } else {
+          return project;
+        }
+      });
+      set(projectsAtom, updatedProject);
+      return { success: true };
+    } else return { success: false, message: "Error Updating chart type." };
   }
 );

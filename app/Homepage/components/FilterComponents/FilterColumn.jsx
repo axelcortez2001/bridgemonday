@@ -17,7 +17,7 @@ const FilterColumn = ({
     let columnData = [];
     if (data && data !== undefined) {
       data?.columns?.map((column) => {
-        if (column.newItemName !== undefined) {
+        if (column.key === "status" || column.key === "dropdown") {
           columnData.push(column);
         }
       });

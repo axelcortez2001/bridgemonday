@@ -12,6 +12,7 @@ import {
   LineElement,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { generateDateChartData } from "../functions/DashboardFunctions";
 // Register the components
 ChartJS.register(
   ArcElement,
@@ -33,15 +34,42 @@ const colorMapping = {
   "bg-a-black": "#393939",
   "bg-a-grey": "#D9D9D9",
 };
+const defaultColors = ["#32449C"];
+const grayColor = ["#D9D9D9"];
+
 const SettingChartComponent = ({ chart }) => {
-  const labels = Object.keys(chart.data);
-  const values = labels.map((label) => chart.data[label].count);
+  const labels = Object.keys(chart.newData);
+  const values = labels.map((label) => chart.newData[label].count);
   const maxValue = Math.max(...values);
-  const backgroundColors = labels.map(
-    (label) => colorMapping[chart.data[label].color]
-  );
-  const hoverBackgroundColors = backgroundColors;
+
+  const backgroundColors = () => {
+    const bgColors = labels.map(
+      (label) => colorMapping[chart.newData[label].color]
+    );
+    if (chart.key === "groupChart") {
+      return defaultColors;
+    } else if (chart.key === "people" || chart.key.startsWith("date")) {
+      return grayColor;
+    } else {
+      return bgColors;
+    }
+  };
+
+  const hoverBackgroundColors = backgroundColors();
   const indexAxis = chart.type === "verticalbar" ? "y" : "x";
+
+  const tickAxis =
+    chart.type === "bar"
+      ? {
+          stepSize: 1,
+          callback: function (value) {
+            return value.toLocaleString();
+          },
+        }
+      : {};
+  //get date chart data if chart is date
+  const dateChartData = generateDateChartData(chart, labels, colorMapping);
+  //options for chart
   const options = {
     indexAxis: indexAxis,
     responsive: true,
@@ -87,37 +115,32 @@ const SettingChartComponent = ({ chart }) => {
     scales: {
       y: {
         display: chart.type !== "pie" && chart.type !== "doughnut",
-        ticks: {
-          stepSize: 1,
-          callback: function (value) {
-            return value.toLocaleString();
-          },
-        },
-        suggestedMax: maxValue + 1,
+        ticks: tickAxis,
+        suggestedMax: chart.key.startsWith("date")
+          ? dateChartData.maxValue + 1
+          : maxValue + 1,
       },
       x: {
         display: chart.type !== "pie" && chart.type !== "doughnut",
-        ticks: {
-          stepSize: 1,
-          callback: function (value) {
-            return value.toLocaleString();
-          },
-        },
-        suggestedMax: maxValue + 1,
+        suggestedMax: chart.key.startsWith("date")
+          ? dateChartData.maxValue + 1
+          : maxValue + 1,
       },
     },
   };
-  const chartData = {
-    labels,
-    datasets: [
-      {
-        label: chart.title,
-        data: values,
-        backgroundColor: backgroundColors,
-        hoverBackgroundColor: hoverBackgroundColors,
-      },
-    ],
-  };
+  const chartData = chart.key.startsWith("date")
+    ? dateChartData
+    : {
+        labels,
+        datasets: [
+          {
+            label: chart.title,
+            data: values,
+            backgroundColor: backgroundColors(),
+            hoverBackgroundColor: hoverBackgroundColors,
+          },
+        ],
+      };
   return (
     <>
       {chart.type === "pie" && (

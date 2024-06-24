@@ -19,7 +19,6 @@ import { toast } from "sonner";
 import { useSetAtom } from "jotai";
 import { deleteChart, renameChart, updateChartType } from "../../datastore";
 import { SlOptionsVertical } from "react-icons/sl";
-import ChartSetting from "./ChartSetting";
 import SettingChartComponent from "./SettingChartComponent";
 import SettingChartOption from "./SettingChartOption";
 
@@ -117,10 +116,12 @@ const EditableChartName = ({ chart, data }) => {
           </Button>
         </DropdownTrigger>
         <DropdownMenu variant='faded' aria-label='Chart Option'>
-          <DropdownItem>Full Screen</DropdownItem>
           <DropdownItem onClick={onOpen}>Settings</DropdownItem>
           <DropdownItem onClick={() => setIsClicked(true)}>Rename</DropdownItem>
-          <DropdownItem onClick={() => handleDeleteChart(chart)}>
+          <DropdownItem
+            className='danger'
+            onClick={() => handleDeleteChart(chart)}
+          >
             Delete
           </DropdownItem>
         </DropdownMenu>

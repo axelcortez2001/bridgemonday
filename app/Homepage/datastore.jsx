@@ -345,135 +345,180 @@ export const deleteProject = atom(null, async (get, set, id) => {
 
 //function to add group task
 export const addGroupTask = atom(null, async (get, set, projectId) => {
-  const projects = get(projectsAtom);
-  const groupData = { id: uuidv4(), groupName: "New Group", task: [] };
-  const id = projectId;
-  const updatedProjects = await addNewGrouptask(
-    "/modaydata/grouptask",
-    id,
-    groupData
-  );
-  if (updatedProjects && updatedProjects?.success === true) {
-    const updatedProjects = projects.map((project) => {
-      if (project._id === projectId) {
-        return {
-          ...project,
-          grouptask: [...project.grouptask, groupData],
-        };
+  const userData = get(UserDataAtom);
+  const userSub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", userSub);
+  if (workSpace && workSpace?.success) {
+    const projects = workSpace?.workspace;
+    if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, projects);
+      return {
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
+      };
+    } else {
+      const groupData = { id: uuidv4(), groupName: "New Group", task: [] };
+      const id = projectId;
+      const updatedProjects = await addNewGrouptask(
+        "/modaydata/grouptask",
+        id,
+        groupData
+      );
+      if (updatedProjects && updatedProjects?.success === true) {
+        const updatedProjects = projects.map((project) => {
+          if (project._id === projectId) {
+            return {
+              ...project,
+              grouptask: [...project.grouptask, groupData],
+            };
+          } else {
+            return project;
+          }
+        });
+        set(projectsAtom, updatedProjects);
+        return { success: true, message: "GroupTask Added" };
       } else {
-        return project;
+        return { success: false, message: "Failed to add new GroupTask" };
       }
-    });
-    set(projectsAtom, updatedProjects);
-    return { success: true, message: "GroupTask Added" };
-  } else {
-    return { success: false, message: "Failed to add new GroupTask" };
+    }
   }
 });
 export const deleteGroupTask = atom(
   null,
   async (get, set, projectId, groupId) => {
-    const projects = get(projectsAtom);
-    const id = projectId;
-    const updatedProjects = projects.map((project) => {
-      if (project._id === projectId) {
-        const updatedGrouptask = project?.grouptask.filter(
-          (group) => group.id !== groupId
-        );
+    const userData = get(UserDataAtom);
+    const userSub = userData.value.sub;
+    const oldProjects = get(projectsAtom);
+    const workSpace = await getWorkspace("/modaydata", userSub);
+    if (workSpace && workSpace?.success) {
+      const projects = workSpace?.workspace;
+      const id = projectId;
+      if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+        set(projectsAtom, projects);
         return {
-          ...project,
-          grouptask: updatedGrouptask,
+          status: false,
+          message: "Oops, project data changed! Updating updated project",
         };
       } else {
-        return project;
+        const updatedProjects = projects.map((project) => {
+          if (project._id === projectId) {
+            const updatedGrouptask = project?.grouptask.filter(
+              (group) => group.id !== groupId
+            );
+            return {
+              ...project,
+              grouptask: updatedGrouptask,
+            };
+          } else {
+            return project;
+          }
+        });
+        const updated = await updateWholeWorkSpace(
+          "/modaydata/update",
+          updatedProjects
+        );
+        if (updated && updated.success === true) {
+          set(projectsAtom, updatedProjects);
+          return { success: true };
+        } else {
+          return { success: false };
+        }
       }
-    });
-    const updated = await updateWholeWorkSpace(
-      "/modaydata/update",
-      updatedProjects
-    );
-    if (updated && updated.success === true) {
-      set(projectsAtom, updatedProjects);
-      return { success: true };
-    } else {
-      return { success: false };
     }
   }
 );
 
 //function to add an item to a group
 export const addNewItem = atom(null, async (get, set, projectId, itemName) => {
-  let newItemName = itemName;
-  let newAccessorName = itemName.toLocaleLowerCase() + uuidv4();
-  const projects = get(projectsAtom);
-  const foundProject = projects.find((project) => project._id === projectId);
-  const itemCell = textItem.filter(
-    (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
-  );
-  //item duplication
-  const newItem = foundProject.columns.filter((column) =>
-    column?.newItemName
-      ?.toLocaleLowerCase()
-      .startsWith(itemName?.toLocaleLowerCase())
-  );
-  if (newItem.length > 0) {
-    let highestSuffix = 0;
-    newItem.forEach((item) => {
-      const suffixMatch = item.newItemName.match(/(\d+)$/);
-      if (suffixMatch) {
-        const suffix = parseInt(suffixMatch[0], 10);
-        if (suffix > highestSuffix) {
-          highestSuffix = suffix;
-        }
-      }
-    });
-    newItemName = `${itemName}${highestSuffix + 1}`;
-  }
-  //newItemData
-  const newItemData = {
-    key: itemName.toLocaleLowerCase(),
-    accessorKey: newAccessorName,
-    newItemName: newItemName,
-  };
-
-  //add the column before the add button
-  const addColumnIndex = foundProject.columns.findIndex(
-    (column) => column.accessorKey === "Add"
-  );
-
-  const updatedColumns = [...foundProject.columns];
-  updatedColumns.splice(addColumnIndex, 0, newItemData);
-  const updatedProjects = projects.map((project) => {
-    if (project._id === projectId) {
+  const userData = get(UserDataAtom);
+  const userSub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", userSub);
+  if (workSpace && workSpace?.success) {
+    const projects = workSpace?.workspace;
+    if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, projects);
       return {
-        ...project,
-        columns: updatedColumns,
-        grouptask: project.grouptask.map((group) => {
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
+      };
+    } else {
+      let newItemName = itemName;
+      let newAccessorName = itemName.toLocaleLowerCase() + uuidv4();
+
+      const foundProject = projects.find(
+        (project) => project._id === projectId
+      );
+      const itemCell = textItem.filter(
+        (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
+      );
+      //item duplication
+      const newItem = foundProject.columns.filter((column) =>
+        column?.newItemName
+          ?.toLocaleLowerCase()
+          .startsWith(itemName?.toLocaleLowerCase())
+      );
+      if (newItem.length > 0) {
+        let highestSuffix = 0;
+        newItem.forEach((item) => {
+          const suffixMatch = item.newItemName.match(/(\d+)$/);
+          if (suffixMatch) {
+            const suffix = parseInt(suffixMatch[0], 10);
+            if (suffix > highestSuffix) {
+              highestSuffix = suffix;
+            }
+          }
+        });
+        newItemName = `${itemName}${highestSuffix + 1}`;
+      }
+      //newItemData
+      const newItemData = {
+        key: itemName.toLocaleLowerCase(),
+        accessorKey: newAccessorName,
+        newItemName: newItemName,
+      };
+
+      //add the column before the add button
+      const addColumnIndex = foundProject.columns.findIndex(
+        (column) => column.accessorKey === "Add"
+      );
+
+      const updatedColumns = [...foundProject.columns];
+      updatedColumns.splice(addColumnIndex, 0, newItemData);
+      const updatedProjects = projects.map((project) => {
+        if (project._id === projectId) {
           return {
-            ...group,
-            task: group.task.map((task) => {
+            ...project,
+            columns: updatedColumns,
+            grouptask: project.grouptask.map((group) => {
               return {
-                ...task,
-                [newAccessorName]: itemCell[0].data,
+                ...group,
+                task: group.task.map((task) => {
+                  return {
+                    ...task,
+                    [newAccessorName]: itemCell[0].data,
+                  };
+                }),
               };
             }),
           };
-        }),
-      };
-    } else {
-      return project;
-    }
-  });
+        } else {
+          return project;
+        }
+      });
 
-  const updated = await updateWholeWorkSpace(
-    "/modaydata/update",
-    updatedProjects
-  );
-  if (updated && updated.success === true) {
-    set(projectsAtom, updatedProjects);
-    return { success: true };
-  } else {
-    return { success: false };
+      const updated = await updateWholeWorkSpace(
+        "/modaydata/update",
+        updatedProjects
+      );
+      if (updated && updated.success === true) {
+        set(projectsAtom, updatedProjects);
+        return { success: true };
+      } else {
+        return { success: false };
+      }
+    }
   }
 });
 
@@ -1158,8 +1203,8 @@ export const changeOwnerShip = atom(null, async (get, set, id, userSub) => {
 //No validation yet
 export const addChart = atom(
   null,
-  async (get, set, projectId, chartTitle, chartKey) => {
-    const chartType = "pie";
+  async (get, set, projectId, chartTitle, chartKey, chartBased) => {
+    const chartType = "bar";
     const chartId = uuidv4();
     const projects = get(projectsAtom);
     const foundProject = projects.find((project) => project._id === projectId);
@@ -1170,6 +1215,7 @@ export const addChart = atom(
         title: chartTitle,
         type: chartType,
         key: chartKey,
+        base: chartBased,
       };
       if (foundProject?.charts?.length === 0) {
         chartData = addedChartData;
@@ -1192,8 +1238,8 @@ export const addChart = atom(
         }
       });
       set(projectsAtom, updatedProject);
-      return { success: true };
-    } else return { success: false };
+      return { success: true, message: `${chartTitle} added` };
+    } else return { success: false, message: `Failed to add ${chartTitle}` };
   }
 );
 //delete chart

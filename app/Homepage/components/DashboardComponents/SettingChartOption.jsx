@@ -9,49 +9,40 @@ const SettingChartOption = ({ chart, setChartSetting }) => {
     <div className='flex flex-col h-full gap-2'>
       <div className='w-full'>Chart Type</div>
       <div className='flex flex-col h-full gap-3'>
-        <div>
-          <p>Pie</p>
-          <div className='flex flex-row gap-2'>
-            <div
-              className='border rounded-md p-2 hover:cursor-pointer'
-              onClick={() => handleSetChartSetting("pie")}
-            >
-              Pie
-            </div>
-            <div
-              className='border rounded-md p-2 hover:cursor-pointer'
-              onClick={() => handleSetChartSetting("doughnut")}
-            >
-              Doughnut
-            </div>
+        <div className='flex flex-wrap gap-2'>
+          <div
+            className='border rounded-md p-2 hover:cursor-pointer'
+            onClick={() => handleSetChartSetting("pie")}
+          >
+            Pie
           </div>
-        </div>
-        <div>
-          <p>Line</p>
+          <div
+            className='border rounded-md p-2 hover:cursor-pointer'
+            onClick={() => handleSetChartSetting("doughnut")}
+          >
+            Doughnut
+          </div>
           <div
             className='border rounded-md p-2 hover:cursor-pointer'
             onClick={() => handleSetChartSetting("line")}
           >
             Line
           </div>
-        </div>
-        <div>
-          <p>Bar</p>
-          <div className='flex flex-row gap-2'>
-            <div
-              className='border rounded-md p-2 hover:cursor-pointer'
-              onClick={() => handleSetChartSetting("bar")}
-            >
-              Bar
-            </div>
-            <div
-              className='border rounded-md p-2 hover:cursor-pointer'
-              onClick={() => handleSetChartSetting("verticalbar")}
-            >
-              Vertical Bar
-            </div>
+
+          <div
+            className='border rounded-md p-2 hover:cursor-pointer'
+            onClick={() => handleSetChartSetting("bar")}
+          >
+            Bar
+          </div>
+          <div
+            className='border rounded-md p-2 hover:cursor-pointer'
+            onClick={() => handleSetChartSetting("verticalbar")}
+          >
+            Vertical Bar
           </div>
         </div>
+        <div>Filtering</div>
       </div>
     </div>
   );

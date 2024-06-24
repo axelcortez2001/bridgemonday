@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -21,7 +21,8 @@ import FilterColumn from "./FilterColumn";
 import FilterCondition from "./FilterCondition";
 import FilterValue from "./FilterValue";
 
-const Filter = ({ data }) => {
+const Filter = ({ data, setData, myData }) => {
+  const [oldData, setOldData] = useState(data);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [columnValue, setColumnValue] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState("Select Item");
@@ -52,41 +53,49 @@ const Filter = ({ data }) => {
     setValue([]);
     setColumnValue([]);
   };
+  useEffect(() => {
+    handleClear();
+    setData(oldData);
+  }, [myData]);
   const handleFilter = () => {
-    const columnKey = columnValue.accessorKey;
+    if (value && value.length > 0) {
+      const columnKey = columnValue.accessorKey;
+      const updatedProject = {
+        ...oldData,
+        grouptask: oldData?.grouptask?.map((grouptask) => {
+          return {
+            ...grouptask,
+            task: grouptask?.task?.filter((task) => {
+              const taskColumnValue = task[columnKey]?.text.toLocaleLowerCase();
+              // console.log("ColumnKey: " + columnKey);
+              console.log("value: ", value);
+              console.log("text value: ", taskColumnValue);
+              console.log("condition: ", condition);
+              // Apply filter based on the condition type
+              if (condition === "is") {
+                return value.some((val) =>
+                  taskColumnValue?.includes(val?.text?.toLocaleLowerCase())
+                ); //
+              } else if (condition === "is not") {
+                return !value.some((val) =>
+                  taskColumnValue?.includes(val?.text?.toLocaleLowerCase())
+                );
+              } else {
+                return false;
+              }
+            }),
+          };
+        }),
+      };
 
-    const updatedProject = {
-      ...data,
-      grouptask: data?.grouptask?.map((grouptask) => {
-        return {
-          ...grouptask,
-          task: grouptask?.task?.filter((task) => {
-            const taskColumnValue = task[columnKey].text.toLocaleLowerCase();
-            // console.log("ColumnKey: " + columnKey);
-            console.log("value: ", value);
-            console.log("text value: ", taskColumnValue);
-            console.log("condition: ", condition);
-            // Apply filter based on the condition type
-            if (condition === "is") {
-              return value.some((val) =>
-                taskColumnValue.includes(val.text.toLocaleLowerCase())
-              ); //
-            } else if (condition === "is not") {
-              return !value.some((val) => taskColumnValue.includes(val));
-            } else {
-              return false;
-            }
-          }),
-        };
-      }),
-    };
-
-    console.log(updatedProject);
-    return updatedProject;
+      setData(updatedProject);
+    } else {
+      setData(oldData);
+    }
   };
 
   return (
-    <div>
+    <div className='p-2 border rounded-md'>
       <button onClick={onOpen}>filter</button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='2xl'>
         <ModalContent>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAtom, useSetAtom } from "jotai";
 import { addGroupTask, selectedProjectAtom } from "../datastore";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
@@ -27,6 +27,7 @@ const Content = () => {
 
   //filtering function
   console.log("Main Data: ", data);
+
   const toggleDropdown = (groupId) => {
     if (openDrop.includes(groupId)) {
       setOpenDrop(openDrop.filter((id) => id !== groupId));
@@ -250,7 +251,7 @@ const Content = () => {
           ))}
         </div>
       ) : (
-        <Dashboard data={data} />
+        <Dashboard myData={data} />
       )}
     </div>
   );

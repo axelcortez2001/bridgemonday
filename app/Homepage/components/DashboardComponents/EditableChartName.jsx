@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Input,
   Skeleton,
@@ -21,17 +21,73 @@ import { deleteChart, renameChart, updateChartType } from "../../datastore";
 import { SlOptionsVertical } from "react-icons/sl";
 import SettingChartComponent from "./SettingChartComponent";
 import SettingChartOption from "./SettingChartOption";
+import {
+  allProjects,
+  getAllCharts,
+  processedChartData,
+} from "../functions/DashboardFunctions";
 
 const EditableChartName = ({ chart, data }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [newName, setNewName] = useState(chart.title);
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [chartSetting, setChartSetting] = useState(chart);
+  const [chartSetting, setChartSetting] = useState();
+  const [filteredData, setFilteredData] = useState(data);
+  const [selectedBase, setSelectedBase] = useState(chart?.base);
+  const [value, setValue] = useState();
+  const handleValue = (val) => {
+    const exists = value.some((item) => item.text === val.text);
+
+    const newValue = exists
+      ? value.filter((item) => item.text !== val.text)
+      : [...value, val];
+    const newChart = { ...chartSetting, chartValue: newValue };
+    setChartSetting(newChart);
+    setValue(newValue);
+  };
   //setting chart
   const handleChartSetting = (newChart) => {
     setChartSetting(newChart);
+    setValue(newChart.chartValue);
   };
+  const handleSelectedBase = (newSelectedBase) => {
+    console.log(newSelectedBase);
+    setSelectedBase(newSelectedBase);
+  };
+  const projectdata = allProjects(filteredData);
+  console.log("projectdata: ", projectdata);
+  console.log("filteredData: ", filteredData);
+  // Get All Charts
+  const chartData = getAllCharts(filteredData);
+  const finalChartData = processedChartData(
+    chartData,
+    projectdata,
+    filteredData
+  );
+  const handleFilterData = () => {
+    const updatedData = {
+      ...filteredData,
+      charts: filteredData?.charts.map((chart) => {
+        if (chart.id === chartSetting?.id) {
+          return chartSetting;
+        }
+        return chart;
+      }),
+    };
+    console.log("updated: ", updatedData);
+    return updatedData;
+  };
+  useEffect(() => {
+    if (oldChart) {
+      handleChartSetting(oldChart);
+    }
+  }, [filteredData]);
+  useEffect(() => {
+    setFilteredData(handleFilterData());
+  }, [selectedBase, value]);
+  const oldChart = finalChartData.find((i) => i.id === chart.id);
+
   const rename = useSetAtom(renameChart);
   const handleBlur = async () => {
     setLoading(true);
@@ -139,21 +195,28 @@ const EditableChartName = ({ chart, data }) => {
                 {chart.title}
               </ModalHeader>
               <ModalBody>
-                <div className='w-full flex flex-row p-2 gap-4'>
-                  <div
-                    className={`border h-auto  ${
-                      chart.type === "bar" || chart.type === "line"
-                        ? "w-[700px]"
-                        : "w-[600px]"
-                    } bg-white rounded-xl`}
-                  >
-                    <SettingChartComponent chart={chartSetting} />
+                {oldChart && (
+                  <div className='w-full flex flex-row p-2 gap-4'>
+                    <div
+                      className={`border h-auto  ${
+                        chart.type === "bar" || chart.type === "line"
+                          ? "w-[700px]"
+                          : "w-[600px]"
+                      } bg-white rounded-xl`}
+                    >
+                      <SettingChartComponent chart={chartSetting} />
+                    </div>
+                    <SettingChartOption
+                      chart={chartSetting}
+                      setChartSetting={handleChartSetting}
+                      data={data}
+                      setSelectedBase={handleSelectedBase}
+                      selectedBase={selectedBase}
+                      value={value}
+                      setValue={handleValue}
+                    />
                   </div>
-                  <SettingChartOption
-                    chart={chartSetting}
-                    setChartSetting={handleChartSetting}
-                  />
-                </div>
+                )}
               </ModalBody>
               <ModalFooter>
                 <Button

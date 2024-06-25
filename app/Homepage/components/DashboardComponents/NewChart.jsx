@@ -24,11 +24,13 @@ const NewChart = ({ columndata, data }) => {
     const chartTitle = chartData.newItemName;
     const chartKey = chartData.accessorKey;
     const chartBased = chartData.accessorKey;
+    const chartValue = [];
     const status = await addNewChart(
       projectId,
       chartTitle,
       chartKey,
-      chartBased
+      chartBased,
+      chartValue
     );
     if (status && status.success === true) {
       toast(status.message);
@@ -41,11 +43,13 @@ const NewChart = ({ columndata, data }) => {
     const chartTitle = text;
     const chartKey = text;
     const chartBased = "";
+    const chartValue = [];
     const status = await addNewChart(
       projectId,
       chartTitle,
       chartKey,
-      chartBased
+      chartBased,
+      chartValue
     );
     if (status && status.success === true) {
       toast(status.message);

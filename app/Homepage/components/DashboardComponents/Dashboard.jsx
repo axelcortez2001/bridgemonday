@@ -22,14 +22,15 @@ const Dashboard = ({ myData }) => {
   };
   // Get all projects data
   const projectdata = allProjects(data);
+  console.log("ProjectData: ", projectdata);
   // Get All columns
   const columndata = getAllColumns(data);
   const [selectedNewItem, setSelectedNewItem] = useState(null);
   //Get All Charts
   const chartData = getAllCharts(data);
+
   //process data for chart
   const finalChartData = processedChartData(chartData, projectdata, data);
-
   return (
     <div className='w-full max-h-screen overflow-y-auto flex flex-col p-2 gap-4'>
       <div className='flex flex-row w-full border p-2 gap-3'>

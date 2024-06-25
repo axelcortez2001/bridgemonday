@@ -31,6 +31,17 @@ export const getAllColumns = (data) => {
   }
   return columnData;
 };
+export const getColumnForDateFiltering = (data) => {
+  let columnData = [];
+  if (data && data !== undefined) {
+    data?.columns?.map((column) => {
+      if (column.key.toLocaleLowerCase() === "status") {
+        columnData.push(column);
+      }
+    });
+  }
+  return columnData;
+};
 export const generateDateChartData = (chart, labels, colorMapping) => {
   const statusLabels = [
     ...new Set(
@@ -43,7 +54,7 @@ export const generateDateChartData = (chart, labels, colorMapping) => {
     );
     const col = labels
       .map((label) => chart.newData[label][statusLabel]?.color || "")
-      .filter((color) => color !== ""); 
+      .filter((color) => color !== "");
 
     const firstValidColor = col.find((color) => colorMapping[color]) || "";
     const backgroundColor = firstValidColor
@@ -71,6 +82,8 @@ export const processedChartData = (chartData, projectdata, data) =>
   chartData.map((chart) => {
     const key = chart.key;
     let newData = {};
+    const chartValues = chart.chartValue || [];
+
     if (key === "groupChart") {
       newData = data?.grouptask?.reduce((acc, group) => {
         const groupName = group.groupName;
@@ -86,9 +99,9 @@ export const processedChartData = (chartData, projectdata, data) =>
         const name = user.name;
         const userSub = user.sub;
         if (!acc[name]) {
-          acc[name] = { name: name, count: 0 };
+          acc[name] = {};
         }
-        projectdata.map((project) => {
+        projectdata.forEach((project) => {
           const peopleKeys = Object.keys(project).filter((key) =>
             key.startsWith("people")
           );
@@ -97,7 +110,23 @@ export const processedChartData = (chartData, projectdata, data) =>
             if (peopleArray && Array.isArray(peopleArray)) {
               peopleArray.forEach((people) => {
                 if (people.sub === userSub) {
-                  acc[name].count += 1;
+                  const statusKeys = Object.keys(project).filter((key) => {
+                    if (chart?.base?.startsWith("status")) {
+                      return key === chart.base;
+                    } else {
+                      return key.startsWith("status");
+                    }
+                  });
+                  statusKeys.forEach((statusKey) => {
+                    const status = project[statusKey];
+                    if (!acc[name][status?.text]) {
+                      acc[name][status?.text] = {
+                        count: 0,
+                        color: status?.color,
+                      };
+                      acc[name][status?.text].count += 1;
+                    }
+                  });
                 }
               });
             }
@@ -109,7 +138,6 @@ export const processedChartData = (chartData, projectdata, data) =>
       newData = projectdata.reduce((acc, project) => {
         const dateKey = Object.keys(project).find((k) => k === key);
         const date = project[dateKey];
-        // Check if the date is valid
         if (!date) {
           return acc;
         }
@@ -122,13 +150,16 @@ export const processedChartData = (chartData, projectdata, data) =>
           acc[monthYear] = {};
         }
 
-        const statusKeys = Object.keys(project).filter((k) =>
-          k.startsWith("status")
-        );
+        const statusKeys = Object.keys(project).filter((k) => {
+          if (chart?.base?.startsWith("status")) {
+            return k === chart.base;
+          } else {
+            return k.startsWith("status");
+          }
+        });
 
         statusKeys.forEach((statusKey) => {
           const status = project[statusKey];
-          console.log("status", status);
           if (!acc[monthYear][status.text]) {
             acc[monthYear][status.text] = { count: 0, color: status.color };
           }
@@ -149,5 +180,41 @@ export const processedChartData = (chartData, projectdata, data) =>
         return acc;
       }, {});
     }
+
+    if (key !== "groupChart") {
+      newData = filterByChartValue(newData, chartValues, chart);
+    }
+
     return { ...chart, newData };
   });
+const filterByChartValue = (data, chartValues, chart) => {
+  if (chartValues.length === 0) {
+    return data;
+  }
+  const filteredData = {};
+  if (chart.key === "people" || chart.key.startsWith("date")) {
+    Object.keys(data).forEach((key) => {
+      const values = data[key];
+      filteredData[key] = {};
+      console.log("Filtered data:", values);
+      Object.keys(values).forEach((valueKey) => {
+        if (chartValues.some((value) => value.text === valueKey)) {
+          filteredData[key][valueKey] = values[valueKey];
+        }
+      });
+    });
+    return filteredData;
+  } else {
+    Object.keys(data).forEach((key) => {
+      if (
+        chartValues.some(
+          (value) =>
+            value?.text?.toLocaleLowerCase() === key.toLocaleLowerCase()
+        )
+      ) {
+        filteredData[key] = data[key];
+      }
+    });
+  }
+  return filteredData;
+};

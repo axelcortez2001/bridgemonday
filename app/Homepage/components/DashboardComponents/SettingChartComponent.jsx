@@ -86,9 +86,10 @@ const SettingChartComponent = ({ chart }) => {
     plugins: {
       legend: {
         display:
-          chart.type !== "bar" &&
-          chart.type !== "line" &&
-          chart.type !== "verticalbar",
+          chart.type === "pie" ||
+          chart.type === "doughnut" ||
+          chart.key.startsWith("date") ||
+          chart.key === "people",
         position: "right",
         labels: {
           pointStyle: "circle",
@@ -116,31 +117,34 @@ const SettingChartComponent = ({ chart }) => {
       y: {
         display: chart.type !== "pie" && chart.type !== "doughnut",
         ticks: tickAxis,
-        suggestedMax: chart.key.startsWith("date")
-          ? dateChartData.maxValue + 1
-          : maxValue + 1,
+        suggestedMax:
+          chart.key.startsWith("date") || chart.key === "people"
+            ? dateChartData.maxValue + 1
+            : maxValue + 1,
       },
       x: {
         display: chart.type !== "pie" && chart.type !== "doughnut",
-        suggestedMax: chart.key.startsWith("date")
-          ? dateChartData.maxValue + 1
-          : maxValue + 1,
+        suggestedMax:
+          chart.key.startsWith("date") || chart.key === "people"
+            ? dateChartData.maxValue + 1
+            : maxValue + 1,
       },
     },
   };
-  const chartData = chart.key.startsWith("date")
-    ? dateChartData
-    : {
-        labels,
-        datasets: [
-          {
-            label: chart.title,
-            data: values,
-            backgroundColor: backgroundColors(),
-            hoverBackgroundColor: hoverBackgroundColors,
-          },
-        ],
-      };
+  const chartData =
+    chart.key.startsWith("date") || chart.key === "people"
+      ? dateChartData
+      : {
+          labels,
+          datasets: [
+            {
+              label: chart.title,
+              data: values,
+              backgroundColor: backgroundColors(),
+              hoverBackgroundColor: hoverBackgroundColors,
+            },
+          ],
+        };
   return (
     <>
       {chart.type === "pie" && (

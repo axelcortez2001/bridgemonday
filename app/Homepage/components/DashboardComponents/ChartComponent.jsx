@@ -57,8 +57,6 @@ const ChartComponent = ({ chartComponentData }) => {
     );
     if (chart.key === "groupChart") {
       return defaultColors;
-    } else if (chart.key === "people") {
-      return grayColor;
     } else {
       return bgColors;
     }
@@ -96,9 +94,10 @@ const ChartComponent = ({ chartComponentData }) => {
       legend: {
         //add legend for pie and dou
         display:
-          chart.type !== "bar" &&
-          chart.type !== "line" &&
-          chart.type !== "verticalbar",
+          chart.type === "pie" ||
+          chart.type === "doughnut" ||
+          chart.key.startsWith("date") ||
+          chart.key === "people",
         position: "right",
         labels: {
           pointStyle: "circle",
@@ -128,16 +127,18 @@ const ChartComponent = ({ chartComponentData }) => {
         //remove labels for y axis for pie and dou
         display: chart.type !== "pie" && chart.type !== "doughnut",
         ticks: tickAxis,
-        suggestedMax: chart.key.startsWith("date")
-          ? dateChartData.maxValue + 1
-          : maxValue + 1,
+        suggestedMax:
+          chart.key.startsWith("date") || chart.key === "people"
+            ? dateChartData.maxValue + 1
+            : maxValue + 1,
       },
       //remove labels for x axis for pie and dou
       x: {
         display: chart.type !== "pie" && chart.type !== "doughnut",
-        suggestedMax: chart.key.startsWith("date")
-          ? dateChartData.maxValue + 1
-          : maxValue + 1,
+        suggestedMax:
+          chart.key.startsWith("date") || chart.key === "people"
+            ? dateChartData.maxValue + 1
+            : maxValue + 1,
       },
     },
     onClick: (event, elements) => {
@@ -150,19 +151,20 @@ const ChartComponent = ({ chartComponentData }) => {
     },
   };
 
-  const chartData = chart.key.startsWith("date")
-    ? dateChartData
-    : {
-        labels,
-        datasets: [
-          {
-            label: chart.title,
-            data: values,
-            backgroundColor: backgroundColors(),
-            hoverBackgroundColor: hoverBackgroundColors,
-          },
-        ],
-      };
+  const chartData =
+    chart.key.startsWith("date") || chart.key === "people"
+      ? dateChartData
+      : {
+          labels,
+          datasets: [
+            {
+              label: chart.title,
+              data: values,
+              backgroundColor: backgroundColors(),
+              hoverBackgroundColor: hoverBackgroundColors,
+            },
+          ],
+        };
 
   return (
     <>

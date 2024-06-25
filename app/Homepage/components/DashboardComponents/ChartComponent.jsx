@@ -42,7 +42,7 @@ const grayColor = ["#D9D9D9"];
 
 const ChartComponent = ({ chartComponentData }) => {
   const [chart, setChart] = useState(chartComponentData);
-  console.log(chart);
+
   useEffect(() => {
     setChart(chartComponentData);
   }, [chartComponentData]);

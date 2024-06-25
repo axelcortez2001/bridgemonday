@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Input,
   Skeleton,
@@ -20,6 +20,7 @@ import {
   getColumnForDateFiltering,
 } from "../functions/DashboardFunctions";
 import FilterValue from "../FilterComponents/FilterValue";
+import FilterDate from "./FilterDate";
 
 const SettingChartOption = ({
   chart,
@@ -29,9 +30,11 @@ const SettingChartOption = ({
   selectedBase,
   value,
   setValue,
+  setDateTrigger,
 }) => {
   // Get All columns
   const columndata = getColumnForDateFiltering(data);
+  // const dropdownData = getDropDownData(data)
   // Get all projects data
   const projectdata = allProjects(data);
   const handleSetChartSetting = (text) => {
@@ -48,13 +51,23 @@ const SettingChartOption = ({
     setSelectedBase("All");
     setChartSetting(newChart);
   };
-  console.log("key: ", chart.key);
-  console.log("columndata: ", columndata);
+  const handleByDate = (dateText) => {
+    const newChart = { ...chart, chartByDate: dateText };
+    setChartSetting(newChart);
+    setDateTrigger(dateText);
+  };
+
   const buttonTitle = columndata.find(
     (col) => col.accessorKey === selectedBase
   );
-  console.log("chart: ", chart);
-  console.log("projectdata: ", projectdata);
+  const [startDate, setStartDate] = useState(chart?.startDate);
+  const [endDate, setEndDate] = useState(chart?.endDate);
+  const handleStartDate = (newDate) => {
+    setStartDate(newDate);
+  };
+  const handleEndDate = (newDate) => {
+    setEndDate(newDate);
+  };
   return (
     <div className='flex flex-col h-full gap-2'>
       <div className='w-full'>Chart Type</div>
@@ -92,6 +105,32 @@ const SettingChartOption = ({
             Vertical Bar
           </div>
         </div>
+        {chart.key.startsWith("date") && (
+          <div>
+            <p>Show By:</p>
+
+            <div className='flex flex-wrap w-full gap-2'>
+              <div
+                className='p-2 border rounded-md hover:cursor-pointer'
+                onClick={() => handleByDate("byDay")}
+              >
+                By Day
+              </div>
+              <div
+                className='p-2 border rounded-md hover:cursor-pointer'
+                onClick={() => handleByDate("byMonth")}
+              >
+                By Month
+              </div>
+              <div
+                className='p-2 border rounded-md hover:cursor-pointer'
+                onClick={() => handleByDate("byYear")}
+              >
+                By Year
+              </div>
+            </div>
+          </div>
+        )}
         <div>
           <p>Filtering</p>
           <div className='flex flex-row items-center gap-3 w-full'>
@@ -136,6 +175,7 @@ const SettingChartOption = ({
           <div className='flex flex-row items-center gap-3 w-full'>
             <p>Value: </p>
             <FilterValue
+              chart={chart}
               data={data}
               columnValue={buttonTitle}
               value={value}
@@ -143,6 +183,13 @@ const SettingChartOption = ({
             />
           </div>
         </div>
+        <FilterDate
+          chart={chart}
+          startDate={startDate}
+          setStartDate={handleStartDate}
+          endDate={endDate}
+          setEndDate={handleEndDate}
+        />
       </div>
     </div>
   );

@@ -22,7 +22,6 @@ const Dashboard = ({ myData }) => {
   };
   // Get all projects data
   const projectdata = allProjects(data);
-  console.log("ProjectData: ", projectdata);
   // Get All columns
   const columndata = getAllColumns(data);
   const [selectedNewItem, setSelectedNewItem] = useState(null);
@@ -35,7 +34,7 @@ const Dashboard = ({ myData }) => {
     <div className='w-full max-h-screen overflow-y-auto flex flex-col p-2 gap-4'>
       <div className='flex flex-row w-full border p-2 gap-3'>
         <NewChart data={data} columndata={columndata} />
-        <Filter data={data} setData={handleData} myData={myData} />
+        {/* <Filter data={data} setData={handleData} myData={myData} /> */}
       </div>
       <div className='flex flex-wrap gap-3'>
         <div className='border h-32 w-60 bg-white rounded-xl'>

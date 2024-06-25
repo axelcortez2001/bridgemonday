@@ -35,13 +35,17 @@ export const getColumnForDateFiltering = (data) => {
   let columnData = [];
   if (data && data !== undefined) {
     data?.columns?.map((column) => {
-      if (column.key.toLocaleLowerCase() === "status") {
+      if (
+        column.key.toLocaleLowerCase() === "status" ||
+        column.key.toLocaleLowerCase() === "dropdown"
+      ) {
         columnData.push(column);
       }
     });
   }
   return columnData;
 };
+
 export const generateDateChartData = (chart, labels, colorMapping) => {
   const statusLabels = [
     ...new Set(
@@ -111,7 +115,10 @@ export const processedChartData = (chartData, projectdata, data) =>
               peopleArray.forEach((people) => {
                 if (people.sub === userSub) {
                   const statusKeys = Object.keys(project).filter((key) => {
-                    if (chart?.base?.startsWith("status")) {
+                    if (
+                      chart?.base?.startsWith("status") ||
+                      chart?.base?.startsWith("dropdown")
+                    ) {
                       return key === chart.base;
                     } else {
                       return key.startsWith("status");
@@ -132,46 +139,83 @@ export const processedChartData = (chartData, projectdata, data) =>
             }
           });
         });
-        return acc;
+
+        return filterAcc(acc);
       }, {});
     } else if (key.startsWith("date")) {
-      newData = projectdata.reduce((acc, project) => {
+      const beforeData = projectdata.reduce((acc, project) => {
         const dateKey = Object.keys(project).find((k) => k === key);
         const date = project[dateKey];
         if (!date) {
           return acc;
         }
-        const monthYear = new Date(date).toLocaleString("default", {
-          year: "numeric",
-          month: "long",
-        });
 
-        if (!acc[monthYear]) {
-          acc[monthYear] = {};
+        // Determine the date format based on chartByDate
+        let dateFormatOptions;
+        if (chart?.chartByDate === "byDay") {
+          dateFormatOptions = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          };
+        } else if (chart?.chartByDate === "byMonth") {
+          dateFormatOptions = { year: "numeric", month: "long" };
+        } else if (chart?.chartByDate === "byYear") {
+          dateFormatOptions = { year: "numeric" };
+        } else {
+          // Default to byDay if not specified
+          dateFormatOptions = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          };
+        }
+
+        const formattedDate = new Date(date).toLocaleString(
+          "default",
+          dateFormatOptions
+        );
+
+        if (!acc[formattedDate]) {
+          acc[formattedDate] = {};
         }
 
         const statusKeys = Object.keys(project).filter((k) => {
-          if (chart?.base?.startsWith("status")) {
+          if (
+            chart?.base?.startsWith("status") ||
+            chart?.base?.startsWith("dropdown")
+          ) {
             return k === chart.base;
           } else {
             return k.startsWith("status");
           }
         });
-
         statusKeys.forEach((statusKey) => {
           const status = project[statusKey];
-          if (!acc[monthYear][status.text]) {
-            acc[monthYear][status.text] = { count: 0, color: status.color };
+          if (!acc[formattedDate][status.text]) {
+            acc[formattedDate][status.text] = { count: 0, color: status.color };
           }
-          acc[monthYear][status.text].count += 1;
+          acc[formattedDate][status.text].count += 1;
         });
 
         return acc;
       }, {});
+      const sortedData = Object.keys(beforeData)
+        .map((dateStr) => ({
+          dateStr,
+          date: new Date(dateStr),
+          data: beforeData[dateStr],
+        }))
+        .sort((a, b) => a.date - b.date)
+        .reduce((acc, { dateStr, data }) => {
+          acc[dateStr] = data;
+          return acc;
+        }, {});
+      newData = sortedData;
     } else {
       newData = projectdata.reduce((acc, project) => {
         const status = project[key];
-        if (status) {
+        if (status && status?.length !== 0) {
           if (!acc[status.text]) {
             acc[status.text] = { count: 0, color: status.color };
           }
@@ -183,6 +227,7 @@ export const processedChartData = (chartData, projectdata, data) =>
 
     if (key !== "groupChart") {
       newData = filterByChartValue(newData, chartValues, chart);
+      console.log("Filter: ", newData);
     }
 
     return { ...chart, newData };
@@ -196,7 +241,6 @@ const filterByChartValue = (data, chartValues, chart) => {
     Object.keys(data).forEach((key) => {
       const values = data[key];
       filteredData[key] = {};
-      console.log("Filtered data:", values);
       Object.keys(values).forEach((valueKey) => {
         if (chartValues.some((value) => value.text === valueKey)) {
           filteredData[key][valueKey] = values[valueKey];
@@ -217,4 +261,19 @@ const filterByChartValue = (data, chartValues, chart) => {
     });
   }
   return filteredData;
+};
+// Function to filter out no data
+const filterAcc = (acc) => {
+  return Object.keys(acc).reduce((filteredAcc, key) => {
+    const statuses = acc[key];
+    const nonEmptyStatuses = Object.keys(statuses).filter(
+      (status) => statuses[status].count > 0
+    );
+
+    if (nonEmptyStatuses.length > 0) {
+      filteredAcc[key] = statuses;
+    }
+
+    return filteredAcc;
+  }, {});
 };

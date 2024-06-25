@@ -25,12 +25,14 @@ const NewChart = ({ columndata, data }) => {
     const chartKey = chartData.accessorKey;
     const chartBased = chartData.accessorKey;
     const chartValue = [];
+    const chartByDate = "byMonth";
     const status = await addNewChart(
       projectId,
       chartTitle,
       chartKey,
       chartBased,
-      chartValue
+      chartValue,
+      chartByDate
     );
     if (status && status.success === true) {
       toast(status.message);
@@ -44,12 +46,14 @@ const NewChart = ({ columndata, data }) => {
     const chartKey = text;
     const chartBased = "";
     const chartValue = [];
+    const chartByDate = "byMonth";
     const status = await addNewChart(
       projectId,
       chartTitle,
       chartKey,
       chartBased,
-      chartValue
+      chartValue,
+      chartByDate
     );
     if (status && status.success === true) {
       toast(status.message);
@@ -89,30 +93,6 @@ const NewChart = ({ columndata, data }) => {
             ))}
         </DropdownMenu>
       </Dropdown>
-      <Modal
-        size={"5xl"}
-        isOpen={isOpen}
-        onClose={onClose}
-        classNames='h-[500px]'
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className='flex flex-col gap-1'>
-                Date Bar
-              </ModalHeader>
-              <ModalBody>
-                <DateNewChart myData={data} />
-              </ModalBody>
-              <ModalFooter>
-                <Button color='danger' variant='light' onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
     </>
   );
 };

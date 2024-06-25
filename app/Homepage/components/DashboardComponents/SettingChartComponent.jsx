@@ -38,6 +38,7 @@ const defaultColors = ["#32449C"];
 const grayColor = ["#D9D9D9"];
 
 const SettingChartComponent = ({ chart }) => {
+  console.log("Chart: ", chart);
   const labels = Object.keys(chart.newData);
   const values = labels.map((label) => chart.newData[label].count);
   const maxValue = Math.max(...values);

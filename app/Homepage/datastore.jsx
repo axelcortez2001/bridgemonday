@@ -1203,7 +1203,16 @@ export const changeOwnerShip = atom(null, async (get, set, id, userSub) => {
 //No validation yet
 export const addChart = atom(
   null,
-  async (get, set, projectId, chartTitle, chartKey, chartBased, chartValue) => {
+  async (
+    get,
+    set,
+    projectId,
+    chartTitle,
+    chartKey,
+    chartBased,
+    chartValue,
+    chartByDate
+  ) => {
     const chartType = "bar";
     const chartId = uuidv4();
     const projects = get(projectsAtom);
@@ -1217,6 +1226,7 @@ export const addChart = atom(
         key: chartKey,
         base: chartBased,
         chartValue: chartValue,
+        chartByDate: chartByDate,
       };
       if (foundProject?.charts?.length === 0) {
         chartData = addedChartData;

@@ -7,7 +7,7 @@ import {
   Button,
 } from "@nextui-org/react";
 
-const FilterValue = ({ data, columnValue, value, setValue }) => {
+const FilterValue = ({ data, columnValue, value, setValue, chart }) => {
   //function for color coding in status
 
   return (
@@ -35,20 +35,35 @@ const FilterValue = ({ data, columnValue, value, setValue }) => {
             closeOnSelect={false}
             className='w-full flex flex-wrap '
           >
-            {data?.defaultStatus.map((status) => (
-              <DropdownItem
-                key={status.text}
-                textValue={status.text}
-                onClick={() => setValue(status)}
-              >
-                <div className='flex justify-start items-center'>
-                  <div
-                    className={`${status.color} w-[24px] h-[24px] rounded`}
-                  ></div>
-                  <p className='pl-[12px]'>{status.text}</p>
-                </div>
-              </DropdownItem>
-            ))}
+            {!chart?.base?.startsWith("dropdown")
+              ? data?.defaultStatus.map((status) => (
+                  <DropdownItem
+                    key={status.text}
+                    textValue={status.text}
+                    onClick={() => setValue(status)}
+                  >
+                    <div className='flex justify-start items-center'>
+                      <div
+                        className={`${status.color} w-[24px] h-[24px] rounded`}
+                      ></div>
+                      <p className='pl-[12px]'>{status.text}</p>
+                    </div>
+                  </DropdownItem>
+                ))
+              : data?.defaultDropDown.map((status) => (
+                  <DropdownItem
+                    key={status.text}
+                    textValue={status.text}
+                    onClick={() => setValue(status)}
+                  >
+                    <div className='flex justify-start items-center'>
+                      <div
+                        className={`${status.color} w-[24px] h-[24px] rounded`}
+                      ></div>
+                      <p className='pl-[12px]'>{status.text}</p>
+                    </div>
+                  </DropdownItem>
+                ))}
           </DropdownMenu>
         </Dropdown>
       </div>

@@ -37,8 +37,12 @@ const EditableChartName = ({ chart, data }) => {
   const [selectedBase, setSelectedBase] = useState(chart?.base);
   const [value, setValue] = useState();
   const [dateTrigger, setDateTrigger] = useState(chart?.chartByDate);
+  const [eventTrigger, setEventTrigger] = useState(null);
   const handleDateTrigger = (text) => {
     setDateTrigger(text);
+  };
+  const handleEventTrigger = (val) => {
+    setEventTrigger(val);
   };
   const handleValue = (val) => {
     const exists = value.some((item) => item.text === val.text);
@@ -85,7 +89,7 @@ const EditableChartName = ({ chart, data }) => {
   }, [filteredData]);
   useEffect(() => {
     setFilteredData(handleFilterData());
-  }, [selectedBase, value, dateTrigger]);
+  }, [selectedBase, value, dateTrigger, eventTrigger]);
   const oldChart = finalChartData.find((i) => i.id === chart.id);
 
   const rename = useSetAtom(renameChart);
@@ -215,6 +219,7 @@ const EditableChartName = ({ chart, data }) => {
                       value={value}
                       setValue={handleValue}
                       setDateTrigger={handleDateTrigger}
+                      setEventTrigger={handleEventTrigger}
                     />
                   </div>
                 )}

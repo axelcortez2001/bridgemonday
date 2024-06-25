@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Input,
   Skeleton,
@@ -31,6 +31,7 @@ const SettingChartOption = ({
   value,
   setValue,
   setDateTrigger,
+  setEventTrigger,
 }) => {
   // Get All columns
   const columndata = getColumnForDateFiltering(data);
@@ -68,6 +69,25 @@ const SettingChartOption = ({
   const handleEndDate = (newDate) => {
     setEndDate(newDate);
   };
+  const handleDateEvent = (start, end) => {
+    const newChart = { ...chart, startDate: start, endDate: end };
+    setChartSetting(newChart);
+    const event = { startDate: start, endDate: end };
+    setEventTrigger(event);
+  };
+  const handleNoEventDate = (start, end) => {
+    const newChart = { ...chart, startDate: start, endDate: end };
+    setChartSetting(newChart);
+    const event = { startDate: start, endDate: end };
+    setEventTrigger(event);
+  };
+  useEffect(() => {
+    if (startDate && startDate !== "" && endDate && endDate !== "") {
+      handleDateEvent(startDate, endDate);
+    } else {
+      handleNoEventDate("", "");
+    }
+  }, [startDate, endDate]);
   return (
     <div className='flex flex-col h-full gap-2'>
       <div className='w-full'>Chart Type</div>

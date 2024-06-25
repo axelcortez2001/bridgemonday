@@ -88,14 +88,12 @@ export const processedChartData = (chartData, projectdata, data) =>
     let newData = {};
     const chartValues = chart.chartValue || [];
     console.log("projectdata: ", projectdata);
-    // Filter projectdata based on date range first
-    // Filter newData based on chart.startDate and chart.endDate
+
     if (chart.startDate && chart.endDate) {
-      // Filter projectdata based on date range first
       projectdata = projectdata.filter((project) => {
         const dateKey = Object.keys(project).find((k) => k.startsWith("date"));
         if (!dateKey) {
-          return false; // Skip entries without a date key
+          return false;
         }
         const projectDate = new Date(project[dateKey]);
         const startDate = new Date(chart.startDate);
@@ -164,8 +162,6 @@ export const processedChartData = (chartData, projectdata, data) =>
         if (!date) {
           return acc;
         }
-
-        // Determine the date format based on chartByDate
         let dateFormatOptions;
         if (chart?.chartByDate === "byDay") {
           dateFormatOptions = {
@@ -291,17 +287,4 @@ const filterAcc = (acc) => {
 
     return filteredAcc;
   }, {});
-};
-const filterDataByDateRange = (data, startDate, endDate) => {
-  const filteredData = {};
-  Object.keys(data).forEach((key) => {
-    // Assuming key is a date string or identifier
-    if (
-      new Date(key) >= new Date(startDate) &&
-      new Date(key) <= new Date(endDate)
-    ) {
-      filteredData[key] = data[key];
-    }
-  });
-  return filteredData;
 };

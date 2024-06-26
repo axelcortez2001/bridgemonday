@@ -15,7 +15,7 @@ const NumberCell = ({ getValue, row, column, table }) => {
       onBlur={onBlur}
       onChange={(e) => setValue(e.target.value)}
       type='Number'
-      className='p-2 text-wrap w-full bg-inherit hover:bg-gray-200 h-full'
+      className='p-2 text-wrap text-center w-full bg-inherit hover:bg-gray-200 h-full'
     />
   );
 };

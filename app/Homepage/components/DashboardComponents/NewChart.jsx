@@ -4,12 +4,6 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Button,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
 import { useSetAtom } from "jotai";
@@ -26,13 +20,15 @@ const NewChart = ({ columndata, data }) => {
     const chartBased = chartData.accessorKey;
     const chartValue = [];
     const chartByDate = "byMonth";
+    const filterState = "None";
     const status = await addNewChart(
       projectId,
       chartTitle,
       chartKey,
       chartBased,
       chartValue,
-      chartByDate
+      chartByDate,
+      filterState
     );
     if (status && status.success === true) {
       toast(status.message);
@@ -47,13 +43,15 @@ const NewChart = ({ columndata, data }) => {
     const chartBased = "";
     const chartValue = [];
     const chartByDate = "byMonth";
+    const filterState = "None";
     const status = await addNewChart(
       projectId,
       chartTitle,
       chartKey,
       chartBased,
       chartValue,
-      chartByDate
+      chartByDate,
+      filterState
     );
     if (status && status.success === true) {
       toast(status.message);

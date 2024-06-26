@@ -87,10 +87,9 @@ export const processedChartData = (chartData, projectdata, data) =>
     const key = chart.key;
     let newData = {};
     const chartValues = chart.chartValue || [];
-    console.log("projectdata: ", projectdata);
-
+    let newProjecData = [];
     if (chart.startDate && chart.endDate) {
-      projectdata = projectdata.filter((project) => {
+      newProjecData = projectdata.filter((project) => {
         const dateKey = Object.keys(project).find((k) => k.startsWith("date"));
         if (!dateKey) {
           return false;
@@ -100,6 +99,8 @@ export const processedChartData = (chartData, projectdata, data) =>
         const endDate = new Date(chart.endDate);
         return projectDate >= startDate && projectDate <= endDate;
       });
+    } else {
+      newProjecData = projectdata;
     }
     if (key === "groupChart") {
       newData = data?.grouptask?.reduce((acc, group) => {
@@ -118,7 +119,7 @@ export const processedChartData = (chartData, projectdata, data) =>
         if (!acc[name]) {
           acc[name] = {};
         }
-        projectdata.forEach((project) => {
+        newProjecData.forEach((project) => {
           const peopleKeys = Object.keys(project).filter((key) =>
             key.startsWith("people")
           );
@@ -156,7 +157,7 @@ export const processedChartData = (chartData, projectdata, data) =>
         return filterAcc(acc);
       }, {});
     } else if (key.startsWith("date")) {
-      const beforeData = projectdata.reduce((acc, project) => {
+      const beforeData = newProjecData.reduce((acc, project) => {
         const dateKey = Object.keys(project).find((k) => k === key);
         const date = project[dateKey];
         if (!date) {
@@ -174,7 +175,6 @@ export const processedChartData = (chartData, projectdata, data) =>
         } else if (chart?.chartByDate === "byYear") {
           dateFormatOptions = { year: "numeric" };
         } else {
-          // Default to byDay if not specified
           dateFormatOptions = {
             year: "numeric",
             month: "long",
@@ -224,7 +224,7 @@ export const processedChartData = (chartData, projectdata, data) =>
         }, {});
       newData = sortedData;
     } else {
-      newData = projectdata.reduce((acc, project) => {
+      newData = newProjecData.reduce((acc, project) => {
         const status = project[key];
         if (status && status?.length !== 0) {
           if (!acc[status.text]) {
@@ -238,7 +238,6 @@ export const processedChartData = (chartData, projectdata, data) =>
 
     if (key !== "groupChart") {
       newData = filterByChartValue(newData, chartValues, chart);
-      console.log("Filter: ", newData);
     }
 
     return { ...chart, newData };

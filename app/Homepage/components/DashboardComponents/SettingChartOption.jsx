@@ -63,27 +63,41 @@ const SettingChartOption = ({
   );
   const [startDate, setStartDate] = useState(chart?.startDate);
   const [endDate, setEndDate] = useState(chart?.endDate);
+  const [filterState, setFilterState] = useState(chart?.filterState);
   const handleStartDate = (newDate) => {
     setStartDate(newDate);
   };
   const handleEndDate = (newDate) => {
     setEndDate(newDate);
   };
-  const handleDateEvent = (start, end) => {
-    const newChart = { ...chart, startDate: start, endDate: end };
+  const handleFilterState = (text) => {
+    setFilterState(text);
+  };
+  const handleDateEvent = (start, end, filterStatus) => {
+    const newChart = {
+      ...chart,
+      startDate: start,
+      endDate: end,
+      filterState: filterStatus,
+    };
     setChartSetting(newChart);
     const event = { startDate: start, endDate: end };
     setEventTrigger(event);
   };
   const handleNoEventDate = (start, end) => {
-    const newChart = { ...chart, startDate: start, endDate: end };
+    const newChart = {
+      ...chart,
+      startDate: start,
+      endDate: end,
+      filterState: "None",
+    };
     setChartSetting(newChart);
     const event = { startDate: start, endDate: end };
     setEventTrigger(event);
   };
   useEffect(() => {
     if (startDate && startDate !== "" && endDate && endDate !== "") {
-      handleDateEvent(startDate, endDate);
+      handleDateEvent(startDate, endDate, filterState);
     } else {
       handleNoEventDate("", "");
     }
@@ -209,6 +223,8 @@ const SettingChartOption = ({
           setStartDate={handleStartDate}
           endDate={endDate}
           setEndDate={handleEndDate}
+          filterState={filterState}
+          setFilterState={handleFilterState}
         />
       </div>
     </div>

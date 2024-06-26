@@ -37,11 +37,8 @@ const StartDate = ({ startDate, setStartDate }) => {
   const handleDateChange = (startDate) => {
     if (startDate) {
       const formattedDate = format(startDate, "yyyy-MM-dd");
-      setStartDate(formattedDate);
-      console.log(startDate);
-    } else {
-      console.log(startDate);
-    }
+      setStartDate(formattedDate);;
+    } 
   };
   return (
     <div className={`${styles.flexCenter} min-w-[160px]`}>

@@ -1211,7 +1211,8 @@ export const addChart = atom(
     chartKey,
     chartBased,
     chartValue,
-    chartByDate
+    chartByDate,
+    filterState
   ) => {
     const chartType = "bar";
     const chartId = uuidv4();
@@ -1227,6 +1228,7 @@ export const addChart = atom(
         base: chartBased,
         chartValue: chartValue,
         chartByDate: chartByDate,
+        filterState: filterState,
       };
       if (foundProject?.charts?.length === 0) {
         chartData = addedChartData;

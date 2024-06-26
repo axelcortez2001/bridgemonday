@@ -31,6 +31,7 @@ import { Button } from "@nextui-org/react";
 import { MdOutlineDelete } from "react-icons/md";
 import { CiExport } from "react-icons/ci";
 import { toast } from "sonner";
+import TableFooter from "./tablecomponents/TableFooter";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
@@ -44,6 +45,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       setColumns(columnData);
     }
   }, [columnData]);
+
   const table = useReactTable({
     data,
     columns: columns,
@@ -233,6 +235,12 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
                 <DraggableRow key={row.id} row={row} gId={groupId} />
               ))}
             </SortableContext>
+            <tr className=''>
+              {columns.map((column, index) => (
+                <TableFooter key={index} column={column} data={data} />
+              ))}
+            </tr>
+
             <tr className='w-full flex items-center justify-center p-1 hover:cursor-pointer h-[52px]'>
               <div>
                 <Button

@@ -38,10 +38,7 @@ const EndDate = ({ endDate, setEndDate }) => {
     if (endDate) {
       const formattedDate = format(endDate, "yyyy-MM-dd");
       setEndDate(formattedDate);
-      console.log(endDate);
-    } else {
-      console.log(endDate);
-    }
+    } 
   };
   return (
     <div className={`${styles.flexCenter} min-w-[160px]`}>

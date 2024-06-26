@@ -10,6 +10,7 @@ import DropDownCell from "../tablecomponents/DropDownCell";
 import EditableCell from "../tablecomponents/EditableCell";
 import EditableHeader from "../tablecomponents/EditableHeader";
 import EditableSubHeader from "../tablecomponents/EditableSubHeader";
+import FormulaCell from "../tablecomponents/FormulaCell";
 import NumberCell from "../tablecomponents/NumberCell";
 import OptionCell from "../tablecomponents/OptionCell";
 import PersonCell from "../tablecomponents/PersonCell";
@@ -39,18 +40,18 @@ export const dataColumns = (columns) => {
           key: column.key,
           header: ({ table }) => (
             <input
-              type="checkbox"
+              type='checkbox'
               checked={table.getIsAllRowsSelected()}
               indeterminate={table.getIsSomeRowsSelected()}
               onChange={table.getToggleAllRowsSelectedHandler()}
             />
           ),
           cell: ({ row }) => (
-            <div className="w-full flex h-full items-center">
+            <div className='w-full flex h-full items-center'>
               <RowDragHandleCell rowId={row.id} />
               <input
-                className="border h-[12px] w-full"
-                type="checkbox"
+                className='border h-[12px] w-full'
+                type='checkbox'
                 checked={row.getIsSelected()}
                 onChange={row.getToggleSelectedHandler()}
               />
@@ -66,7 +67,7 @@ export const dataColumns = (columns) => {
           cell: ({ row }) => {
             return row.getCanExpand() ? (
               <button
-                className=" flex justify-center w-full"
+                className=' flex justify-center w-full'
                 {...{
                   onClick: row.getToggleExpandedHandler(),
                   style: { cursor: "pointer" },
@@ -302,6 +303,21 @@ export const dataColumns = (columns) => {
             />
           ),
           cell: DropDownCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "formula") {
+        //pending action
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: FormulaCell,
           accessorKey: column.accessorKey,
         });
       } else if (column.key === "status") {

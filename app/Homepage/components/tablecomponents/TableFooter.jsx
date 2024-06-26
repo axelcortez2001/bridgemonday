@@ -50,7 +50,6 @@ const TableFooter = ({ column, data }) => {
         values = data.map((row) => row[column.accessorKey] || null);
 
         let compressedValues = values.reduce((acc, item) => {
-          console.log("item: ");
           if (item === null || Array.isArray(item)) return acc;
           const key = `${item.text}`;
           if (!acc[key]) {
@@ -81,11 +80,8 @@ const TableFooter = ({ column, data }) => {
         return null;
       }
     };
-
     return totals();
   };
-
-  console.log("Total: ", totalRow());
   const statusData = totalRow();
 
   const renderStatusBars = () => {

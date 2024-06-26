@@ -43,14 +43,12 @@ const FilterDate = ({
       setEndDate(tom);
     } else if (text === "Yesterday") {
       const yesterday = addDays(formattedDate, -1);
-      console.log("Yesterday: ", yesterday);
       setFilterState(text);
       setStartDate(yesterday);
       setEndDate(yesterday);
     } else if (text === "This Week") {
       const startWeek = previousMonday(formattedDate);
       const endWeek = nextSunday(formattedDate);
-      console.log("Started ", startWeek, " ", endWeek);
       setFilterState(text);
       setStartDate(startWeek);
       setEndDate(endWeek);
@@ -58,7 +56,6 @@ const FilterDate = ({
       const dateLastWeek = addWeeks(formattedDate, -1);
       const startWeek = previousMonday(dateLastWeek);
       const endWeek = nextSunday(dateLastWeek);
-      console.log("Started ", startWeek, " ", endWeek);
       setFilterState(text);
       setStartDate(startWeek);
       setEndDate(endWeek);
@@ -66,14 +63,12 @@ const FilterDate = ({
       const dateNextWeek = addWeeks(formattedDate, 1);
       const startWeek = previousMonday(dateNextWeek);
       const endWeek = nextSunday(dateNextWeek);
-      console.log("Started ", startWeek, " ", endWeek);
       setFilterState(text);
       setStartDate(startWeek);
       setEndDate(endWeek);
     } else if (text === "This Month") {
       const startMonth = startOfMonth(formattedDate);
       const endMonth = endOfMonth(formattedDate);
-      console.log("Started ", startMonth, " ", endMonth);
       setFilterState(text);
       setStartDate(startMonth);
       setEndDate(endMonth);
@@ -81,7 +76,6 @@ const FilterDate = ({
       const dateLastMonth = addMonths(formattedDate, -1);
       const startMonth = startOfMonth(dateLastMonth);
       const endMonth = endOfMonth(dateLastMonth);
-      console.log("Started ", startMonth, " ", endMonth);
       setFilterState(text);
       setStartDate(startMonth);
       setEndDate(endMonth);
@@ -89,7 +83,6 @@ const FilterDate = ({
       const dateNextMonth = addMonths(formattedDate, 1);
       const startMonth = startOfMonth(dateNextMonth);
       const endMonth = endOfMonth(dateNextMonth);
-      console.log("Started ", startMonth, " ", endMonth);
       setFilterState(text);
       setStartDate(startMonth);
       setEndDate(endMonth);

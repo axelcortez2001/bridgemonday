@@ -20,7 +20,6 @@ import { addNewItem, selectedProjectAtom } from "../../datastore";
 
 const AddDropDown = () => {
   const [project, setProject] = useAtom(selectedProjectAtom);
-
   const addItem = useSetAtom(addNewItem);
   const handleSelect = (projectId, itemName, itemType) => {
     addItem(projectId, itemName, itemType);
@@ -28,7 +27,10 @@ const AddDropDown = () => {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <button variant='bordered' className='border rounded-md h-8 w-8 bg-[#32449C] text-white'>
+        <button
+          variant='bordered'
+          className='border rounded-md h-8 w-8 bg-[#32449C] text-white'
+        >
           +
         </button>
       </DropdownTrigger>
@@ -132,6 +134,18 @@ const AddDropDown = () => {
               <CiTimer color='white' />
             </div>
             <p>Default Time</p>
+          </div>
+        </DropdownItem>
+        <DropdownItem
+          key='defaultTime'
+          textValue='Default Time'
+          onClick={() => handleSelect(project._id, "Formula")}
+        >
+          <div className='flex w-full items-center gap-x-2'>
+            <div className=' bg-orange-500 w-7 h-7 flex items-center justify-center border rounded-md'>
+              <CiTimer color='white' />
+            </div>
+            <p>Formula</p>
           </div>
         </DropdownItem>
       </DropdownMenu>

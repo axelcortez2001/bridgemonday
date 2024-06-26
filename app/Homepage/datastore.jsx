@@ -79,6 +79,7 @@ export const textItem = [
   { name: "DefaultTime", cell: DefaultTimeCell, data: "" },
   { name: "number", cell: NumberCell, data: "" },
   { name: "DropDown", cell: DropDownCell, data: [] },
+  { name: "formula", data: "" },
 ];
 export const subtextItem = [
   {

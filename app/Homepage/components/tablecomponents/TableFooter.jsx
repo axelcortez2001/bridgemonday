@@ -105,12 +105,12 @@ const TableFooter = ({ column, data }) => {
     ));
   };
   return (
-    <td className=' h-full '>
+    <td className=' h-full p-2 '>
       {totalRow()?.accessorKey?.startsWith("number") ? (
         <div className='flex items-center' title={formulaState}>
           <Dropdown className=''>
             <DropdownTrigger>
-              <button className='h-full  w-full text-center hover:bg-gray-400 flex items-center justify-center p-1 rounded-md'>
+              <button className='h-full  w-full text-center hover:bg-gray-400 flex items-center justify-center p-1 rounded-md border'>
                 {totalRow()?.Footer &&
                   totalRow()?.Footer[formulaState] &&
                   totalRow()?.Footer[formulaState]}

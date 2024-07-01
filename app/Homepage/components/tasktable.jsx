@@ -45,7 +45,11 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
       setColumns(columnData);
     }
   }, [columnData]);
-
+  useEffect(() => {
+    if (JSON.stringify(data) !== JSON.stringify(groupData)) {
+      setData(groupData);
+    }
+  }, [groupData]);
   const table = useReactTable({
     data,
     columns: columns,
@@ -76,13 +80,15 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     const updateData = async () => {
       try {
         const type = "UpdateData";
-        console.log("Trigger");
-        const status = await updateTableData(projectId, groupId, data, type);
-        if (status && status.success === false) {
-          if (status.newTask) {
-            setData(status.newTask);
-          } else {
-            toast("Error updating");
+        if (JSON.stringify(data) !== JSON.stringify(groupData)) {
+          console.log("Trigger");
+          const status = await updateTableData(projectId, groupId, data, type);
+          if (status && status.success === false) {
+            if (status.newTask) {
+              setData(status.newTask);
+            } else {
+              toast("Error updating");
+            }
           }
         }
       } catch (error) {

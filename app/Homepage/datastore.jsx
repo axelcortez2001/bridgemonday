@@ -1,3 +1,4 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { atom } from "jotai";
 import EditableCell from "./components/tablecomponents/EditableCell";
 import OptionCell from "./components/tablecomponents/OptionCell";
@@ -1348,5 +1349,38 @@ export const updateChartType = atom(
       set(projectsAtom, updatedProject);
       return { success: true };
     } else return { success: false, message: "Error Updating chart type." };
+  }
+);
+export const updateFormula = atom(
+  null,
+  async (get, set, projectId, key, newValue) => {
+    const projects = get(projectsAtom);
+    const updatedProject = projects?.map((project) => {
+      if (project._id === projectId) {
+        return {
+          ...project,
+          grouptask: project?.grouptask?.map((grouptask) => {
+            return {
+              ...grouptask,
+              task: grouptask?.task?.map((task) => {
+                return {
+                  ...task,
+                  [key]: newValue,
+                };
+              }),
+            };
+          }),
+        };
+      }
+      return project;
+    });
+    const updated = await updateWholeWorkSpace(
+      "/modaydata/update",
+      updatedProject
+    );
+    if (updated.success === true) {
+      set(projectsAtom, updatedProject);
+      return { success: true };
+    } else return { success: false };
   }
 );

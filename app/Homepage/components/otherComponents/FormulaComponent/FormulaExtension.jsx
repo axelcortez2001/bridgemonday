@@ -17,23 +17,10 @@ import {
 const FormulaExtension = ({ extension, setExtension, setFullExtension }) => {
   const [valueOpen, setValueOpen] = useState(false);
   const [val, setVal] = useState("");
-  const handleValue = (val) => {
-    if (typeof val === "number") {
-      console.log("Value is a number");
-    } else if (typeof val === "string") {
-      console.log("Value is a string");
-    }
-    setExtension(`"${val}"`);
-    setVal("");
-  };
 
   return (
-    <div className='w-full'>
-      <Input
-        value={extension}
-        onChange={(e) => setFullExtension(e.target.value)}
-      />
-      <div className='flex w-full flex-row'>
+    <div className='w-full flex'>
+      <div className='flex flex-row '>
         <Dropdown className=''>
           <DropdownTrigger>
             <Button
@@ -41,14 +28,14 @@ const FormulaExtension = ({ extension, setExtension, setFullExtension }) => {
               variant='light'
               disableAnimation
               disableRipple
-              className='w-full'
+              className='w-5 border'
             >
-              Condition
+              +
             </Button>
           </DropdownTrigger>
           <DropdownMenu variant='faded' aria-label='Chart Option'>
-            <DropdownItem textValue='===' onClick={() => setExtension("===")}>
-              {"==="}
+            <DropdownItem textValue='==' onClick={() => setExtension("==")}>
+              {"=="}
             </DropdownItem>
             <DropdownItem textValue='>' onClick={() => setExtension(">")}>
               {">"}
@@ -62,8 +49,8 @@ const FormulaExtension = ({ extension, setExtension, setFullExtension }) => {
             <DropdownItem textValue='<=' onClick={() => setExtension("<=")}>
               {"<="}
             </DropdownItem>
-            <DropdownItem textValue='!==' onClick={() => setExtension("!==")}>
-              {"!=="}
+            <DropdownItem textValue='!=' onClick={() => setExtension("!=")}>
+              {"!="}
             </DropdownItem>
             <DropdownItem textValue='&&' onClick={() => setExtension("&&")}>
               {"AND"}
@@ -73,21 +60,12 @@ const FormulaExtension = ({ extension, setExtension, setFullExtension }) => {
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
-        <div className='w-full relative'>
-          <button onClick={() => setValueOpen(!valueOpen)}>Value</button>
-          {valueOpen && (
-            <div className='absolute bottom-0'>
-              <input
-                className='val'
-                placeholder='open'
-                value={val}
-                onChange={(e) => setVal(e.target.value)}
-                onBlur={() => handleValue(val)}
-              ></input>
-            </div>
-          )}
-        </div>
       </div>
+      <Input
+        value={extension}
+        onChange={(e) => setFullExtension(e.target.value)}
+        className='w-full'
+      />
     </div>
   );
 };

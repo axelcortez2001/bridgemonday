@@ -14,12 +14,14 @@ import { selectedProjectAtom, updateFormula } from "../../datastore";
 import {
   getColforFormula,
   getFormulaValue,
+  getSumValue,
 } from "../functions/FormulaFunction/mainFunction";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import FunctionOption from "../otherComponents/FormulaComponent/FunctionOption";
 import ColumnSelected from "../otherComponents/FormulaComponent/ColumnSelected";
 import FormulaContent from "../otherComponents/FormulaComponent/FormulaContent";
 import FormulaExtension from "../otherComponents/FormulaComponent/FormulaExtension";
+import Equations from "../otherComponents/FormulaComponent/Equations";
 const FormulaCell = ({ getValue, row, column, table }) => {
   const key = column.id;
   const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom);
@@ -31,6 +33,7 @@ const FormulaCell = ({ getValue, row, column, table }) => {
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [chosenColumn, setChosenColumn] = useState(value?.column || null);
+  const [columnArray, setColumnArray] = useState(value?.columnArray || []);
   const [columnOpen, setColumnOpen] = useState(false);
   const [extension, setExtension] = useState(value?.formula || "");
   const [functionOpen, setFunctionOpen] = useState(false);
@@ -39,10 +42,8 @@ const FormulaCell = ({ getValue, row, column, table }) => {
     table.options.meta?.updateData(row.index, column.id, value);
     onClose();
   };
-  console.log("Initial ValueL ", initialValue);
-  console.log("Ivalue ", value);
+
   useEffect(() => {
-    console.log("trihher");
     setValue(initialValue);
   }, [initialValue]);
   useEffect(() => {
@@ -59,12 +60,22 @@ const FormulaCell = ({ getValue, row, column, table }) => {
   const handleValue = () => {
     const operation = chosenFunction;
     const column = chosenColumn;
+    const colArray = columnArray;
     const formula = `${extension}`;
-    const newValue = {
-      operation,
-      column,
-      formula,
-    };
+    let newValue = {};
+    if (operation === "IF") {
+      newValue = {
+        operation,
+        column,
+        formula,
+      };
+    } else {
+      newValue = {
+        operation,
+        columnArray,
+      };
+    }
+
     const projectId = selectedProject._id;
     setValue(newValue);
     setNewFormula(projectId, key, newValue);
@@ -82,30 +93,46 @@ const FormulaCell = ({ getValue, row, column, table }) => {
   const handleFullExtension = (a) => {
     setExtension(a);
   };
+  const handleColumnArray = (a) => {
+    const exists = columnArray.some(
+      (item) => item.accessorKey === a.accessorKey
+    );
+    const newValue = exists
+      ? columnArray.filter((item) => item.accessorKey !== a.accessorKey)
+      : [...columnArray, a];
+    setColumnArray(newValue);
+  };
   const handleShownValue = (val) => {
     if (val !== undefined) {
+      const id = row.original.id;
+      const task = row.original;
       switch (val?.operation) {
         case "IF":
-          const id = row.original.id;
-          const task = row.original;
           const finalValue = getFormulaValue(
             id,
             task,
             val?.column,
             val?.formula
           );
-          console.log("FinalValue: ", finalValue);
           return finalValue?.value;
         case "SUM":
-          return `SUM(${getValue()})`;
+        case "DIFFERENCE":
+        case "PRODUCT":
+        case "QUOTIENT":
         case "AVERAGE":
-          return `AVERAGE(${getValue()})`;
         case "MAX":
-          return `MAX(${getValue()})`;
         case "MIN":
-          return `MIN(${getValue()})`;
-        case "COUNT":
-          return `COUNT(${getValue()})`;
+        case "MEAN":
+        case "MEDIAN":
+        case "MODE":
+          const SumValue = getSumValue(
+            id,
+            task,
+            val?.operation,
+            val?.columnArray
+          );
+          return SumValue?.value;
+
         default:
           return "No Value";
       }
@@ -114,8 +141,23 @@ const FormulaCell = ({ getValue, row, column, table }) => {
     }
   };
   return (
-    <div>
-      <button onClick={onOpen}> {handleShownValue(value)} </button>
+    <div className='w-full text-center min-h-7 hover:bg-gray-200 rounded-md'>
+      <button onClick={onOpen}>
+        {Array?.isArray(handleShownValue(value)) ? (
+          <div className='flex flex-wrap'>
+            {handleShownValue(value)?.map((val, index) => (
+              <div key={index}>
+                {val}
+                {"  |  "}
+              </div>
+            ))}
+          </div>
+        ) : handleShownValue(value) === "" ? (
+          <p>No Value</p>
+        ) : (
+          handleShownValue(value)
+        )}{" "}
+      </button>
       <Modal
         size={"3xl"}
         isOpen={isOpen}
@@ -127,25 +169,37 @@ const FormulaCell = ({ getValue, row, column, table }) => {
             <>
               <ModalHeader className='flex flex-col gap-1'>Formula</ModalHeader>
               <ModalBody>
-                <div className='flex flex-col w-full h-[400px]'>
+                <div className='flex flex-col w-full max-h-[400px]'>
                   <div className='flex flex-row p-2'>
                     <FunctionOption
                       chosenFunction={chosenFunction}
                       setChosenFunction={handleChosenFunction}
                     />
-                    <ColumnSelected
-                      columnData={columnData}
-                      chosenColumn={chosenColumn}
-                      setChosenColumn={handleChosenColumn}
-                    />
-                    <FormulaExtension
-                      extension={extension}
-                      setExtension={handleExtension}
-                      setFullExtension={handleFullExtension}
-                    />
+                    {chosenFunction && chosenFunction === "IF" ? (
+                      <>
+                        <ColumnSelected
+                          columnData={columnData}
+                          chosenColumn={chosenColumn}
+                          setChosenColumn={handleChosenColumn}
+                        />
+                        <FormulaExtension
+                          extension={extension}
+                          setExtension={handleExtension}
+                          setFullExtension={handleFullExtension}
+                        />
+                      </>
+                    ) : (
+                      <Equations
+                        chosenFunction={chosenFunction}
+                        columnData={columnData}
+                        columnArray={columnArray}
+                        setColumnArray={handleColumnArray}
+                      />
+                    )}
                   </div>
                   <FormulaContent
                     columnData={columnData}
+                    columnArray={columnArray}
                     chosenFunction={chosenFunction}
                     chosenColumn={chosenColumn}
                     selectedProject={selectedProject}

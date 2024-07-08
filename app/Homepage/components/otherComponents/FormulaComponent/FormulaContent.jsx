@@ -2,6 +2,7 @@ import React from "react";
 import { getAllItems } from "../../functions/FormulaFunction/mainFunction";
 
 const FormulaContent = ({
+  type,
   columnData,
   columnArray,
   chosenFunction,
@@ -13,8 +14,10 @@ const FormulaContent = ({
     chosenFunction,
     selectedProject,
     chosenColumn,
-    extension
+    extension,
+    type
   );
+
   return (
     <div>
       {chosenFunction !== "None" ? (

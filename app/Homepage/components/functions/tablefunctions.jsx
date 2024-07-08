@@ -5,10 +5,15 @@ import { Button } from "@nextui-org/react";
 import SubItemTable from "../SubItemTable";
 import { useAtom, useSetAtom } from "jotai";
 import { selectedProjectAtom, updateSubItemData } from "../../datastore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
+import {
+  getFormulaValue,
+  getSumValue,
+  handleShownValue,
+} from "./FormulaFunction/mainFunction";
 
 //functions for DnD based from tanstackDnD
 //Cell Component
@@ -47,6 +52,11 @@ export const DraggableRow = ({ row, gId }) => {
   const handleData = (newData) => {
     setData(newData);
   };
+  useEffect(() => {
+    if (JSON.stringify(data) !== JSON.stringify(subData)) {
+      setData(subData);
+    }
+  }, [subData]);
   const handleAdd = async () => {
     const status = await addSubColumn(projectId, groupId, taskId, data);
     if (status && status.success === true) {
@@ -139,17 +149,23 @@ export const preprocessData = (data, convertedArray) => {
   const selectedExport = data1.filter((rowData) =>
     array.some((row) => row === rowData.id)
   );
+  console.log(selectedExport);
   return selectedExport.map((row) => {
     const processedRow = {};
     for (const key in row) {
       const value = row[key];
+
       if (Array.isArray(value) || typeof value === "object") {
-        if (value && value.length > 0) {
-          const returnedValue = value.map((val) => {
-            return val.email;
-          });
-          processedRow[key] = JSON.stringify(returnedValue);
-        } else if (value && value.text !== undefined) {
+        if (value && value?.length > 0) {
+          const returnedValue = value
+            .filter((val) => val?.email !== undefined)
+            .map((val) => val.email);
+          if (returnedValue.length > 0) {
+            processedRow[key] = JSON.stringify(returnedValue);
+          } else {
+            processedRow[key] = JSON.stringify("");
+          }
+        } else if (value && value?.text !== undefined) {
           processedRow[key] = value.text;
         } else processedRow[key] = JSON.stringify(value);
       } else {
@@ -174,9 +190,14 @@ export const preprocessAllData = (data) => {
             });
             processedRow[key] = JSON.stringify(returnedValue);
           } else if (value && value.length > 0) {
-            const returnedValue = value.map((val) => {
-              return val.email;
-            });
+            const returnedValue = value
+              .filter((val) => val?.email !== undefined)
+              .map((val) => val.email);
+            if (returnedValue.length > 0) {
+              processedRow[key] = JSON.stringify(returnedValue);
+            } else {
+              processedRow[key] = JSON.stringify("");
+            }
             processedRow[key] = JSON.stringify(returnedValue);
           } else if (value && value.text !== undefined) {
             processedRow[key] = value.text;
@@ -226,5 +247,21 @@ export const exportInitialData = (columnData, sub) => {
       finalData.push(group.groupName);
     });
   }
-  return finalData;
+  // Function to check if a formula is present
+
+  const formulaPresent = (data) => {
+    return data.map((item) => {
+      for (const key in item) {
+        if (key.startsWith("formula") || key.startsWith("subformula")) {
+          const newKeyData = item[key];
+          const newValue = handleShownValue(newKeyData, item);
+          const newItem = { ...item, [key]: newValue };
+          return newItem;
+        }
+      }
+      return item;
+    });
+  };
+  const newData = formulaPresent(finalData);
+  return newData;
 };

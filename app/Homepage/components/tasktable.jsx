@@ -32,6 +32,11 @@ import { MdOutlineDelete } from "react-icons/md";
 import { CiExport } from "react-icons/ci";
 import { toast } from "sonner";
 import TableFooter from "./tablecomponents/TableFooter";
+import {
+  getFormulaValue,
+  getSumValue,
+  handleShownValue,
+} from "./functions/FormulaFunction/mainFunction";
 
 const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
@@ -47,6 +52,7 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   }, [columnData]);
   useEffect(() => {
     if (JSON.stringify(data) !== JSON.stringify(groupData)) {
+      console.log("Trigger main table");
       setData(groupData);
     }
   }, [groupData]);
@@ -159,8 +165,24 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
     useTextFile: false,
     useBom: true,
   });
+
   const exportCsv = () => {
     const rowData = table.getRowModel().rows.map((row) => row.original);
+    // Function to check if a formula is present
+    const formulaPresent = (data) => {
+      return data.map((item) => {
+        for (const key in item) {
+          if (key.startsWith("formula")) {
+            const newKeyData = item[key];
+            const newValue = handleShownValue(newKeyData, item);
+            const newItem = { ...item, [key]: newValue };
+            return newItem;
+          }
+        }
+        return item;
+      });
+    };
+    const newData = formulaPresent(rowData);
     const keyMapping = {};
     columnData.forEach((col) => {
       if (
@@ -178,11 +200,9 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
         return acc;
       }, {});
     };
-    const finalData = rowData.map((row) => renameKeys(row, keyMapping));
+    const finalData = newData.map((row) => renameKeys(row, keyMapping));
     const preprocessedData = preprocessData(finalData, convertToArray());
-
     const csv = generateCsv(csvConfig)(preprocessedData);
-    console.log("preprocessData: ", csv);
     download(csvConfig)(csv);
   };
   return (

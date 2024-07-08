@@ -95,6 +95,7 @@ export const subtextItem = [
   { name: "subDefaultTime", cell: DefaultTimeCell, data: "" },
   { name: "subnumber", cell: NumberCell, data: "" },
   { name: "subDropDown", cell: DropDownCell, data: [] },
+  { name: "subformula", data: "" },
 ];
 export const defaultColumn = [
   {
@@ -1353,7 +1354,7 @@ export const updateChartType = atom(
 );
 export const updateFormula = atom(
   null,
-  async (get, set, projectId, key, newValue) => {
+  async (get, set, projectId, key, newValue, type) => {
     const projects = get(projectsAtom);
     const updatedProject = projects?.map((project) => {
       if (project._id === projectId) {
@@ -1363,10 +1364,22 @@ export const updateFormula = atom(
             return {
               ...grouptask,
               task: grouptask?.task?.map((task) => {
-                return {
-                  ...task,
-                  [key]: newValue,
-                };
+                if (type === "Col") {
+                  return {
+                    ...task,
+                    [key]: newValue,
+                  };
+                } else {
+                  return {
+                    ...task,
+                    subItems: task?.subItems?.map((subItem) => {
+                      return {
+                        ...subItem,
+                        [key]: newValue,
+                      };
+                    }),
+                  };
+                }
               }),
             };
           }),

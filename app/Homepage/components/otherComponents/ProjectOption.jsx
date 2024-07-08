@@ -304,7 +304,7 @@ const ProjectOption = ({ data, exportCsv }) => {
           )}
           {data?.type === "shared" && checkOwner(initialValue) === true && (
             <DropdownItem
-              key='share'
+              key='change'
               startContent={<MdOutlineSwapHoriz className={iconClasses} />}
               onClick={() => modalClick("change")}
             >

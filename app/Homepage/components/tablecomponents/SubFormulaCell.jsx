@@ -9,67 +9,36 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
+import FunctionOption from "../otherComponents/FormulaComponent/FunctionOption";
 import { useAtom, useSetAtom } from "jotai";
 import { selectedProjectAtom, updateFormula } from "../../datastore";
 import {
   getColforFormula,
-  getFormulaValue,
-  getSumValue,
   handleShownValue,
 } from "../functions/FormulaFunction/mainFunction";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import FunctionOption from "../otherComponents/FormulaComponent/FunctionOption";
 import ColumnSelected from "../otherComponents/FormulaComponent/ColumnSelected";
-import FormulaContent from "../otherComponents/FormulaComponent/FormulaContent";
 import FormulaExtension from "../otherComponents/FormulaComponent/FormulaExtension";
+import FormulaContent from "../otherComponents/FormulaComponent/FormulaContent";
 import Equations from "../otherComponents/FormulaComponent/Equations";
-const FormulaCell = ({ getValue, row, column, table }) => {
-  const key = column.id;
-  const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom);
-  const columnData = getColforFormula(selectedProject.columns);
+const SubFormulaCell = ({ getValue, row, column, table }) => {
   const initialValue = getValue();
   const [value, setValue] = useState(initialValue);
-  const [chosenFunction, setChosenFunction] = useState(
-    value?.operation || "None"
-  );
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [chosenColumn, setChosenColumn] = useState(value?.column || null);
+  const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom);
+  const columnData = getColforFormula(selectedProject.subColumns);
   const [columnArray, setColumnArray] = useState(value?.columnArray || []);
   const [extension, setExtension] = useState(value?.formula || "");
-  const task = row?.original;
-
+  const task = row.original;
+  const key = column.id;
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  //handlers for childrens
-  const setNewFormula = useSetAtom(updateFormula);
-
-  const handleValue = () => {
-    const operation = chosenFunction;
-    const column = chosenColumn;
-    const colArray = columnArray;
-    const formula = `${extension}`;
-    let newValue = {};
-    if (operation === "IF") {
-      newValue = {
-        operation,
-        column,
-        formula,
-      };
-    } else {
-      newValue = {
-        operation,
-        columnArray,
-      };
-    }
-
-    const projectId = selectedProject._id;
-    const type = "Col";
-    setValue(newValue);
-    setNewFormula(projectId, key, newValue, type);
-    onClose();
-  };
+  const [chosenFunction, setChosenFunction] = useState(
+    value?.operation || "None"
+  );
+  const [chosenColumn, setChosenColumn] = useState(value?.column || null);
+  //Handlers
   const handleChosenFunction = (a) => {
     setChosenFunction(a);
   };
@@ -91,10 +60,37 @@ const FormulaCell = ({ getValue, row, column, table }) => {
       : [...columnArray, a];
     setColumnArray(newValue);
   };
+  const setNewFormula = useSetAtom(updateFormula);
+  const handleValue = () => {
+    const operation = chosenFunction;
+    const column = chosenColumn;
+    const colArray = columnArray;
+    const formula = `${extension}`;
+    let newValue = {};
+    if (operation === "IF") {
+      newValue = {
+        operation,
+        column,
+        formula,
+      };
+    } else {
+      newValue = {
+        operation,
+        columnArray,
+      };
+    }
+
+    const projectId = selectedProject._id;
+    const type = "Sub";
+    setValue(newValue);
+    setNewFormula(projectId, key, newValue, type);
+    onClose();
+  };
 
   return (
     <div className='w-full text-center min-h-7 hover:bg-gray-200 rounded-md'>
       <button onClick={onOpen}>
+        {" "}
         {Array?.isArray(handleShownValue(value, task)) ? (
           <div className='flex flex-wrap'>
             {handleShownValue(value, task)?.map((val, index) => (
@@ -140,16 +136,19 @@ const FormulaCell = ({ getValue, row, column, table }) => {
                           setFullExtension={handleFullExtension}
                         />
                       </>
-                    ) : (
+                    ) : chosenFunction !== "None" ? (
                       <Equations
                         chosenFunction={chosenFunction}
                         columnData={columnData}
                         columnArray={columnArray}
                         setColumnArray={handleColumnArray}
                       />
+                    ) : (
+                      <p>Select a function</p>
                     )}
                   </div>
                   <FormulaContent
+                    type='Sub'
                     columnData={columnData}
                     columnArray={columnArray}
                     chosenFunction={chosenFunction}
@@ -175,4 +174,4 @@ const FormulaCell = ({ getValue, row, column, table }) => {
   );
 };
 
-export default FormulaCell;
+export default SubFormulaCell;

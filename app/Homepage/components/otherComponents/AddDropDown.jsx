@@ -137,8 +137,8 @@ const AddDropDown = () => {
           </div>
         </DropdownItem>
         <DropdownItem
-          key='defaultTime'
-          textValue='Default Time'
+          key='Formula'
+          textValue='Formula'
           onClick={() => handleSelect(project._id, "Formula")}
         >
           <div className='flex w-full items-center gap-x-2'>

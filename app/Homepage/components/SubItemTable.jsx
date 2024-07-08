@@ -29,6 +29,7 @@ import { Button } from "@nextui-org/react";
 import { MdOutlineDelete } from "react-icons/md";
 import { CiExport } from "react-icons/ci";
 import { toast } from "sonner";
+import { handleShownValue } from "./functions/FormulaFunction/mainFunction";
 
 const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   const [projects, setProjects] = useAtom(selectedProjectAtom);
@@ -150,7 +151,20 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
   });
   const exportCsv = () => {
     const rowData = table.getRowModel().rows.map((row) => row.original);
-
+    const formulaPresent = (data) => {
+      return data.map((item) => {
+        for (const key in item) {
+          if (key.startsWith("subformula")) {
+            const newKeyData = item[key];
+            const newValue = handleShownValue(newKeyData, item);
+            const newItem = { ...item, [key]: newValue };
+            return newItem;
+          }
+        }
+        return item;
+      });
+    };
+    const newData = formulaPresent(rowData);
     const keyMapping = {};
     columnValues.forEach((col) => {
       if (
@@ -168,10 +182,10 @@ const SubItemTable = ({ subItems, groupId, taskId, setData }) => {
         return acc;
       }, {});
     };
-    const finalData = rowData.map((row) => renameKeys(row, keyMapping));
+    const finalData = newData.map((row) => renameKeys(row, keyMapping));
     const preprocessedData = preprocessData(finalData, convertToArray());
     const csv = generateCsv(csvConfig)(preprocessedData);
-    download(csvConfig)(csv);
+     download(csvConfig)(csv);
   };
   return (
     <DndContext

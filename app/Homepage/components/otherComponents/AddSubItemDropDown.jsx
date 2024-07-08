@@ -26,7 +26,10 @@ const AddSubItemDropDown = () => {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <button variant='bordered' className='border rounded-md h-8 w-8 bg-[#32449C] text-white'>
+        <button
+          variant='bordered'
+          className='border rounded-md h-8 w-8 bg-[#32449C] text-white'
+        >
           +
         </button>
       </DropdownTrigger>
@@ -130,6 +133,19 @@ const AddSubItemDropDown = () => {
               <CiTimer color='white' />
             </div>
             <p>Default Time</p>
+          </div>
+        </DropdownItem>
+        <DropdownItem
+          key='Formula'
+          textValue='Formula'
+          onClick={() => handleSelect(project._id, "SubFormula")}
+        >
+          {" "}
+          <div className='flex w-full items-center gap-x-2'>
+            <div className=' bg-orange-500 w-7 h-7 flex items-center justify-center border rounded-md'>
+              <CiTimer color='white' />
+            </div>
+            <p>Sub Formula</p>
           </div>
         </DropdownItem>
       </DropdownMenu>

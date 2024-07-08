@@ -14,6 +14,7 @@ import FormulaCell from "../tablecomponents/FormulaCell";
 import NumberCell from "../tablecomponents/NumberCell";
 import OptionCell from "../tablecomponents/OptionCell";
 import PersonCell from "../tablecomponents/PersonCell";
+import SubFormulaCell from "../tablecomponents/SubFormulaCell";
 import { RowDragHandleCell } from "./tablefunctions";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
@@ -318,6 +319,21 @@ export const dataColumns = (columns) => {
             />
           ),
           cell: FormulaCell,
+          accessorKey: column.accessorKey,
+        });
+      } else if (column.key === "subformula") {
+        //pending action
+        return dataCol.push({
+          size: column.size,
+          key: column.key,
+          newItemName: column.newItemName,
+          header: (
+            <EditableHeader
+              data={column.newItemName}
+              accessorKey={column.accessorKey}
+            />
+          ),
+          cell: SubFormulaCell,
           accessorKey: column.accessorKey,
         });
       } else if (column.key === "status") {

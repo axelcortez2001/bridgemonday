@@ -75,6 +75,7 @@ const Content = () => {
     const finalData = exportInitialData(columnData, sub).map((row) =>
       renameKeys(row, keyMapping)
     );
+
     const columnHeaders = ["groupName"];
     finalData.forEach((obj) => {
       Object.keys(obj).map((key) => {

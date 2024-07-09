@@ -106,11 +106,17 @@ app.post("/modaydata/*", function (req, res) {
 //update project data, title and type
 app.put("/modaydata", async (req, res) => {
   const { id, title, privacy } = req.body;
+  if (typeof id !== "string") {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
   try {
-    const project = await workspaceModel.findByIdAndUpdate(id, {
-      name: title,
-      type: privacy,
-    });
+    const project = await workspaceModel.findByIdAndUpdate(
+      { _id: id },
+      {
+        name: title,
+        type: privacy,
+      }
+    );
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
     }

@@ -17,12 +17,12 @@
         "mondaydata": {
           "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge",
           "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
-          "s3Key": "amplify-builds/mondaydata-4932644d4f5975713056-build.zip"
+          "s3Key": "amplify-builds/mondaydata-5a504745713768343275-build.zip"
         },
         "user": {
           "mongodbUri": "mongodb+srv://axelcortez:are-text2024@are-text.kye05rk.mongodb.net/MondayBridge",
           "deploymentBucketName": "amplify-bridgemonday-dev-ee81f-deployment",
-          "s3Key": "amplify-builds/user-566b73532b4b52324e65-build.zip"
+          "s3Key": "amplify-builds/user-3159424872506446616b-build.zip"
         }
       },
       "auth": {

@@ -92,7 +92,7 @@ app.post("/user", async (req, res) => {
   }
 
   try {
-    let user = await userModel.findOne({ email });
+    let user = await userModel.findOne({ email: { $eq: email } });
     if (!user) {
       user = new userModel({ email, sub, name, picture });
       await user.save();

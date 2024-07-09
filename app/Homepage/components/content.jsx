@@ -108,6 +108,7 @@ const Content = () => {
     });
     //process data for exporting
     const preprocessedData = preprocessAllData(finalData);
+    console.log(preprocessedData);
     const csvConfig = mkConfig({
       fieldSeparator: ",",
       filename: columnData.name,

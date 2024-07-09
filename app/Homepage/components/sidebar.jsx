@@ -29,6 +29,7 @@ import styles from "@/app/styles";
 import { IoMenu } from "react-icons/io5";
 import { IoAddOutline } from "react-icons/io5";
 import { toast } from "sonner";
+import ImportOption from "./sidebarcomponents/ImportOption";
 
 const Sidebar = () => {
   const data = useAtomValue(projectsAtom);
@@ -179,6 +180,7 @@ const Sidebar = () => {
                   <Button color='danger' variant='light' onPress={onClose}>
                     Close
                   </Button>
+                  <ImportOption />
                   <Button
                     color='primary'
                     onPress={onClose}

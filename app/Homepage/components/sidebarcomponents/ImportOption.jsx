@@ -12,6 +12,9 @@ import Stepper from "./Stepper";
 import Upload from "./Upload";
 import MatchColumns from "./MatchColumns";
 import Validate from "./Validate";
+import { useSetAtom } from "jotai";
+import { importProject } from "../../datastore";
+import { toast } from "sonner";
 
 const steps = [
   { id: 1, label: "Upload" },
@@ -26,9 +29,10 @@ const ImportOption = () => {
 
   //UploadedFIle
   const [uploadedFile, setUploadedFile] = useState([]);
+  //newWorkSpaceData
+  const [newWorkSpaceData, setNewWorkSpaceData] = useState(null);
   //upload handler
   const handleUploadFile = (a) => {
-    console.log(a);
     setUploadedFile(a);
     if (a.length > 0) {
       handleNext();
@@ -47,6 +51,25 @@ const ImportOption = () => {
   const handleStepClick = (index) => {
     setDirection(index > posIndex ? "next" : "prev");
     setPosIndex(index);
+  };
+  const handleWorkSpace = (workspace) => {
+    setNewWorkSpaceData(workspace);
+    if (workspace !== null) {
+      handleNext();
+    }
+  };
+  const importNewData = useSetAtom(importProject);
+  const handleSaveNewData = async () => {
+    if (newWorkSpaceData !== null) {
+      const status = await importNewData(newWorkSpaceData);
+      if (status && status.success) {
+        toast(status.message);
+      } else {
+        toast(status.message);
+      }
+    } else {
+      toast.error("WorkSpace missing");
+    }
   };
 
   return (
@@ -80,7 +103,10 @@ const ImportOption = () => {
                       setUploadedFile={handleUploadFile}
                     />
                   ) : posIndex === 1 ? (
-                    <MatchColumns uploadedFile={uploadedFile} />
+                    <MatchColumns
+                      uploadedFile={uploadedFile}
+                      setNewWorkSpaceData={handleWorkSpace}
+                    />
                   ) : (
                     <Validate />
                   )}
@@ -101,7 +127,11 @@ const ImportOption = () => {
                   </Button>
                 )}
                 {posIndex === steps.length - 1 && (
-                  <Button color='primary' onPress={onClose}>
+                  <Button
+                    color='primary'
+                    onPress={onClose}
+                    onClick={() => handleSaveNewData()}
+                  >
                     Import
                   </Button>
                 )}

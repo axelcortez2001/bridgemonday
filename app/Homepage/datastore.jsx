@@ -274,7 +274,33 @@ export const addProject = atom(null, async (get, set, { title, privacy }) => {
       const returnProject = await addWorkspace("/modaydata", newProject);
       if (returnProject && returnProject?.success === true) {
         set(projectsAtom, [...prevProject, returnProject.workspace]);
+        set(selectedProject, returnProject.workspace._id);
         return { success: true, message: "Project Added" };
+      } else {
+        return { success: false, message: "Error Adding Project" };
+      }
+    }
+  }
+});
+export const importProject = atom(null, async (get, set, newProject) => {
+  const userData = get(UserDataAtom);
+  const sub = userData.value.sub;
+  const oldProjects = get(projectsAtom);
+  const workSpace = await getWorkspace("/modaydata", sub);
+  if (workSpace && workSpace?.success) {
+    const prevProject = workSpace?.workspace;
+    if (JSON.stringify(prevProject) !== JSON.stringify(oldProjects)) {
+      set(projectsAtom, prevProject);
+      return {
+        status: false,
+        message: "Oops, project data changed! Updating updated project",
+      };
+    } else {
+      const returnProject = await addWorkspace("/modaydata", newProject);
+      if (returnProject && returnProject?.success === true) {
+        set(projectsAtom, [...prevProject, returnProject.workspace]);
+        set(selectedProject, returnProject.workspace._id);
+        return { success: true, message: "Project Imported" };
       } else {
         return { success: false, message: "Error Adding Project" };
       }
@@ -617,14 +643,20 @@ export const addNewStatus = atom(
   null,
   async (get, set, id, newStatus, newColor) => {
     const projects = get(projectsAtom);
-    const newDefaultStatus = {
-      id: statusId++,
-      color: newColor,
-      text: newStatus,
-    };
 
     const updatedProject = projects.map((project) => {
       if (project._id === id) {
+        let highestID = 0;
+        if (project?.defaultStatus?.length > 0) {
+          highestID = Math.max(
+            ...project?.defaultStatus?.map((status) => status.id)
+          );
+        }
+        const newDefaultStatus = {
+          id: highestID + 1,
+          color: newColor,
+          text: newStatus,
+        };
         return {
           ...project,
           defaultStatus: [...project.defaultStatus, newDefaultStatus],
@@ -638,7 +670,6 @@ export const addNewStatus = atom(
     );
     if (updated && updated.success === true) {
       set(projectsAtom, updatedProject);
-      return newDefaultStatus;
     }
   }
 );
@@ -648,14 +679,19 @@ export const addNewDropDown = atom(
   null,
   async (get, set, id, newDropDown, newColor) => {
     const projects = get(projectsAtom);
-    const newDefaultStatus = {
-      id: dropId++,
-      color: newColor,
-      text: newDropDown,
-    };
-
     const updatedProject = projects.map((project) => {
       if (project._id === id) {
+        let highestID = 0;
+        if (project?.defaultDropDown?.length > 0) {
+          highestID = Math.max(
+            ...project?.defaultDropDown?.map((dropdown) => dropdown.id)
+          );
+        }
+        const newDefaultStatus = {
+          id: highestID + 1,
+          color: newColor,
+          text: newDropDown,
+        };
         return {
           ...project,
           defaultDropDown: [...project.defaultDropDown, newDefaultStatus],
@@ -1073,7 +1109,7 @@ export const updateSubItemData = atom(
 );
 export const updateDefaultStatus = atom(
   null,
-  async (get, set, id, oldStat, newStatus, newColor) => {
+  async (get, set, id, columnKey, newStatus, newColor, updateStatus) => {
     const user = get(UserDataAtom);
     const sub = user.value.sub;
     const oldProjects = get(projectsAtom);
@@ -1090,13 +1126,35 @@ export const updateDefaultStatus = atom(
           return {
             ...project,
             defaultStatus: project.defaultStatus.map((status) => {
-              if (status.text === oldStat) {
+              if (status.id === updateStatus.id) {
                 return {
+                  id: status.id,
                   text: newStatus,
                   color: newColor,
                 };
               }
               return status;
+            }),
+            grouptask: project?.grouptask?.map((grouptask) => {
+              return {
+                ...grouptask,
+                task: grouptask?.task?.map((task) => {
+                  if (
+                    task[columnKey] &&
+                    task[columnKey].id === updateStatus.id
+                  ) {
+                    return {
+                      ...task,
+                      [columnKey]: {
+                        id: updateStatus.id,
+                        text: newStatus,
+                        color: newColor,
+                      },
+                    };
+                  }
+                  return task;
+                }),
+              };
             }),
           };
         }
@@ -1116,7 +1174,7 @@ export const updateDefaultStatus = atom(
 
 export const updateDefaultDropDown = atom(
   null,
-  async (get, set, id, oldStat, newDropDown, newColor) => {
+  async (get, set, id, columnKey, newDropDown, newColor, updateDropDown) => {
     const user = get(UserDataAtom);
     const sub = user.value.sub;
     const oldProjects = get(projectsAtom);
@@ -1133,18 +1191,41 @@ export const updateDefaultDropDown = atom(
           return {
             ...project,
             defaultDropDown: project?.defaultDropDown?.map((status) => {
-              if (status.text === oldStat) {
+              if (status.id === updateDropDown.id) {
                 return {
+                  id: status.id,
                   text: newDropDown,
                   color: newColor,
                 };
               }
               return status;
             }),
+            grouptask: project?.grouptask?.map((grouptask) => {
+              return {
+                ...grouptask,
+                task: grouptask?.task?.map((task) => {
+                  if (
+                    task[columnKey] &&
+                    task[columnKey].id === updateDropDown.id
+                  ) {
+                    return {
+                      ...task,
+                      [columnKey]: {
+                        id: updateDropDown.id,
+                        text: newDropDown,
+                        color: newColor,
+                      },
+                    };
+                  }
+                  return task;
+                }),
+              };
+            }),
           };
         }
         return project;
       });
+      console.log("Updated projects: ", updatedProjects);
       const updated = await updateWholeWorkSpace(
         "/modaydata/update",
         updatedProjects

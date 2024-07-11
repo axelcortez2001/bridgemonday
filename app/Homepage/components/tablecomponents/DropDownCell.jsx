@@ -35,7 +35,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
     [selectedKeys]
   );
-
+  const columnKey = column.id;
   //function for color coding in status
   const checkColor = (color) => {
     if (color) {
@@ -88,32 +88,26 @@ const DropDownCell = ({ getValue, row, column, table }) => {
   };
   const updateStat = useSetAtom(updateDefaultDropDown);
   const handleUpdateDropDown = () => {
-    const oldStat = updateDropDown?.text;
-
     if (newDropDown === "") {
       toast("Please fill out all fields");
       return;
     } else {
-      if (oldStat.toLocaleLowerCase() === newDropDown.toLocaleLowerCase()) {
-        setNewColor("");
-        setNewDropDown("");
-        setUpdateDropDown(null);
-      } else if (selectedProject) {
+      if (selectedProject) {
         const prevStatus = selectedProject?.defaultDropDown.find(
           (prev) =>
             prev?.text.toLocaleLowerCase() === newDropDown.toLocaleLowerCase()
         );
-        if (prevStatus === undefined) {
-          const id = selectedProject._id;
-          updateStat(id, oldStat, newDropDown, newColor);
-          setNewColor("");
-          setNewDropDown("");
-          setUpdateDropDown(null);
-        } else {
-          toast("Dropdown already exists: ");
-          setNewColor(updateDropDown.color);
-          setNewDropDown(updateDropDown.text);
-        }
+        // if (prevStatus === undefined) {
+        const id = selectedProject._id;
+        updateStat(id, columnKey, newDropDown, newColor, updateDropDown);
+        setNewColor("");
+        setNewDropDown("");
+        setUpdateDropDown(null);
+        // } else {
+        //   toast("Dropdown already exists: ");
+        //   setNewColor(updateDropDown.color);
+        //   setNewDropDown(updateDropDown.text);
+        // }
       }
     }
   };
@@ -143,7 +137,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
                 Select
               </div>
               <div className={`${selectedValue !== "" ? "flex" : "hidden"}`}>
-                {selectedValue}
+                {text}
               </div>
             </Button>
           </DropdownTrigger>
@@ -168,7 +162,7 @@ const DropDownCell = ({ getValue, row, column, table }) => {
           ))}
           <DropdownItem
             className='bg-gray-200'
-            key={" "}
+            key={selectedKeys}
             onClick={onOpen}
             textValue='Add New'
           >

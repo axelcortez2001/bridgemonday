@@ -52,7 +52,6 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   }, [columnData]);
   useEffect(() => {
     if (JSON.stringify(data) !== JSON.stringify(groupData)) {
-      console.log("Trigger main table");
       setData(groupData);
     }
   }, [groupData]);
@@ -111,9 +110,12 @@ const Tasktable = ({ projectId, groupId, groupData, columnData }) => {
   const deleteSelectedRows = () => {
     if (window.confirm("Are you sure you want to delete") === true) {
       const selectedRowIds = convertToArray();
+      console.log("selectedRowIds: ", selectedRowIds);
+      console.log("Data:", data);
       const newData = data.filter(
         (row, index) => !selectedRowIds.includes(row.id)
       );
+      console.log("newData: ", newData);
       setData(newData);
       table.reset();
     }

@@ -2,7 +2,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { IoCalendarOutline } from "react-icons/io5";
 import React, { useState, forwardRef } from "react";
-import { format } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 
 import styles from "@/app/styles";
 
@@ -37,6 +37,30 @@ const DateCustomInput = forwardRef(({ value, onClick, clearDate }, ref) => (
 DateCustomInput.displayName = "DateCustomInput";
 const DateCell = ({ getValue, row, column, table }) => {
   const date = getValue();
+  const parseDate = (dateStr) => {
+    // Check if the dateStr is a valid date format
+    if (!dateStr || typeof dateStr !== "string") return null;
+    // Check if it's a single date
+    if (isValid(parse(dateStr, "dd/MM/yyyy", new Date()))) {
+      const newDat = parse(dateStr, "dd/MM/yyyy", new Date());
+      return format(newDat, "yyyy-MM-dd");
+    }
+    if (isValid(parse(dateStr, "yyyy-MM-dd", new Date()))) {
+      return format(dateStr, "yyyy-MM-dd");
+    }
+    // Check if it's a date range
+    const dateRangeRegex = /^(\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2})$/;
+    const match = dateStr.match(dateRangeRegex);
+    if (match) {
+      const startDate = parse(match[1], "yyyy-MM-dd", new Date());
+      return format(startDate, "yyyy-MM-dd");
+    }
+    return null;
+  };
+  const handleBlur = (e) => {
+    const value = e.target.value;
+    handleDateChange(value);
+  };
   const { updateData } = table.options.meta;
   //   const [date, setDate] = useState(parseAbsoluteToLocal(dateData));
   const handleDateChange = (date) => {
@@ -54,7 +78,7 @@ const DateCell = ({ getValue, row, column, table }) => {
         classNames={{ calendarContent: "bg-a-black" }}
         label='Start Date'
         dateFormat='YYYY-MM-dd'
-        selected={date}
+        selected={parseDate(date)}
         onChange={handleDateChange}
         customInput={
           <DateCustomInput

@@ -34,7 +34,7 @@ const OptionCell = ({ getValue, row, column, table }) => {
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
     [selectedKeys]
   );
-
+  const columnKey = column.id;
   //function for color coding in status
 
   const checkColor = (color) => {
@@ -99,26 +99,16 @@ const OptionCell = ({ getValue, row, column, table }) => {
       toast("Please fill out all fields");
       return;
     } else {
-      if (oldStat.toLocaleLowerCase() === newStatus.toLocaleLowerCase()) {
-        setNewColor("");
-        setNewStatus("");
-        setUpdateStatus(null);
-      } else if (selectedProject) {
+      if (selectedProject) {
         const prevStatus = selectedProject?.defaultStatus.find(
           (prev) =>
             prev?.text.toLocaleLowerCase() === newStatus.toLocaleLowerCase()
         );
-        if (prevStatus === undefined) {
-          const id = selectedProject._id;
-          updateStat(id, oldStat, newStatus, newColor);
-          setNewColor("");
-          setNewStatus("");
-          setUpdateStatus(null);
-        } else {
-          toast("Status already exists: ");
-          setNewColor(updateStatus.color);
-          setNewStatus(updateStatus.text);
-        }
+        const id = selectedProject._id;
+        updateStat(id, columnKey, newStatus, newColor, updateStatus);
+        setNewColor("");
+        setNewStatus("");
+        setUpdateStatus(null);
       }
     }
   };
@@ -145,7 +135,7 @@ const OptionCell = ({ getValue, row, column, table }) => {
                 }text-a-black text-sm font-medium`}
               ></div>
               <div className={`${selectedValue !== "" ? "flex" : "hidden"}`}>
-                {selectedValue}
+                {text}
               </div>
             </Button>
           </DropdownTrigger>

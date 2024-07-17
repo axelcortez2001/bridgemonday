@@ -23,6 +23,7 @@ import {
   MdIosShare,
   MdOutlineSwapHoriz,
 } from "react-icons/md";
+import { CiImport } from "react-icons/ci";
 import { TiExport, TiExportOutline } from "react-icons/ti";
 
 import { useAtom, useSetAtom } from "jotai";
@@ -37,6 +38,7 @@ import {
 } from "../../datastore";
 import LoadingComponent from "./LoadingComponent";
 import { toast } from "sonner";
+import ImportGroupOption from "./ImportComponent/ImportGroupOption";
 const ProjectOption = ({ data, exportCsv }) => {
   const [title, setTitle] = useState(data.name);
   const [privacy, setPrivacy] = useState(data.type);
@@ -329,6 +331,15 @@ const ProjectOption = ({ data, exportCsv }) => {
               Export CSV with SubItems
             </DropdownItem>
           )}
+          {data?.grouptask && data?.grouptask?.length > 0 && (
+            <DropdownItem
+              key='sub'
+              startContent={<CiImport className={iconClasses} />}
+              onClick={() => modalClick("import")}
+            >
+              Import File
+            </DropdownItem>
+          )}
           {data && data !== undefined && (
             <DropdownItem
               startContent={
@@ -344,7 +355,11 @@ const ProjectOption = ({ data, exportCsv }) => {
           )}
         </DropdownMenu>
       </Dropdown>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size={`${modalSelected === "import" && "5xl"}`}
+      >
         {modalSelected === "edit" ? (
           //Edit Project
           <ModalContent>
@@ -419,6 +434,15 @@ const ProjectOption = ({ data, exportCsv }) => {
                     Close
                   </Button>
                 </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        ) : modalSelected === "import" ? (
+          //Share to other users
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ImportGroupOption onClose={onClose} data={data} />
               </>
             )}
           </ModalContent>

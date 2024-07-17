@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { UserDataAtom } from "../../datastore";
 import { toast } from "sonner";
+import { renameUploadedFile } from "../functions/ImportFunction";
 
 const tableheader = [
   { label: "Text", key: "text" },
@@ -159,73 +160,12 @@ const MatchColumns = ({ uploadedFile, setNewWorkSpaceData }) => {
     console.log("uploadedFile: ", uploadedFile);
   }, [columns, headers, type, uploadedFile]);
   const handleSaveNewData = () => {
-    const renameUploadedFile = (uploadedFile, headers) => {
-      const keyMapping = headers.reduce((acc, header) => {
-        acc[header.text] = header.accessorKey;
-        return acc;
-      }, {});
-      const findStatus = (text) => {
-        let existingStatus = defaultStatus.find(
-          (status) => status.text === text
-        );
-        if (!existingStatus) {
-          const highestId = Math.max(
-            ...defaultStatus.map((status) => status.id)
-          );
-          if (text !== "" && text !== undefined && text !== null) {
-            const newStatus = {
-              id: highestId + 1,
-              color: "bg-a-grey",
-              text: text,
-            };
-            defaultStatus.push(newStatus);
-            existingStatus = newStatus;
-          }
-        }
-        return existingStatus;
-      };
-      const findDropdown = (text) => {
-        let existingDropdown = defaultDropdown.find(
-          (dropdown) => dropdown.text === text
-        );
-        if (!existingDropdown) {
-          const highestId = Math.max(
-            ...defaultDropdown.map((dropdown) => dropdown.id)
-          );
-          console.log("text: ", text);
-          if (text !== "" && text !== undefined && text !== null) {
-            console.log("trihher");
-            const newDropdown = {
-              id: highestId + 1,
-              color: "bg-a-grey",
-              text: text,
-            };
-            defaultDropdown.push(newDropdown);
-            existingDropdown = newDropdown;
-          } else {
-            console.log("Trihher else");
-          }
-        }
-        console.log("existingDropdown: ", existingDropdown);
-        return existingDropdown;
-      };
-
-      return uploadedFile.map((item, index) => {
-        const renamedItem = { id: index };
-        Object.keys(item).forEach((key) => {
-          const newKey = keyMapping[key] || key;
-          if (newKey.startsWith("status")) {
-            renamedItem[newKey] = findStatus(item[key]);
-          } else if (newKey.startsWith("dropdown")) {
-            renamedItem[newKey] = findDropdown(item[key]);
-          } else {
-            renamedItem[newKey] = item[key];
-          }
-        });
-        return renamedItem;
-      });
-    };
-    const renamedData = renameUploadedFile(uploadedFile, headers);
+    const renamedData = renameUploadedFile(
+      uploadedFile,
+      headers,
+      defaultStatus,
+      defaultDropdown
+    );
     const owner = userData;
     owner["organizer"] = true;
     const newData = {

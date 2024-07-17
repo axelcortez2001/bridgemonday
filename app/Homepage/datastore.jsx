@@ -310,49 +310,49 @@ export const importProject = atom(null, async (get, set, newProject) => {
 export const importGroupProject = atom(
   null,
   async (get, set, projectId, newGroupData) => {
-    const userData = get(UserDataAtom);
-    const sub = userData.value.sub;
-    const oldProjects = get(projectsAtom);
-    const workSpace = await getWorkspace("/modaydata", sub);
-    if (workSpace && workSpace?.success) {
-      const prevProject = workSpace?.workspace;
-      if (JSON.stringify(prevProject) !== JSON.stringify(oldProjects)) {
-        set(projectsAtom, prevProject);
-        return {
-          status: false,
-          message: "Oops, project data changed! Updating updated project",
-        };
-      } else {
-        const groupData = {
-          id: uuidv4(),
-          groupName: newGroupData.groupName,
-          task: newGroupData.task,
-        };
-        const id = projectId;
-        const updatedProjects = await addNewGrouptask(
-          "/modaydata/grouptask",
-          id,
-          groupData
-        );
-        if (updatedProjects && updatedProjects?.success === true) {
-          const updatedProjects = prevProject.map((project) => {
-            if (project._id === projectId) {
-              return {
-                ...project,
-                grouptask: [...project.grouptask, groupData],
-              };
-            } else {
-              return project;
-            }
-          });
-          set(projectsAtom, updatedProjects);
-          return { success: true, message: "GroupTask Added" };
+    // const userData = get(UserDataAtom);
+    // const sub = userData.value.sub;
+    // const oldProjects = get(projectsAtom);
+    // const workSpace = await getWorkspace("/modaydata", sub);
+    // if (workSpace && workSpace?.success) {
+    const projects = get(projectsAtom);
+    // if (JSON.stringify(projects) !== JSON.stringify(oldProjects)) {
+    //   set(projectsAtom, projects);
+    //   return {
+    //     success: false,
+    //     message: "Oops, project data changed! Updating updated project",
+    //   };
+    // } else {
+    const groupData = {
+      id: uuidv4(),
+      groupName: newGroupData.groupName,
+      task: newGroupData.task,
+    };
+    const id = projectId;
+    const updatedProjects = await addNewGrouptask(
+      "/modaydata/grouptask",
+      id,
+      groupData
+    );
+    if (updatedProjects && updatedProjects?.success === true) {
+      const updatedProjects = projects.map((project) => {
+        if (project._id === projectId) {
+          return {
+            ...project,
+            grouptask: [...project.grouptask, groupData],
+          };
         } else {
-          return { success: false, message: "Failed to add new GroupTask" };
+          return project;
         }
-      }
+      });
+      set(projectsAtom, updatedProjects);
+      return { success: true, message: "GroupTask Added" };
+    } else {
+      return { success: false, message: "Failed to add new GroupTask" };
     }
   }
+  //   }
+  // }
 );
 
 //function to edit project

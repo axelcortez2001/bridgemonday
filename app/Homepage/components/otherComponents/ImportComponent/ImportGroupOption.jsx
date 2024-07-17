@@ -49,6 +49,7 @@ const ImportGroupOption = ({ onClose, data }) => {
     setPosIndex(index);
   };
   const handleGroupData = (workspace) => {
+    console.log(workspace);
     setNewGroupData(workspace);
     if (workspace !== null) {
       handleNext();

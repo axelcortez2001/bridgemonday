@@ -50,6 +50,7 @@ const ProjectOption = ({ data, exportCsv }) => {
   useEffect(() => {
     setTitle(data.name);
     setPrivacy(data.type);
+    console.log("Trihher");
   }, [data]);
 
   //for user sharing

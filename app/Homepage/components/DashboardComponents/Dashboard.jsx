@@ -11,6 +11,7 @@ import {
 import NewChart from "./NewChart";
 import ChartComponent from "./ChartComponent";
 import EditableChartName from "./EditableChartName";
+import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 
 const Dashboard = ({ myData }) => {
   const [data, setData] = useState(myData);
@@ -31,34 +32,28 @@ const Dashboard = ({ myData }) => {
   //process data for chart
   const finalChartData = processedChartData(chartData, projectdata, data);
   return (
-    <div className='w-full max-h-screen overflow-y-auto flex flex-col p-2 gap-4'>
-      <div className='flex flex-row w-full border p-2 gap-3'>
+    <div className="w-full">
+      <div className="flex justify-left items-center mx-2 mb-2">
+        <Card className="p-2 mr-2 rounded-xl">
+          <p>
+            <span className="font-bold text-base">Number of Projects:</span>{" "}
+            {projectdata.length}
+          </p>
+        </Card>
         <NewChart data={data} columndata={columndata} />
         {/* <Filter data={data} setData={handleData} myData={myData} /> */}
       </div>
-      <div className='flex flex-wrap gap-3'>
-        <div className='border h-32 w-60 bg-white rounded-xl'>
-          <div className='w-full h-auto text-center p-2 border-b text-xl font-bold'>
-            Number of Projects
-          </div>
-          <div className='w-full flex items-center justify-center text-4xl'>
-            {projectdata.length}
-          </div>
-        </div>
+      <div className="grid lg:grid-cols-3 sm:grid-cols-2 md:m-2 h-full gap-2 mx-0">
         {finalChartData.map((chart) => (
-          <div
-            key={chart.id}
-            className={`border h-auto  ${
-              chart.type === "bar" || chart.type === "line"
-                ? "w-[600px]"
-                : "w-[500px]"
-            } bg-white rounded-xl`}
-          >
-            <div className='w-full h-auto  p-2 border-b text-xl font-bold'>
+          <Card key={chart.id} className="h-[300px] sm:h-[340px] md:h-[360px]">
+            <CardHeader>
               <EditableChartName chart={chart} data={data} />
-            </div>
-            <ChartComponent chartComponentData={chart} className='w-full' />
-          </div>
+            </CardHeader>
+            <Divider />
+            <CardBody className="h-[400px] flex justify-center items-center overflow-hidden">
+              <ChartComponent chartComponentData={chart} className="w-full" />
+            </CardBody>
+          </Card>
         ))}
       </div>
     </div>

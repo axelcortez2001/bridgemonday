@@ -141,6 +141,9 @@ export const defaultSubColumns = [
 // };
 export const projectsAtom = atom([]);
 
+//check change of project - andrei
+export const checkProject = atom();
+
 export const getProjects = atom(null, async (get, set) => {
   const user = get(UserDataAtom);
   const sub = user.value.sub;
@@ -237,9 +240,17 @@ export const selectedProjectAtom = atom((get) => {
   const projects = get(projectsAtom);
   const selectedProjectId = get(selectedProject);
   if (projects && projects.length > 0) {
-    return projects.find((project) => project._id === selectedProjectId);
+    if (selectedProjectId) {
+      return (
+        projects.find((project) => project._id === selectedProjectId) || {
+          message: "Project not found!",
+        }
+      );
+    } else {
+      return projects[0];
+    }
   } else {
-    return { message: "Project not found" };
+    return { message: "No project available" };
   }
 });
 

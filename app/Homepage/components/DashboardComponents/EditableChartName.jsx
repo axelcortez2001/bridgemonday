@@ -144,17 +144,17 @@ const EditableChartName = ({ chart, data }) => {
     }
   };
   return (
-    <div className='w-full flex justify-between'>
-      <div className='hover:cursor-text'>
+    <div className="w-full flex justify-between">
+      <div className="hover:cursor-text flex justify-center items-center font-bold">
         {loading ? (
-          <div className='text-a-grey font-light text-sm w-full'>
-            <Skeleton className='rounded-lg w-full h-[32px] my-[4px]'></Skeleton>
+          <div className="text-a-grey font-light text-sm w-full">
+            <Skeleton className="rounded-lg w-full h-[32px] my-[4px]"></Skeleton>
           </div>
         ) : !isClicked ? (
           <p onClick={() => setIsClicked(true)}>{chart.title}</p>
         ) : (
           <Input
-            placeholder='Title'
+            placeholder="Title"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             required
@@ -162,24 +162,24 @@ const EditableChartName = ({ chart, data }) => {
           ></Input>
         )}
       </div>
-      <Dropdown className='w-[132px] min-w-[0px] p-[0px]'>
+      <Dropdown className="w-[132px] min-w-[0px] p-[0px]">
         <DropdownTrigger>
           <Button
             isIconOnly
-            size='sm'
-            variant='light'
+            size="sm"
+            variant="light"
             disableAnimation
             disableRipple
-            className='mr-[4px]'
+            className="mr-[4px]"
           >
             <SlOptionsVertical />
           </Button>
         </DropdownTrigger>
-        <DropdownMenu variant='faded' aria-label='Chart Option'>
+        <DropdownMenu variant="faded" aria-label="Chart Option">
           <DropdownItem onClick={onOpen}>Settings</DropdownItem>
           <DropdownItem onClick={() => setIsClicked(true)}>Rename</DropdownItem>
           <DropdownItem
-            className='danger'
+            className="danger"
             onClick={() => handleDeleteChart(chart)}
           >
             Delete
@@ -190,17 +190,17 @@ const EditableChartName = ({ chart, data }) => {
         size={"5xl"}
         isOpen={isOpen}
         onClose={onClose}
-        classNames='h-[500px]'
+        classNames="h-[500px]"
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className='flex flex-col gap-1'>
+              <ModalHeader className="flex flex-col gap-1">
                 {chart.title}
               </ModalHeader>
               <ModalBody>
                 {oldChart && (
-                  <div className='w-full flex flex-row p-2 gap-4'>
+                  <div className="w-full flex flex-row p-2 gap-4">
                     <div
                       className={`border h-auto  ${
                         chart.type === "bar" || chart.type === "line"
@@ -226,14 +226,14 @@ const EditableChartName = ({ chart, data }) => {
               </ModalBody>
               <ModalFooter>
                 <Button
-                  color='danger'
-                  variant='light'
+                  color="danger"
+                  variant="light"
                   onPress={onClose}
                   onClick={() => setChartSetting(chart)}
                 >
                   Close
                 </Button>
-                <Button color='primary' onClick={() => handleUpdateChartType()}>
+                <Button color="primary" onClick={() => handleUpdateChartType()}>
                   Save
                 </Button>
               </ModalFooter>

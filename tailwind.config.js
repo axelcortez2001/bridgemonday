@@ -25,6 +25,7 @@ module.exports = {
         "a-white": "#F9F9F9",
         "a-black": "#393939",
         "a-grey": "#D9D9D9",
+        "a-darkgrey": "#C2C2C2",
       },
       fontFamily: {
         helvetica: ["helvetica", "sans"],

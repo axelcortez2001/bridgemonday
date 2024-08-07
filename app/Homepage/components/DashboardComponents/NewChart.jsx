@@ -5,11 +5,13 @@ import {
   DropdownMenu,
   DropdownItem,
   useDisclosure,
+  Button,
 } from "@nextui-org/react";
 import { useSetAtom } from "jotai";
 import { addChart } from "../../datastore";
 import { toast } from "sonner";
 import DateNewChart from "./DateNewChart";
+import { VscGraph } from "react-icons/vsc";
 const NewChart = ({ columndata, data }) => {
   const addNewChart = useSetAtom(addChart);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -61,21 +63,25 @@ const NewChart = ({ columndata, data }) => {
   };
   return (
     <>
-      <Dropdown className=''>
+      <Dropdown>
         <DropdownTrigger>
-          <button className='h-full   hover:bg-gray-400 flex items-center p-1 rounded-md'>
-            New Chart
-          </button>
+          <Button
+            variant="solid"
+            className="bg-a-orange text-a-white text-base font-bold"
+            isIconOnly
+          >
+            <VscGraph size={20} />
+          </Button>
         </DropdownTrigger>
-        <DropdownMenu variant='faded' aria-label='Dropdown menu with icons'>
+        <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
           <DropdownItem
-            key='groupChart'
+            key="groupChart"
             onClick={() => handleDefaultChart("groupChart")}
           >
             Group Chart
           </DropdownItem>
           <DropdownItem
-            key='people'
+            key="people"
             onClick={() => handleDefaultChart("people")}
           >
             People

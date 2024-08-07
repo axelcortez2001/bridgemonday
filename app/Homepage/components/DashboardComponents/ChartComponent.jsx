@@ -168,25 +168,13 @@ const ChartComponent = ({ chartComponentData }) => {
 
   return (
     <>
-      {chart.type === "pie" && (
-        <div
-          className='chart-container w-full'
-          style={{ height: "400px", width: "full" }}
-        >
-          <Pie data={chartData} options={options} className='w-full' />
-        </div>
-      )}
+      {chart.type === "pie" && <Pie data={chartData} options={options} />}
       {chart.type === "doughnut" && (
-        <div
-          className='chart-container w-full'
-          style={{ height: "400px", width: "full" }}
-        >
-          <Doughnut data={chartData} options={options} className='w-full' />
-        </div>
+        <Doughnut data={chartData} options={options} />
       )}
       {chart.type === "bar" && <Bar data={chartData} options={options} />}
       {chart.type === "verticalbar" && (
-        <Bar data={chartData} options={options} />
+        <Bar responsive={false} data={chartData} options={options} />
       )}
       {chart.type === "line" && <Line data={chartData} options={options} />}
     </>

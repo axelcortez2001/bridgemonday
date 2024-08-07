@@ -25,6 +25,7 @@ import OptionModal from "./sidebarcomponents/OptionModal";
 import { signOut } from "aws-amplify/auth";
 import LoadingComponent from "./otherComponents/LoadingComponent";
 import styles from "@/app/styles";
+import { checkProject } from "@/app/Homepage/datastore";
 
 import { IoMenu } from "react-icons/io5";
 import { IoAddOutline } from "react-icons/io5";
@@ -38,6 +39,7 @@ const Sidebar = () => {
   const setSelectedProject = useSetAtom(selectedProject);
   const [loading, setLoading] = useState(false);
   const [toggle, setToggle] = useState(false);
+  const setIsProject = useSetAtom(checkProject);
 
   const handleOpen = () => {
     if (toggle == false) {
@@ -49,6 +51,7 @@ const Sidebar = () => {
 
   const handleSelect = (task) => {
     setSelectedProject(task._id);
+    setIsProject(task._id);
     setToggle(false);
   };
   //handlers
@@ -90,14 +93,14 @@ const Sidebar = () => {
 
   return (
     <div>
-      <div className='md:hidden absolute z-50'>
+      <div className="md:hidden absolute z-50">
         <Button
           isIconOnly
           onPress={handleOpen}
-          variant='light'
+          variant="light"
           className={`${toggle ? "text-a-black" : "text-a-white"} m-[8px]`}
         >
-          <IoMenu className='size-[80%]' />
+          <IoMenu className="size-[80%]" />
         </Button>
       </div>
 
@@ -108,30 +111,30 @@ const Sidebar = () => {
       >
         <div className={`w-full mt-2 ${styles.flexCenter}`}>
           <Image
-            src='./Assets/Header.png'
-            alt='Logo'
+            src="./Assets/Header.png"
+            alt="Logo"
             width={160}
-            className='ml-[16px] sm:ml-[0px]'
+            className="ml-[16px] sm:ml-[0px]"
           ></Image>
         </div>
 
         <div
           className={`${styles.flexCenter} justify-between m-[12px] border-t-1 border-a-grey pt-[12px]`}
         >
-          <span className='text-base font-bold'>PROJECTS:</span>
-          <Button onPress={onOpen} isIconOnly size='sm' className='bg-a-orange'>
-            <IoAddOutline className='text-a-white size-[70%]' />
+          <span className="text-base font-bold">PROJECTS:</span>
+          <Button onPress={onOpen} isIconOnly size="sm" className="bg-a-orange">
+            <IoAddOutline className="text-a-white size-[70%]" />
           </Button>
         </div>
 
-        <div className='w-full flex flex-col items-center'>
+        <div className="w-full flex flex-col items-center">
           {loading ? (
             <LoadingComponent />
           ) : (
             checkAccess !== undefined &&
             checkAccess().map((task) => (
               <div
-                className='w-[90%] py-[4px] px-[8px] mb-[4px] font-medium rounded-[8px] hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between'
+                className="w-[90%] py-[4px] px-[8px] mb-[4px] font-medium rounded-[8px] hover:bg-gray-200 hover:cursor-pointer flex items-center justify-between"
                 key={task.id}
                 onClick={() => handleSelect(task)}
               >
@@ -142,10 +145,10 @@ const Sidebar = () => {
           )}
         </div>
 
-        <div className='w-full absolute bottom-0 left-0 '>
+        <div className="w-full absolute bottom-0 left-0 ">
           <div className={`${styles.flexCenter}`}>
             <Button
-              className='w-full m-[8px] bg-a-orange text-a-white'
+              className="w-full m-[8px] bg-a-orange text-a-white"
               onClick={signOut}
             >
               Sign Out
@@ -157,32 +160,32 @@ const Sidebar = () => {
           <ModalContent>
             {(onClose) => (
               <>
-                <ModalHeader className='flex flex-col gap-1'>
+                <ModalHeader className="flex flex-col gap-1">
                   Add New Project
                 </ModalHeader>
                 <ModalBody>
                   <Input
-                    placeholder='Title'
+                    placeholder="Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
                   ></Input>
                   <RadioGroup
-                    label='Privacy'
+                    label="Privacy"
                     value={privacy}
                     onChange={(e) => setPrivacy(e.target.value)}
                   >
-                    <Radio value='shared'>Shared</Radio>
-                    <Radio value='personal'>Personal</Radio>
+                    <Radio value="shared">Shared</Radio>
+                    <Radio value="personal">Personal</Radio>
                   </RadioGroup>
                 </ModalBody>
                 <ModalFooter>
-                  <Button color='danger' variant='light' onPress={onClose}>
+                  <Button color="danger" variant="light" onPress={onClose}>
                     Close
                   </Button>
                   <ImportOption />
                   <Button
-                    color='primary'
+                    color="primary"
                     onPress={onClose}
                     onClick={() => handleAddProject()}
                   >

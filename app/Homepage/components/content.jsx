@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAtom, useSetAtom } from "jotai";
 import { addGroupTask, selectedProjectAtom } from "../datastore";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import { Button } from "@nextui-org/react";
-import Tasktable from "./tasktable";
+import { Button, Tabs, Tab } from "@nextui-org/react";
+
 import EditableGroupName from "./EditableGroupName";
-import { dataColumns } from "./functions/hookfunctions";
+
 import { mkConfig, generateCsv, download } from "export-to-csv";
 import {
   exportInitialData,
@@ -18,23 +17,16 @@ import { IoAddOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import Dashboard from "./DashboardComponents/Dashboard";
 import Filter from "./FilterComponents/Filter";
+import AccordionItemList from "./DashboardComponents/AccordionItemList";
+import { TiTabsOutline } from "react-icons/ti";
+
 const Content = () => {
   const [data, setData] = useAtom(selectedProjectAtom);
   //function to toggle dropdown of each groupTask
-  const [openDrop, setOpenDrop] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [locationStatus, setLocationStatus] = useState("table");
 
   //filtering function
   console.log("Main Data: ", data);
-
-  const toggleDropdown = (groupId) => {
-    if (openDrop.includes(groupId)) {
-      setOpenDrop(openDrop.filter((id) => id !== groupId));
-    } else {
-      setOpenDrop([...openDrop, groupId]);
-    }
-  };
 
   //Handlers
   //handler to add new group
@@ -131,130 +123,77 @@ const Content = () => {
   return loading ? (
     <LoadingComponent />
   ) : (
-    <div className='flex flex-col w-full max-h-screen overflow-y-auto md:pl-[300px] bg-a-grey '>
-      <div className='w-full p-2 flex h-[56px] justify-between bg-a-blue items-center'>
-        <div className='flex ml-[44px] md:ml-[0px] w-[60%]'>
+    <div className="flex flex-col w-full max-h-screen overflow-y-hidden md:pl-[300px] bg-a-grey">
+      <div className="w-full p-2 flex max-h-[56px] justify-between bg-a-blue items-center">
+        <div className="flex ml-[44px] md:ml-[0px] w-[60%]">
           {data ? (
-            <p className='text-white text-base font-bold leading-none'>
+            <p className="text-white text-base font-bold leading-none">
               {data?.name}
             </p>
           ) : (
-            <p className='text-white text-base font-bold leading-none'>
+            <p className="text-white text-base font-bold leading-none">
               Bridge Workspace
             </p>
           )}
         </div>
 
-        <div className='justify-start flex gap-x-2 items-center h-full'>
+        <div className="justify-start flex gap-x-2 items-center h-full">
           {data && data !== undefined && (
             <ProjectOption data={data} exportCsv={exportCsv} />
           )}
-          <div className='hidden xs:block'>
+          <div className="hidden xs:block">
             {data && data !== undefined && (
               <Button
-                className='bg-a-orange text-white text-base font-medium'
-                size='sm'
+                className="bg-a-orange text-white text-base font-medium"
+                size="sm"
                 onClick={() => handleAddGroup(data)}
               >
                 New Group
               </Button>
             )}
           </div>
-          <div className='block xs:hidden'>
+          <div className="block xs:hidden">
             {data && data !== undefined && (
               <Button
-                className='bg-a-orange text-white text-base'
-                size='sm'
+                className="bg-a-orange text-white text-base"
+                size="sm"
                 isIconOnly
                 onClick={() => handleAddGroup(data)}
               >
-                <IoAddOutline className='size-[70%]' />
+                <IoAddOutline className="size-[70%]" />
               </Button>
             )}
           </div>
         </div>
       </div>
-      {data && data !== undefined && (
-        <>
-          <div className='p-3 border w-full flex gap-x-5'>
-            <div
-              className={`hover:cursor-pointer ${
-                locationStatus === "table" && "underline"
-              }`}
-              onClick={() => setLocationStatus("table")}
-            >
-              Main Table
-            </div>
-            <div
-              className={`hover:cursor-pointer ${
-                locationStatus === "dashboard" && "underline"
-              }`}
-              onClick={() => setLocationStatus("dashboard")}
-            >
-              Dashboard
-            </div>
+      <Tabs
+        aria-label="Tabs"
+        variant="light"
+        classNames={{
+          base: "m-2 mt-4",
+          tabList: "gap-4 w-full ",
+          tab: "bg-a-darkgrey border-b-2 border-a-black",
+          tabContent:
+            "group-data-[selected=true]:text-a-blue hover:text-a-blue text-a-black text-base ",
+          panel: "overflow-y-auto",
+        }}
+      >
+        <Tab key="Table" title="Table" className="text-base p-0">
+          <div className="w-full max-w-full p-[4px] md:p-[8px] space-y-2 md:space-y-2 flex flex-col mt-1 md:mt-0">
+            {data?.grouptask?.map((groupData, index) => (
+              <AccordionItemList
+                key={index}
+                setKey={index}
+                data={data}
+                groupData={groupData}
+              />
+            ))}
           </div>
-        </>
-      )}
-      {locationStatus === "table" ? (
-        <div className='w-full max-w-full p-[4px] md:p-[8px] space-y-2 md:space-y-2 flex flex-col mt-1 md:mt-0'>
-          {data?.grouptask?.map((groupData) => (
-            <div
-              className={`w-full hover:cursor-pointer md:mt-[0px] flex flex-col items-center p-2 border rounded-md shadow-md duration-300 ease-in bg-a-white`}
-              key={groupData.id}
-            >
-              <div className='flex w-full justify-between items-center'>
-                <div className='flex justify-start space-x-2'>
-                  <div
-                    className={`${
-                      !openDrop.includes(groupData.id)
-                        ? "font-semibold"
-                        : "text-base font-bold"
-                    }`}
-                  >
-                    <EditableGroupName
-                      projectId={data._id}
-                      groupData={groupData}
-                    />
-                  </div>
-                  {groupData?.task?.length > 0 &&
-                    !openDrop.includes(groupData.id) && (
-                      <div className='w-full flex items-center justify-start text-sm font-medium'>
-                        <span>
-                          - {groupData?.task?.length} Item
-                          {groupData?.task?.length > 1 && "s"}{" "}
-                        </span>
-                      </div>
-                    )}
-                </div>
-
-                {openDrop.includes(groupData.id) ? (
-                  <MdKeyboardArrowUp
-                    size={28}
-                    onClick={() => toggleDropdown(groupData.id)}
-                  />
-                ) : (
-                  <MdKeyboardArrowDown
-                    size={28}
-                    onClick={() => toggleDropdown(groupData.id)}
-                  />
-                )}
-              </div>
-
-              {openDrop.includes(groupData.id) && (
-                <Tasktable
-                  projectId={data._id}
-                  groupId={groupData.id}
-                  groupData={groupData.task}
-                  columnData={dataColumns(data.columns)}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <Dashboard myData={data} />
-      )}
+        </Tab>
+        <Tab key="Dashboard" title="Dashboard" className="">
+          <Dashboard myData={data} />
+        </Tab>
+      </Tabs>
     </div>
   );
 };
